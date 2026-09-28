@@ -1,0 +1,15 @@
+@import "../index.css";
+
+/* Estilo padrão de todos os links da Dock */
+.dock a {
+    @apply text-texto-main transition-colors duration-200 ease-in-out;
+}
+
+.dock a:hover {
+    @apply text-destaque;
+}
+
+/* Estilo de quando o NavLink estiver ativo (.isActive), aplica a cor de destaque */
+.dock a.isActive {
+    @apply text-destaque;
+}

@@ -1,0 +1,25 @@
+# Dependências
+node_modules/
+**/node_modules/
+
+# Variáveis de ambiente e segredos
+.env
+.env.*
+!.env.example
+reminder.txt
+
+# Artefatos gerados pelo Vite no client
+dist/
+build/
+
+# Logs de depuração
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Arquivos do sistema operacional e da IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

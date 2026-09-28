@@ -1,0 +1,22 @@
+@import "tailwindcss";
+@import "../index.css";
+
+/* Estilo padão de cada link da sidebar */
+.sidebar-link {
+    @apply flex items-center gap-3 px-4 py-3 rounded font-medium text-texto-main transition-all duration-200 ease-in-out;
+}
+
+/* Hover nos itens inativos */
+.sidebar-link:hover {
+    @apply bg-discreto;
+}
+
+/* Item ATIVO */
+.sidebar-link.isActive {
+    @apply text-fundo bg-destaque font-bold;
+}
+
+/* Deixa o ícone do item ativo mais espesso */
+.sidebar-link.isActive svg {
+    @apply stroke-[2.5px];
+}
