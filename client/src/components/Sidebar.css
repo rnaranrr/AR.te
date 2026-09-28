@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "../index.css";
+@import "@/index.css";
 
 /* Estilo padão de cada link da sidebar */
 .sidebar-link {

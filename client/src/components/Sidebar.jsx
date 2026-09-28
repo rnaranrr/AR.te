@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { House, Send, CirclePlus, Search, CircleUser, ShieldAlert, LogOut } from 'lucide-react';
-import './Sidebar.css';
-import Logo from '../assets/logo/icon-logo-small.svg?react';
+import '@/components/Sidebar.css';
+import Logo from '@/assets/logo/icon-logo-small.svg?react';
 
 export default function Sidebar() {
     return (

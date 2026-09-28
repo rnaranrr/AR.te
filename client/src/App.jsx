@@ -1,7 +1,6 @@
-import React from 'react';
-import Dock from './components/Dock';
-import Sidebar from './components/Sidebar';
-import Navbar from './components/Navbar';
+import Dock from '@/components/Dock';
+import Sidebar from '@/components/Sidebar';
+import Navbar from '@/components/Navbar';
 
 export default function App() {
     return (

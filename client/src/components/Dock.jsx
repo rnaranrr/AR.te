@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { House, Send, CirclePlus, Search, CircleUser } from 'lucide-react';
-import './Dock.css';
+import '@/components/Dock.css';
 
 // Dock para telas pequenas
 export default function Dock() {

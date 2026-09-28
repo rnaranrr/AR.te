@@ -1,4 +1,4 @@
-import Logo from '../assets/logo/icon-logo-small.svg?react'
+import Logo from '@/assets/logo/icon-logo-small.svg?react'
 
 // Logo no topo do site para telas pequenas
 export default function Navbar() {
