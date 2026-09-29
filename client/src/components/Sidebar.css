@@ -20,3 +20,7 @@
 .sidebar-link.isActive svg {
     @apply stroke-[2.5px];
 }
+
+.btn.isActive {
+    @apply text-fundo bg-destaque font-bold;
+}

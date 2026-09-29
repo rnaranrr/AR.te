@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { House, Send, CirclePlus, Search, CircleUser } from 'lucide-react';
+import { House, Send, ShieldAlert, Search, CircleUser } from 'lucide-react';
 import '@/components/Dock.css';
 
 // Dock para telas pequenas
@@ -32,25 +32,25 @@ export default function Dock() {
                 <Send />
             </NavLink>
 
-            {/* Criar Post */}
-            <NavLink
-                to='/postar'
-                className={({ isActive }) => isActive ? 'isActive' : ''}
-            >
-                <CirclePlus />
-            </NavLink>
-
             {/* Pesquisar */}
             <NavLink
-                to='/pesquisar'
+                to='/search'
                 className={({ isActive }) => isActive ? 'isActive' : ''}
             >
                 <Search />
             </NavLink>
 
+            {/* Criar Post */}
+            <NavLink
+                to='/mod'
+                className={({ isActive }) => isActive ? 'isActive' : ''}
+            >
+                <ShieldAlert />
+            </NavLink>
+
             {/* Perfil */}
             <NavLink
-                to='/perfil'
+                to='/profile'
                 className={({ isActive }) => isActive ? 'isActive' : ''}
             >
                 <CircleUser />

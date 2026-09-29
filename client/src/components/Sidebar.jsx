@@ -61,7 +61,7 @@ export default function Sidebar() {
 
                     {/* Criar Post */}
                     <NavLink
-                        to='/postar'
+                        to='/post'
                         className={({ isActive }) => isActive ? 'sidebar-link isActive' : 'sidebar-link'}
                     >
                         <CirclePlus />
@@ -70,20 +70,11 @@ export default function Sidebar() {
 
                     {/* Pesquisar */}
                     <NavLink
-                        to='/pesquisar'
+                        to='/search'
                         className={({ isActive }) => isActive ? 'sidebar-link isActive' : 'sidebar-link'}
                     >
                         <Search />
                         <span>{t('sidebar.search')}</span>
-                    </NavLink>
-
-                    {/* Perfil */}
-                    <NavLink
-                        to='/perfil'
-                        className={({ isActive }) => isActive ? 'sidebar-link isActive' : 'sidebar-link'}
-                    >
-                        <CircleUser />
-                        <span>{t('sidebar.profile')}</span>
                     </NavLink>
 
                     {/* Moderação */}
@@ -94,6 +85,16 @@ export default function Sidebar() {
                         <ShieldAlert />
                         <span>{t('sidebar.moderation')}</span>
                     </NavLink>
+
+                    {/* Perfil */}
+                    <NavLink
+                        to='/profile'
+                        className={({ isActive }) => isActive ? 'sidebar-link isActive' : 'sidebar-link'}
+                    >
+                        <CircleUser />
+                        <span>{t('sidebar.profile')}</span>
+                    </NavLink>
+
                 </nav>
 
                 {/* INSERIR AQUI DETALHES DO PERFIL*/}
