@@ -1,0 +1,11 @@
+{
+  "sidebar": {
+    "home": "Início",
+    "inbox": "Mensagens",
+    "post": "Postar",
+    "search": "Pesquisar",
+    "profile": "Você",
+    "moderation": "Moderação",
+    "logout": "Sair"
+  }
+}

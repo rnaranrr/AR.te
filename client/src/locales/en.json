@@ -1,0 +1,11 @@
+{
+  "sidebar": {
+    "home": "Home",
+    "inbox": "Inbox",
+    "post": "Post",
+    "search": "Search",
+    "profile": "You",
+    "moderation": "Moderation",
+    "logout": "Logout"
+  }
+}

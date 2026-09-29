@@ -1,9 +1,19 @@
 import { NavLink } from 'react-router-dom';
 import { House, Send, CirclePlus, Search, CircleUser, ShieldAlert, LogOut } from 'lucide-react';
 import '@/components/Sidebar.css';
+import { useTranslation } from 'react-i18next';
 import Logo from '@/assets/logo/icon-logo-small.svg?react';
 
 export default function Sidebar() {
+
+    // Obtém o objeto de idioma do i18next para mudar o idioma atual
+    const { i18n } = useTranslation();
+
+    // Altera o idioma da aplicação ao clicar nos botões de idioma.
+    const changeLanguage = (lng) => {
+        i18n.changeLanguage(lng);
+    };
+
     return (
         <aside className='h-screen sticky top-0 z-50 hidden sm:flex flex-col justify-between w-64 border-r border-discreto bg-fundo p-4 min-h-screen font-principal'>
             <div>
@@ -11,6 +21,12 @@ export default function Sidebar() {
                 <div className='px-4 py-3 mb-6 mx-8 flex flex-row justify-around items-center'>
                     <Logo className='w-9 pt-3 text-texto-main' />
                     <h1 className='text-3xl font-logo text-texto-main h-fit pt-4'>AR.te</h1>
+                </div>
+
+                {/* Botões de troca de idioma */}
+                <div className="flex gap-2 p-2 fixed top-0 right-0 z-[999]">
+                    <button onClick={() => changeLanguage('pt')} className="btn btn-lang">PT</button>
+                    <button onClick={() => changeLanguage('en')} className="btn btn-lang">EN</button>
                 </div>
 
                 {/* Lista de Navegação */}
@@ -31,7 +47,7 @@ export default function Sidebar() {
                         className={({ isActive }) => isActive ? 'sidebar-link isActive' : 'sidebar-link'}
                     >
                         <House />
-                        <span>Início</span>
+                        <span>{t('sidebar.home')}</span>
                     </NavLink>
 
                     {/* DM */}
@@ -40,7 +56,7 @@ export default function Sidebar() {
                         className={({ isActive }) => isActive ? 'sidebar-link isActive' : 'sidebar-link'}
                     >
                         <Send />
-                        <span>Mensagens</span>
+                        <span>{t('sidebar.inbox')}</span>
                     </NavLink>
 
                     {/* Criar Post */}
@@ -49,7 +65,7 @@ export default function Sidebar() {
                         className={({ isActive }) => isActive ? 'sidebar-link isActive' : 'sidebar-link'}
                     >
                         <CirclePlus />
-                        <span>Postar</span>
+                        <span>{t('sidebar.post')}</span>
                     </NavLink>
 
                     {/* Pesquisar */}
@@ -58,7 +74,7 @@ export default function Sidebar() {
                         className={({ isActive }) => isActive ? 'sidebar-link isActive' : 'sidebar-link'}
                     >
                         <Search />
-                        <span>Pesquisar</span>
+                        <span>{t('sidebar.search')}</span>
                     </NavLink>
 
                     {/* Perfil */}
@@ -67,7 +83,7 @@ export default function Sidebar() {
                         className={({ isActive }) => isActive ? 'sidebar-link isActive' : 'sidebar-link'}
                     >
                         <CircleUser />
-                        <span>Perfil</span>
+                        <span>{t('sidebar.profile')}</span>
                     </NavLink>
 
                     {/* Moderação */}
@@ -76,7 +92,7 @@ export default function Sidebar() {
                         className={({ isActive }) => isActive ? 'sidebar-link isActive' : 'sidebar-link'}
                     >
                         <ShieldAlert />
-                        <span>Moderação</span>
+                        <span>{t('sidebar.moderation')}</span>
                     </NavLink>
                 </nav>
 
@@ -86,7 +102,7 @@ export default function Sidebar() {
                 <div className='mt-4 pt-4 border-t border-discreto'>
                     <button className='sidebar-link w-full text-left text-cinza'>
                         <LogOut size={20} />
-                        <span>Sair</span>
+                        <span>{t('sidebar.logout')}</span>
                     </button>
                 </div>
             </div>
