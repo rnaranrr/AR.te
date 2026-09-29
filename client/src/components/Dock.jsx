@@ -17,9 +17,16 @@ export default function Dock() {
             */}
 
             {/* Feed Principal */}
+
+            {/*
+                Para o botão de Home fique ativo também quando o usuário estiver na página de Following
+                foi adicionada a condição location.pathname === '/following'
+            */}
+
             <NavLink
                 to='/'
-                className={({ isActive }) => isActive ? 'isActive' : ''}
+                end
+                className={({ isActive }) => isActive || location.pathname === '/following' ? 'isActive' : ''}
             >
                 <House />
             </NavLink>

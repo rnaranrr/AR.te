@@ -21,10 +21,10 @@ export default function Navbar() {
     };
 
     return (
-        <div className="navbar sm:hidden font-principal sticky top-0 z-50 bg-fundo">
+        <div className='navbar sm:hidden font-principal sticky top-0 z-50 bg-fundo'>
 
             {/* Botão para a plat. de moderação */}
-            <div className="flex gap-2 p-2 pt-5 fixed top-0 left-0 z-[999]">
+            <div className='flex gap-2 p-2 pt-5 fixed top-0 left-0 z-[999]'>
                 <NavLink
                     to='/post'
                     className={({ isActive }) => isActive ? 'btn btn-lang isActive w-[50px]' : 'btn btn-lang w-[50px]'}

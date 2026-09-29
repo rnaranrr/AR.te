@@ -7,5 +7,9 @@
     "profile": "Você",
     "moderation": "Moderação",
     "logout": "Sair"
+  },
+  "feed": {
+    "foryou": "Para você",
+    "following": "Seguindo"
   }
 }

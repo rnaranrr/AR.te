@@ -1,10 +1,11 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { House, Send, CirclePlus, Search, CircleUser, ShieldAlert, LogOut } from 'lucide-react';
 import '@/components/Sidebar.css';
 import { useTranslation } from 'react-i18next';
 import Logo from '@/assets/logo/icon-logo-small.svg?react';
 
 export default function Sidebar() {
+    const location = useLocation();
 
     // Obtém o objeto de idioma do i18next para mudar o idioma atual
     const { i18n, t } = useTranslation();
@@ -24,9 +25,9 @@ export default function Sidebar() {
                 </div>
 
                 {/* Botões de troca de idioma */}
-                <div className="flex gap-2 p-2 fixed top-0 right-0 z-[999]">
-                    <button onClick={() => changeLanguage('pt')} className="btn btn-lang">PT</button>
-                    <button onClick={() => changeLanguage('en')} className="btn btn-lang">EN</button>
+                <div className='flex gap-2 p-2 fixed top-0 right-0 z-[999]'>
+                    <button onClick={() => changeLanguage('pt')} className='btn btn-lang'>PT</button>
+                    <button onClick={() => changeLanguage('en')} className='btn btn-lang'>EN</button>
                 </div>
 
                 {/* Lista de Navegação */}
@@ -42,9 +43,16 @@ export default function Sidebar() {
                     */}
 
                     {/* Feed Principal */}
+
+                    {/*
+                        Para o botão de Home fique ativo também quando o usuário estiver na página de Following
+                        foi adicionada a condição location.pathname === '/following'
+                    */}
+
                     <NavLink
                         to='/'
-                        className={({ isActive }) => isActive ? 'sidebar-link isActive' : 'sidebar-link'}
+                        end
+                        className={({ isActive }) => isActive || location.pathname === '/following' ? 'sidebar-link isActive' : 'sidebar-link'}
                     >
                         <House />
                         <span>{t('sidebar.home')}</span>
