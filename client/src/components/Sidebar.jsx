@@ -7,7 +7,7 @@ import Logo from '@/assets/logo/icon-logo-small.svg?react';
 export default function Sidebar() {
 
     // Obtém o objeto de idioma do i18next para mudar o idioma atual
-    const { i18n } = useTranslation();
+    const { i18n, t } = useTranslation();
 
     // Altera o idioma da aplicação ao clicar nos botões de idioma.
     const changeLanguage = (lng) => {
