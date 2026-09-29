@@ -38,10 +38,10 @@ export default function Feed() {
         <aside className="w-full">
 
             {/* Aba seletora de foryou */}
-            <div className="sm:pt-9 font-principal bg-fundo border-b border-discreto w-full flex justify-center items-center px-4 py-2">
-                <div className="join">
+            <div className="sm:pt-9 h-9 sm:h-fit font-principal bg-fundo border-b border-discreto w-full flex justify-center items-center px-4 py-2 sticky top-16 z-10 sm:top-0">
+                <div className="join h-9 sm:h-fit mb-2">
 
-                    <button className="btn join-item bg-fundo border-none">
+                    <button className="h-9 sm:h-fit btn join-item bg-fundo border-none">
                         <NavLink
                             to='/'
                             className={({ isActive }) => isActive ? 'isActive' : ''}
@@ -52,7 +52,7 @@ export default function Feed() {
 
                     <div className="divider divider-horizontal"></div>
 
-                    <button className="btn join-item bg-fundo border-none">
+                    <button className="h-9 sm:h-fit btn join-item bg-fundo border-none">
                         <NavLink
                             to='/following'
                             className={({ isActive }) => isActive ? 'isActive' : ''}
@@ -72,7 +72,7 @@ export default function Feed() {
                     <div className="card-body">
 
                         <h2 className="card-title">Card Title</h2>
-                        
+
                         <figure>
                             <img
                                 src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"

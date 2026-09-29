@@ -15,6 +15,7 @@ export default function App() {
 
             {/* Conteúdo */}
             <Feed />
+            <div className='h-[300vh]'></div>
 
             {/* Dock inferior fixo para celular*/}
             <Dock />
