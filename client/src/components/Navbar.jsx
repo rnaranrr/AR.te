@@ -3,9 +3,6 @@ import { NavLink } from 'react-router-dom';
 import { CirclePlus } from 'lucide-react';
 import Logo from '@/assets/logo/icon-logo-small.svg?react';
 
-import '@/components/langbtn.css';
-import '@/components/Sidebar.css';
-
 import LangBtn from '@/components/Lang-btn';
 
 // Logo no topo do site para telas pequenas

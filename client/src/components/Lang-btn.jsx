@@ -1,10 +1,4 @@
-import { NavLink } from 'react-router-dom';
-
-import { CirclePlus } from 'lucide-react';
-import Logo from '@/assets/logo/icon-logo-small.svg?react';
-
-import '@/components/langbtn.css';
-import '@/components/Sidebar.css';
+import '@/components/lang-btn.css';
 
 import { useTranslation } from 'react-i18next';
 

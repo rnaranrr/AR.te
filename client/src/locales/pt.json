@@ -18,6 +18,7 @@
     "reposts": "Reposts",
     "author": "Ver detalhes do autor",
     "details": "Ver detalhes do post",
-    "report": "Denunciar post"
+    "report": "Denunciar post",
+    "nsfw_warning": "Confirmar e mostrar mídia sensível"
   }
 }

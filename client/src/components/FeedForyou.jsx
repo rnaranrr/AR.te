@@ -1,6 +1,4 @@
 import { useTranslation } from 'react-i18next';
-import '@/components/Feed.css';
-
 import Post from '@/components/Post';
 
 export default function FeedForyou() {
@@ -44,32 +42,32 @@ export default function FeedForyou() {
     ];
 
     return (
-            <article className="w-full  flex flex-col justify-center items-center gap-4 mx-auto">
+        <article className="w-full  flex flex-col justify-center items-center gap-4 mx-auto">
 
-                {dbPosts.map((post) => (
-                    <Post
-                        key={post.post_id}
-                        author={post.author.user_id}
-                        authorname={post.author.name}
-                        authorusername={post.author.username}
-                        authoravatar_url={post.author.avatar_url}
+            {dbPosts.map((post) => (
+                <Post
+                    key={post.post_id}
+                    author={post.author.user_id}
+                    authorname={post.author.name}
+                    authorusername={post.author.username}
+                    authoravatar_url={post.author.avatar_url}
 
-                        post_id={post.post_id}
-                        post_title={post.post_title}
-                        post_content={post.post_content}
+                    post_id={post.post_id}
+                    post_title={post.post_title}
+                    post_content={post.post_content}
 
-                        is_nsfw={post.is_nsfw}
+                    is_nsfw={post.is_nsfw}
 
-                        media={post.media}
-                        
-                        likesCount={post.likesCount}
-                        commentsCount={post.commentsCount}
-                        repostsCount={post.repostsCount}
+                    media={post.media}
 
-                        tags={post.tags}
-                    />
-                ))}
+                    likesCount={post.likesCount}
+                    commentsCount={post.commentsCount}
+                    repostsCount={post.repostsCount}
 
-            </article>
+                    tags={post.tags}
+                />
+            ))}
+
+        </article>
     );
 }

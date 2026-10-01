@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { House, Send, ShieldAlert, Search, CircleUser } from 'lucide-react';
+
 import '@/components/Dock.css';
 
 // Dock para telas pequenas

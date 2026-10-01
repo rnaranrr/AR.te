@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+
 import { EllipsisVertical, Heart, MessageCircle, RotateCcw, CircleUserRound, StickyNote, TriangleAlert } from 'lucide-react';
+
 import '@/components/Post.css';
 
 // Componente Post recebe os dados do post, incluindo autor, título, conteúdo, mídia, tags e contadores de interações
@@ -14,6 +16,7 @@ export default function Post({
     post_id,
     post_title,
     post_content,
+
     media,
 
     is_nsfw,
@@ -118,25 +121,66 @@ export default function Post({
 
                         {/* Mídia do post */}
                         {media && media.length > 0 && (
-                            <div className="mt-2">
+                            <div className="mt-4">
+                                {/* Se o post for NSFW e o usuário ainda não confirmou, exibe um botão para confirmar a visualização da mídia sensível */}
                                 {is_nsfw && !nsfwConfirmed ? (
                                     <button
                                         type="button"
                                         onClick={() => setNsfwConfirmed(true)}
                                         className="btn w-full border-none bg-destaque text-fundo hover:bg-destaque/80 transition-colors duration-200"
                                     >
-                                        Confirmar e mostrar mídia sensível
+                                        {t('post.nsfw_warning')}
                                     </button>
                                 ) : (
-                                    media.map((item, index) => (
-                                        <NavLink key={index} to={`/post/${post_id}`}>
-                                            <img
-                                                src={item.media_url}
-                                                alt={`Media ${index + 1}`}
-                                                className="w-full rounded-lg"
-                                            />
-                                        </NavLink>
-                                    ))
+
+                                    //mapeia a mídia do post e renderiza imagens ou vídeos de acordo com o tipo de mídia
+                                    media.map((item, index) => {
+                                        const type = (item.media_type || '').toLowerCase();
+                                        const key = item.media_id ?? index;
+
+                                        //se for imagem
+                                        if (type.startsWith('image')) {
+                                            return (
+                                                <NavLink key={key} to={`/post/${post_id}`}>
+                                                    <img
+                                                        src={item.media_url}
+                                                        alt={`Mídia ${index + 1}`}
+                                                        className="w-full rounded-lg"
+                                                        loading="lazy"
+                                                    />
+                                                </NavLink>
+                                            );
+                                        }
+
+                                        //se for vídeo
+                                        if (type.startsWith('video')) {
+                                            return (
+                                                <video
+                                                    key={key}
+                                                    src={item.media_url}
+                                                    controls
+                                                    playsInline
+                                                    preload="metadata"
+                                                    className="w-full rounded-lg"
+                                                >
+                                                    Seu navegador não suporta vídeo.
+                                                </video>
+                                            );
+                                        }
+
+                                        return (
+                                            <a
+                                                key={key}
+                                                href={item.media_url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="link"
+                                            >
+                                                Abrir mídia
+                                            </a>
+                                        );
+                                    })
+
                                 )}
                             </div>
                         )}
@@ -151,7 +195,7 @@ export default function Post({
                         </div>
 
                         {/* Contadores de likes, comentários e reposts */}
-                        <div className="card-actions justify-start mt-2">
+                        <div className="card-actions justify-start mt-4">
                             <div className="flex gap-4">
                                 {/* Botão de like */}
                                 <button

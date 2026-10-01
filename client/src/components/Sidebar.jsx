@@ -1,8 +1,10 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { House, Send, CirclePlus, Search, CircleUser, ShieldAlert, LogOut } from 'lucide-react';
-import '@/components/Sidebar.css';
 import { useTranslation } from 'react-i18next';
+
+import { House, Send, CirclePlus, Search, CircleUser, ShieldAlert, LogOut } from 'lucide-react';
 import Logo from '@/assets/logo/icon-logo-small.svg?react';
+
+import '@/components/Sidebar.css';
 
 import LangBtn from '@/components/Lang-btn';
 
