@@ -4,19 +4,16 @@ import '@/components/Sidebar.css';
 import { useTranslation } from 'react-i18next';
 import Logo from '@/assets/logo/icon-logo-small.svg?react';
 
+import LangBtn from '@/components/Lang-btn';
+
 export default function Sidebar() {
     const location = useLocation();
 
     // Obtém o objeto de idioma do i18next para mudar o idioma atual
-    const { i18n, t } = useTranslation();
-
-    // Altera o idioma da aplicação ao clicar nos botões de idioma.
-    const changeLanguage = (lng) => {
-        i18n.changeLanguage(lng);
-    };
+    const { t } = useTranslation();
 
     return (
-        <aside className='h-screen sticky top-0 z-50 hidden sm:flex flex-col justify-between w-64 border-r border-discreto bg-fundo p-4 min-h-screen font-principal'>
+        <aside className='h-screen sticky top-0 z-50 hidden sm:flex flex-col w-fit justify-between w-64 border-r border-discreto bg-fundo p-4 min-h-screen font-principal'>
             <div>
                 {/* Logo */}
                 <div className='px-4 py-3 mb-6 mx-8 flex flex-row justify-around items-center'>
@@ -24,11 +21,7 @@ export default function Sidebar() {
                     <h1 className='text-3xl font-logo text-texto-main h-fit pt-4'>AR.te</h1>
                 </div>
 
-                {/* Botões de troca de idioma */}
-                <div className='flex gap-2 p-2 fixed top-0 right-0 z-[999]'>
-                    <button onClick={() => changeLanguage('pt')} className='btn btn-lang'>PT</button>
-                    <button onClick={() => changeLanguage('en')} className='btn btn-lang'>EN</button>
-                </div>
+                <LangBtn />
 
                 {/* Lista de Navegação */}
                 <nav className='flex flex-col gap-1'>
@@ -50,7 +43,7 @@ export default function Sidebar() {
                     */}
 
                     <NavLink
-                        to='/'
+                        to='/feed'
                         end
                         className={({ isActive }) => isActive || location.pathname === '/following' ? 'sidebar-link isActive' : 'sidebar-link'}
                     >
@@ -69,7 +62,7 @@ export default function Sidebar() {
 
                     {/* Criar Post */}
                     <NavLink
-                        to='/post'
+                        to='/post/new'
                         className={({ isActive }) => isActive ? 'sidebar-link isActive' : 'sidebar-link'}
                     >
                         <CirclePlus />

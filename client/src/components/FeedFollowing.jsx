@@ -1,0 +1,102 @@
+import { useTranslation } from 'react-i18next';
+import '@/components/Feed.css';
+
+import Post from '@/components/Post';
+
+export default function FeedFollowing() {
+
+    // Obtém o objeto de idioma do i18next para definir o idioma atual
+    const { t } = useTranslation();
+
+    // Simulação de um retorno do Sequelize usando .findAll({ include: [...] })
+    const dbPosts = [
+        {
+            post_id: 11,
+            post_title: "Pôr do sol em aquarela",
+            post_content: "Hoje foi um dia perfeito para explorar cores quentes e deixar o céu ganhar vida na folha.",
+            is_nsfw: false,
+            createdAt: "2026-09-30T18:45:00.000Z",
+
+            // Post.belongsTo(User, { as: 'author' })
+            author: {
+                user_id: 201,
+                name: "Bruno Costa",
+                username: "@brunocosta_paints",
+                avatar_url: "https://i.pravatar.cc/150?u=bruno"
+            },
+            // Post.hasMany(PostMedia, { as: 'media' })
+            media: [
+                { media_id: 11, media_url: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee", media_type: "image" }
+            ],
+
+            // Post.belongsToMany(Tag, { through: Ptag, as: 'tags' })
+            tags: [
+                { tag_id: 11, tag_name: "aquarela" },
+                { tag_id: 12, tag_name: "landscape" }
+            ],
+
+            likesCount: 204,
+            commentsCount: 27,
+            repostsCount: 9
+        },
+        {
+            post_id: 12,
+            post_title: "Estúdio em processo",
+            post_content: "Montando a mesa de trabalho e testando novas texturas para uma peça experimental.",
+            is_nsfw: false,
+            createdAt: "2026-09-29T10:15:00.000Z",
+
+            // Post.belongsTo(User, { as: 'author' })
+            author: {
+                user_id: 202,
+                name: "Lívia Mendes",
+                username: "@liviartstudio",
+                avatar_url: "https://i.pravatar.cc/150?u=livia"
+            },
+            // Post.hasMany(PostMedia, { as: 'media' })
+            media: [
+                { media_id: 12, media_url: "https://images.unsplash.com/photo-1517048676732-d65bc937f952", media_type: "image" }
+            ],
+
+            // Post.belongsToMany(Tag, { through: Ptag, as: 'tags' })
+            tags: [
+                { tag_id: 13, tag_name: "estudio" },
+                { tag_id: 14, tag_name: "textura" }
+            ],
+
+            likesCount: 118,
+            commentsCount: 15,
+            repostsCount: 4
+        }
+    ];
+
+    return (
+        <article className="w-full  flex flex-col justify-center items-center gap-4 mx-auto">
+
+            {dbPosts.map((post) => (
+                <Post
+                    key={post.post_id}
+                        author={post.author.user_id}
+                        authorname={post.author.name}
+                        authorusername={post.author.username}
+                        authoravatar_url={post.author.avatar_url}
+
+                        post_id={post.post_id}
+                        post_title={post.post_title}
+                        post_content={post.post_content}
+
+                        is_nsfw={post.is_nsfw}
+
+                        media={post.media}
+                        
+                        likesCount={post.likesCount}
+                        commentsCount={post.commentsCount}
+                        repostsCount={post.repostsCount}
+
+                        tags={post.tags}
+                />
+            ))}
+
+        </article>
+    );
+}

@@ -11,5 +11,13 @@
   "feed": {
     "foryou": "For you",
     "following": "Following"
+  },
+  "post":{
+    "likes": "Likes",
+    "comments": "Comments",
+    "reposts": "Reposts",
+    "author": "See author details",
+    "details": "See post details",
+    "report": "Report post"
   }
 }

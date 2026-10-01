@@ -10,11 +10,13 @@ const resources = {
   en: { translation: enTranslation }
 };
 
+const idiomaSalvo = localStorage.getItem('idiomaSalvo') || 'pt';
+
 i18n
   .use(initReactI18next) // Passa i18 pra react
   .init({
     resources,
-    lng: 'pt', // Idioma padrão inicial
+    lng: idiomaSalvo, // Idioma padrão inicial
     fallbackLng: 'pt', // Idioma de segurança caso falte alguma tradução no pt
     interpolation: {
       escapeValue: false

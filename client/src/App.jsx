@@ -1,3 +1,5 @@
+import { NavLink, useLocation, Routes, Route } from 'react-router-dom';
+
 import Dock from '@/components/Dock';
 import Sidebar from '@/components/Sidebar';
 import Navbar from '@/components/Navbar';
@@ -14,7 +16,11 @@ export default function App() {
             <Sidebar />
 
             {/* Conteúdo */}
-            <Feed />
+            <Routes>
+                <Route path="/feed/*" element={<Feed />} />
+                <Route path="/following/*" element={<Feed />} />
+            </Routes>
+            
             <div className='h-[300vh]'></div>
 
             {/* Dock inferior fixo para celular*/}

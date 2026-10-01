@@ -1,0 +1,11 @@
+@import "@/index.css";
+
+.interaction {
+    @apply w-5 h-5 text-cinza hover:text-destaque;
+}
+.interactedlike {
+    @apply w-5 h-5 text-destaque fill-destaque;
+}
+.interactedrepost {
+    @apply w-5 h-5 text-destaque;
+}

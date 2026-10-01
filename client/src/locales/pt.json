@@ -11,5 +11,13 @@
   "feed": {
     "foryou": "Para você",
     "following": "Seguindo"
+  },
+  "post":{
+    "likes": "Curtidas",
+    "comments": "Comentários",
+    "reposts": "Reposts",
+    "author": "Ver detalhes do autor",
+    "details": "Ver detalhes do post",
+    "report": "Denunciar post"
   }
 }

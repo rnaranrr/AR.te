@@ -24,7 +24,7 @@ export default function Dock() {
             */}
 
             <NavLink
-                to='/'
+                to='/feed'
                 end
                 className={({ isActive }) => isActive || location.pathname === '/following' ? 'isActive' : ''}
             >

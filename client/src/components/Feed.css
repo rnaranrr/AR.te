@@ -3,3 +3,7 @@
 .isActive {
     @apply border-b-2 border-destaque text-destaque;
 }
+
+.feed{
+    @apply font-bold text-sm mt-2;
+}
