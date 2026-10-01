@@ -111,7 +111,7 @@ export default function Post({
                         {/* Menu de opções do post */}
                         <div className="dropdown dropdown-end justify-end ml-auto">
                             <div tabIndex={0} role="button" className="btn border-none bg-fundo px-0"><EllipsisVertical className="text-cinza" /></div>
-                            <ul tabIndex={-1} className="dropdown-content menu bg-cinza rounded-box z-1 w-52 p-2 shadow-sm text-[#f1f1e7]">
+                            <ul tabIndex={-1} className="dropdown-content menu bg-cinza rounded-box z-1 w-60 p-2 shadow-sm text-[#f1f1e7]">
                                 <li>
                                     <NavLink to={`/user/${author}`}><CircleUserRound className="h-5 mr-2" />{t('post.author')}</NavLink>
                                 </li>
@@ -234,13 +234,29 @@ export default function Post({
                                 </NavLink>
 
                                 {/* Botão de repost */}
-                                <button
-                                    onClick={Repost}
-                                    className="flex items-center gap-1 hover:cursor-pointer"
-                                    aria-pressed={reposted}>
-                                    <RotateCcw className={`interaction ${reposted ? 'interactedrepost' : ''}`} />
-                                    <span>{displayedReposts}</span>
-                                </button>
+                                <div className="dropdown dropdown-end">
+                                    <div tabIndex={0} role="button" className="btn border-none bg-fundo px-0 font-normal">
+                                        <RotateCcw className={`interaction ${reposted ? 'interactedrepost' : ''}`} />
+                                        <span>{displayedReposts}</span>
+                                    </div>
+                                    <ul tabIndex={-1} className="dropdown-content menu bg-cinza rounded-box z-1 w-34 p-2 shadow-sm text-[#f1f1e7]">
+                                        <li>
+                                            <button
+                                                onClick={(event) => {
+                                                    Repost();
+                                                    event.currentTarget.blur();
+                                                }}
+                                                className="flex items-center gap-1 hover:cursor-pointer"
+                                                aria-pressed={reposted}>
+                                                <RotateCcw className="h-5 w-5"/>
+                                                    {reposted
+                                                    ? <p className='pl-2 w-10'>{t('post.reposted')}</p>
+                                                    : <p>{t('post.repost')}</p>}
+                                                
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>

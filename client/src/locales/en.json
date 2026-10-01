@@ -19,6 +19,8 @@
     "author": "See author details",
     "details": "See post details",
     "report": "Report post",
-    "nsfw_warning": "Confirm and show sensitive media"
+    "nsfw_warning": "Confirm and show sensitive media",
+    "repost": "Repost",
+    "reposted": "Undo repost"
   }
 }
