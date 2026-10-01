@@ -55,6 +55,7 @@ export default function FeedForyou() {
                     post_id={post.post_id}
                     post_title={post.post_title}
                     post_content={post.post_content}
+                    createdAt={post.createdAt}
 
                     is_nsfw={post.is_nsfw}
 

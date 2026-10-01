@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { EllipsisVertical, Heart, MessageCircle, RotateCcw, CircleUserRound, StickyNote, TriangleAlert } from 'lucide-react';
+import { EllipsisVertical, Heart, MessageCircle, RotateCcw, CircleUserRound, StickyNote, TriangleAlert, Dot } from 'lucide-react';
 
 import '@/components/Post.css';
 
@@ -16,6 +16,7 @@ export default function Post({
     post_id,
     post_title,
     post_content,
+    createdAt,
 
     media,
 
@@ -60,7 +61,18 @@ export default function Post({
     }
 
     // Obtém o objeto de idioma do i18next para definir o idioma atual
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+
+    // Formata a data de criação do post de acordo com o idioma atual
+    const dateLocale = i18n.language?.toLowerCase().startsWith('pt')
+        ? 'pt-BR'
+        : 'en-US';
+    const formattedCreatedAt = createdAt
+        ? new Intl.DateTimeFormat(dateLocale, {
+            dateStyle: 'short',
+            timeStyle: 'short'
+        }).format(new Date(createdAt))
+        : '';
 
     return (
         <aside className="w-full flex flex-col justify-center items-center mx-auto">
@@ -192,6 +204,11 @@ export default function Post({
                                     {tag.tag_name}
                                 </NavLink>
                             ))}
+
+                            {/* Data de criação do post */}
+                            <p className="text-sm text-cinza flex flex-row items-center justify-end ml-auto">
+                                {formattedCreatedAt}
+                            </p>
                         </div>
 
                         {/* Contadores de likes, comentários e reposts */}

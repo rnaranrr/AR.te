@@ -59,7 +59,9 @@ export default function FeedFollowing() {
             // Post.belongsToMany(Tag, { through: Ptag, as: 'tags' })
             tags: [
                 { tag_id: 13, tag_name: "eevee" },
-                { tag_id: 14, tag_name: "fofinho" }
+                { tag_id: 14, tag_name: "fofinho" },
+                { tag_id: 15, tag_name: "eevee2" },
+                { tag_id: 16, tag_name: "fofinho2" }
             ],
 
             likesCount: 118,
@@ -82,6 +84,7 @@ export default function FeedFollowing() {
                     post_id={post.post_id}
                     post_title={post.post_title}
                     post_content={post.post_content}
+                    createdAt={post.createdAt}
 
                     is_nsfw={post.is_nsfw}
 
