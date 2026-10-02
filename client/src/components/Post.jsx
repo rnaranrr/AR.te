@@ -211,7 +211,7 @@ export default function Post({
                                     <button
                                         type="button"
                                         onClick={() => setNsfwConfirmed(true)}
-                                        className="btn w-full border-none bg-destaque text-fundo hover:bg-destaque/80 transition-colors duration-200"
+                                        className="btn w-full border-none bg-destaque text-fundo hover:bg-destaque/80 transition-colors duration-200 col-span-2"
                                     >
                                         {t('post.nsfw_warning')}
                                     </button>
@@ -221,6 +221,7 @@ export default function Post({
                                     media.map((item, index) => {
                                         const type = (item.media_type || '').toLowerCase();
                                         const key = item.media_id ?? index;
+                                        const thirdPost = media.length === 3 && index === 2;
 
                                         //se for imagem
                                         if (type.startsWith('image')) {
@@ -232,12 +233,13 @@ export default function Post({
                                                         src: item.media_url,
                                                         alt: `Mídia ${index + 1}`
                                                     })}
-                                                    className="block w-full cursor-zoom-in"
+                                                    className={`block w-full cursor-zoom-in ${media.length === 3 && index === 2 ? 'col-span-2' : ''}`}
                                                 >
                                                     <img
                                                         src={item.media_url}
                                                         alt={`Mídia ${index + 1}`}
-                                                        className={`w-full rounded-lg ${media.length > 1 ? 'aspect-square object-contain' : ''}`}
+                                                        className={`w-full rounded-lg 
+                                                        ${media.length > 1 ? thirdPost ? 'aspect-[2/1] object-cover' : 'aspect-square object-contain' : ''}`}
                                                         loading="lazy"
                                                     />
                                                 </button>
@@ -253,10 +255,8 @@ export default function Post({
                                                     controls
                                                     playsInline
                                                     preload="metadata"
-                                                    className={`w-full rounded-lg ${media.length > 1 ? 'aspect-square object-contain' : ''}`}
-                                                >
-                                                    Seu navegador não suporta vídeo.
-                                                </video>
+                                                    className={`w-full rounded-lg ${media.length > 1 ? thirdPost ? 'aspect-[2/1] object-cover' : 'aspect-square object-contain' : ''} ${thirdPost ? 'col-span-2' : ''}`}
+                                                />
                                             );
                                         }
 
@@ -266,7 +266,7 @@ export default function Post({
                                                 href={item.media_url}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="link"
+                                                className={`link ${media.length === 3 && index === 2 ? 'col-span-2' : ''}`}
                                             >
                                                 Abrir mídia
                                             </a>
