@@ -23,5 +23,8 @@
     "nsfw_warning": "Confirmar e mostrar mídia sensível",
     "repost": "Republicar",
     "reposted": "Desfazer repost"
+  },
+  "login": {
+    "error": "Email ou senha incorretos"
   }
 }

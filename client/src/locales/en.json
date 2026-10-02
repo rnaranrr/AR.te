@@ -23,5 +23,8 @@
     "nsfw_warning": "Confirm and show sensitive media",
     "repost": "Repost",
     "reposted": "Undo repost"
+  },
+  "login": {
+    "error": "Invalid email or password"
   }
 }

@@ -35,8 +35,8 @@ export default function FeedForyou() {
 
             // O Sequelize geralmente pode trazer contagens usando Sequelize.fn('COUNT')
             // ou arrays dependendo de como fazes a query. Vamos assumir contagens diretas.
-            likesCount: 124,
-            commentsCount: 18,
+            likesCount: 189,
+            commentsCount: 200,
             repostsCount: 5
         }
     ];
