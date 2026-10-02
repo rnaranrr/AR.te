@@ -160,7 +160,6 @@ export default function Post({
                         <NavLink to={`/user/${author}`}>
                             <img
                                 src={authoravatar_url}
-                                alt={authorname}
                                 className="w-10 h-10 rounded-full"
                             />
                         </NavLink>
@@ -211,9 +210,26 @@ export default function Post({
                                     <button
                                         type="button"
                                         onClick={() => setNsfwConfirmed(true)}
-                                        className="btn w-full border-none bg-destaque text-fundo hover:bg-destaque/80 transition-colors duration-200 col-span-2"
+                                        className="block relative w-full overflow-hidden rounded-lg border-none bg-discreto text-texto-main hover:bg-destaque/80 transition-colors duration-200 col-span-2"
                                     >
-                                        {t('post.nsfw_warning')}
+                                        {/* Renderiza a primeira mídia para ajustar o tamanho do botão */}
+                                        {media[0]?.media_type?.toLowerCase().startsWith('image') && (
+                                            <img
+                                                src={media[0].media_url}
+                                                className="invisible block w-full rounded-lg"
+                                            />
+                                        )}
+                                        {media[0]?.media_type?.toLowerCase().startsWith('video') && (
+                                            <video
+                                                src={media[0].media_url}
+                                                preload="metadata"
+                                                playsInline
+                                                className="invisible block w-full rounded-lg"
+                                            />
+                                        )}
+                                        <span className="absolute inset-0 flex items-center w-full ml-auto justify-center">
+                                            {t('post.nsfw_warning')}
+                                        </span>
                                     </button>
                                 ) : (
 
@@ -231,15 +247,13 @@ export default function Post({
                                                     type="button"
                                                     onClick={() => setFullscreenImage({
                                                         src: item.media_url,
-                                                        alt: `Mídia ${index + 1}`
                                                     })}
                                                     className={`block w-full cursor-zoom-in ${media.length === 3 && index === 2 ? 'col-span-2' : ''}`}
                                                 >
                                                     <img
                                                         src={item.media_url}
-                                                        alt={`Mídia ${index + 1}`}
                                                         className={`w-full rounded-lg 
-                                                        ${media.length > 1 ? thirdPost ? 'aspect-[2/1] object-cover' : 'aspect-square object-contain' : ''}`}
+                                                        ${media.length > 1 ? thirdPost ? 'aspect-[2/1] object-cover' : 'aspect-square object-cover' : ''}`}
                                                         loading="lazy"
                                                     />
                                                 </button>
@@ -255,7 +269,7 @@ export default function Post({
                                                     controls
                                                     playsInline
                                                     preload="metadata"
-                                                    className={`w-full rounded-lg ${media.length > 1 ? thirdPost ? 'aspect-[2/1] object-cover' : 'aspect-square object-contain' : ''} ${thirdPost ? 'col-span-2' : ''}`}
+                                                    className={`w-full rounded-lg ${media.length > 1 ? thirdPost ? 'aspect-[2/1] object-cover' : 'aspect-square object-cover' : ''} ${thirdPost ? 'col-span-2' : ''}`}
                                                 />
                                             );
                                         }
@@ -366,7 +380,6 @@ export default function Post({
                     </button>
                     <img
                         src={fullscreenImage.src}
-                        alt={fullscreenImage.alt}
                         onClick={(event) => event.stopPropagation()}
                         className="max-h-[calc(100vh-2rem)] max-w-full object-contain"
                     />
