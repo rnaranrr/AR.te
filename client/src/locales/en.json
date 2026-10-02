@@ -20,6 +20,8 @@
     "details": "See post details",
     "copy_link": "Copy link",
     "link_copied": "Link copied",
+    "open_image": "Open image fullscreen",
+    "close_image": "Close image",
     "report": "Report post",
     "nsfw_warning": "Confirm and show sensitive media",
     "repost": "Repost",

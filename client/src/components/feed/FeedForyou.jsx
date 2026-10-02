@@ -24,7 +24,7 @@ export default function FeedForyou() {
             },
             // Post.hasMany(PostMedia, { as: 'media' })
             media: [
-                { media_id: 1, media_url: "https://images.unsplash.com/photo-1547826039-bfc35e0f1ea8", media_type: "image" }
+                { media_id: 1, media_url: "https://images.unsplash.com/photo-1547826039-bfc35e0f1ea8", media_type: "image" },
             ],
 
             // Post.belongsToMany(Tag, { through: Ptag, as: 'tags' })

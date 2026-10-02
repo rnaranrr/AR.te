@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { EllipsisVertical, Heart, MessageCircle, RotateCcw, CircleUserRound, StickyNote, TriangleAlert, Link } from 'lucide-react';
+import { EllipsisVertical, Heart, MessageCircle, RotateCcw, CircleUserRound, StickyNote, TriangleAlert, Link, X } from 'lucide-react';
 
 import '@/components/Post.css';
 
@@ -36,12 +36,34 @@ export default function Post({
     // Controla se o link do post já foi copiado para a área de transferência
     const [linkCopied, setLinkCopied] = useState(false);
 
+    // Função para resetar o estado de linkCopied após 2,5 segundos
     useEffect(() => {
         if (!linkCopied) return;
 
-        const timeoutId = setTimeout(() => setLinkCopied(false), 2500);
-        return () => clearTimeout(timeoutId);
+        const timeout = setTimeout(() => setLinkCopied(false), 2500);
+        return () => clearTimeout(timeout);
     }, [linkCopied]);
+
+    // Controla se a imagem do post está sendo exibida em tela cheia
+    const [fullscreenImage, setFullscreenImage] = useState(null);
+
+    // Função para fechar a imagem em tela cheia ao pressionar Esc
+    useEffect(() => {
+        if (!fullscreenImage) return;
+
+        const OverflowAnterior = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+
+        function closeOnEscape(event) {
+            if (event.key === 'Escape') setFullscreenImage(null);
+        }
+
+        window.addEventListener('keydown', closeOnEscape);
+        return () => {
+            document.body.style.overflow = OverflowAnterior;
+            window.removeEventListener('keydown', closeOnEscape);
+        };
+    });
 
     // Determina quais tags devem ser renderizadas, priorizando post_tags sobre tags
     const renderedTags = Array.isArray(post_tags) && post_tags.length > 0
@@ -75,31 +97,36 @@ export default function Post({
         const copyButton = event.currentTarget;
         const postLink = `${window.location.origin}/post/${post_id}`;
 
-        try {
-            if (navigator.clipboard?.writeText) {
+        let copied = false;
+
+        if (navigator.clipboard?.writeText) {
+            try {
+                //manda pra área de transferência o link do post igual um ser normal
                 await navigator.clipboard.writeText(postLink);
-            } else {
-                throw new Error('Clipboard API indisponível');
+                copied = true;
+            } catch {
             }
-        } catch {
+        }
+
+        // manda pra área de transferência o link do post de maneira satânica
+        // Honestamente não entendi essa maracutaia, mas funcionando tá valendo
+        if (!copied) {
             const textArea = document.createElement('textarea');
             textArea.value = postLink;
             textArea.setAttribute('readonly', '');
             textArea.style.position = 'fixed';
-            textArea.style.opacity = '0';
+            textArea.style.left = '-9999px';
             document.body.appendChild(textArea);
             textArea.select();
-            textArea.setSelectionRange(0, postLink.length);
 
-            const copied = document.execCommand('copy');
-            textArea.remove();
-
-            if (!copied) {
-                setLinkCopied(false);
-                copyButton.blur();
-                return;
+            try {
+                copied = document.execCommand('copy');
+            } finally {
+                textArea.remove();
             }
         }
+
+        if (!copied) return;
 
         setLinkCopied(true);
         copyButton.blur();
@@ -178,7 +205,7 @@ export default function Post({
 
                         {/* Mídia do post */}
                         {media && media.length > 0 && (
-                            <div className="mt-4">
+                            <div className={`mt-4 ${media.length > 1 ? 'grid grid-cols-2 gap-2' : ''}`}>
                                 {/* Se o post for NSFW e o usuário ainda não confirmou, exibe um botão para confirmar a visualização da mídia sensível */}
                                 {is_nsfw && !nsfwConfirmed ? (
                                     <button
@@ -198,14 +225,22 @@ export default function Post({
                                         //se for imagem
                                         if (type.startsWith('image')) {
                                             return (
-                                                <NavLink key={key} to={`/post/${post_id}`}>
+                                                <button
+                                                    key={key}
+                                                    type="button"
+                                                    onClick={() => setFullscreenImage({
+                                                        src: item.media_url,
+                                                        alt: `Mídia ${index + 1}`
+                                                    })}
+                                                    className="block w-full cursor-zoom-in"
+                                                >
                                                     <img
                                                         src={item.media_url}
                                                         alt={`Mídia ${index + 1}`}
-                                                        className="w-full rounded-lg"
+                                                        className={`w-full rounded-lg ${media.length > 1 ? 'aspect-square object-contain' : ''}`}
                                                         loading="lazy"
                                                     />
-                                                </NavLink>
+                                                </button>
                                             );
                                         }
 
@@ -218,7 +253,7 @@ export default function Post({
                                                     controls
                                                     playsInline
                                                     preload="metadata"
-                                                    className="w-full rounded-lg"
+                                                    className={`w-full rounded-lg ${media.length > 1 ? 'aspect-square object-contain' : ''}`}
                                                 >
                                                     Seu navegador não suporta vídeo.
                                                 </video>
@@ -263,7 +298,6 @@ export default function Post({
                                 <button
                                     onClick={Like}
                                     className="flex items-center gap-1 hover:cursor-pointer"
-                                    aria-pressed={liked}
                                 >
                                     <Heart
                                         className={`interaction ${liked ? 'interactedlike' : ''
@@ -292,7 +326,7 @@ export default function Post({
                                                     event.currentTarget.blur();
                                                 }}
                                                 className="flex items-center gap-1 hover:cursor-pointer"
-                                                aria-pressed={reposted}>
+                                                >
                                                 <RotateCcw className="h-5 w-5" />
                                                 {reposted
                                                     ? <p className='pl-2 w-10'>{t('post.reposted')}</p>
@@ -316,10 +350,33 @@ export default function Post({
 
             <div className="divider divider-vertical"></div>
 
+            {/* Renderiza a imagem em tela cheia se fullscreenImage estiver definido */}
+            {fullscreenImage && (
+                <div
+                    role="dialog"
+                    onClick={() => setFullscreenImage(null)}
+                    className="fixed inset-0 z-[100] flex items-center justify-center bg-[#120f22] p-4"
+                >
+                    <button
+                        type="button"
+                        onClick={() => setFullscreenImage(null)}
+                        className="absolute right-4 top-4 z-10 rounded-full bg-cinza p-2 text-white hover:bg-discreto transition-colors duration-200"
+                    >
+                        <X className="text-[#f1f1e7]" />
+                    </button>
+                    <img
+                        src={fullscreenImage.src}
+                        alt={fullscreenImage.alt}
+                        onClick={(event) => event.stopPropagation()}
+                        className="max-h-[calc(100vh-2rem)] max-w-full object-contain"
+                    />
+                </div>
+            )}
+
+            {/* Toast de quando o link do post é copiado */}
             {linkCopied && (
                 <div
                     role="status"
-                    aria-live="polite"
                     className="fixed bottom-20 left-1/2 z-50 -translate-x-1/2 rounded-md bg-destaque px-4 py-3 text-fundo shadow-lg sm:bottom-6"
                 >
                     {t('post.link_copied')}

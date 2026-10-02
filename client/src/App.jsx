@@ -4,6 +4,7 @@ import Dock from '@/components/navigation/Dock';
 import Sidebar from '@/components/navigation/Sidebar';
 import Navbar from '@/components/navigation/Navbar';
 import Feed from '@/components/feed/Feed';
+import NewPost from '@/components/form/NewPost';
 
 export default function App() {
     return (
@@ -19,6 +20,7 @@ export default function App() {
             <Routes>
                 <Route path="/feed/*" element={<Feed />} />
                 <Route path="/following/*" element={<Feed />} />
+                <Route path="/post/new" element={<NewPost />} />
             </Routes>
             
             <div className='h-[300vh]'></div>

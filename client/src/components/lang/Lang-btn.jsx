@@ -2,10 +2,8 @@ import '@/components/lang/lang-btn.css';
 
 import { useTranslation } from 'react-i18next';
 
-// Logo no topo do site para telas pequenas
+
 export default function Navbar() {
-
-
     // Obtém o objeto de idioma do i18next para mudar o idioma atual
     const { i18n } = useTranslation();
 

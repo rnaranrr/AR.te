@@ -24,7 +24,8 @@ export default function FeedFollowing() {
             },
             // Post.hasMany(PostMedia, { as: 'media' })
             media: [
-                { media_id: 11, media_url: "https://static1.e926.net/data/29/6a/296aa3b1bd4851b6f4ab6f0e8bcea7f4.gif", media_type: "image" }
+                { media_id: 11, media_url: "https://static1.e926.net/data/29/6a/296aa3b1bd4851b6f4ab6f0e8bcea7f4.gif", media_type: "image" },
+                { media_id: 17, media_url: "https://static1.e926.net/data/29/6a/296aa3b1bd4851b6f4ab6f0e8bcea7f4.gif", media_type: "image" }
             ],
 
             // Post.belongsToMany(Tag, { through: Ptag, as: 'tags' })
