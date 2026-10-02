@@ -18,6 +18,8 @@
     "reposts": "Reposts",
     "author": "See author details",
     "details": "See post details",
+    "copy_link": "Copy link",
+    "link_copied": "Link copied",
     "report": "Report post",
     "nsfw_warning": "Confirm and show sensitive media",
     "repost": "Repost",

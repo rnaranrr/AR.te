@@ -1,9 +1,9 @@
 import { NavLink, useLocation, Routes, Route } from 'react-router-dom';
 
-import Dock from '@/components/Dock';
-import Sidebar from '@/components/Sidebar';
-import Navbar from '@/components/Navbar';
-import Feed from '@/components/Feed';
+import Dock from '@/components/navigation/Dock';
+import Sidebar from '@/components/navigation/Sidebar';
+import Navbar from '@/components/navigation/Navbar';
+import Feed from '@/components/feed/Feed';
 
 export default function App() {
     return (

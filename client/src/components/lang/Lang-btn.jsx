@@ -1,4 +1,4 @@
-import '@/components/lang-btn.css';
+import '@/components/lang/lang-btn.css';
 
 import { useTranslation } from 'react-i18next';
 

@@ -5,5 +5,5 @@
 }
 
 .feed{
-    @apply font-bold text-sm mt-2;
+    @apply font-bold text-sm mt-2 w-20 justify-center flex;
 }

@@ -4,9 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { House, Send, CirclePlus, Search, CircleUser, ShieldAlert, LogOut } from 'lucide-react';
 import Logo from '@/assets/logo/icon-logo-small.svg?react';
 
-import '@/components/Sidebar.css';
+import '@/components/navigation/Sidebar.css';
 
-import LangBtn from '@/components/Lang-btn';
+import LangBtn from '@/components/lang/Lang-btn';
 
 export default function Sidebar() {
     const location = useLocation();

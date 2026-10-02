@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { EllipsisVertical, Heart, MessageCircle, RotateCcw, CircleUserRound, StickyNote, TriangleAlert, Dot } from 'lucide-react';
+import { EllipsisVertical, Heart, MessageCircle, RotateCcw, CircleUserRound, StickyNote, TriangleAlert, Link } from 'lucide-react';
 
 import '@/components/Post.css';
 
@@ -33,6 +33,16 @@ export default function Post({
     // Controla se o usuário confirmou que deseja ver mídia NSFW
     const [nsfwConfirmed, setNsfwConfirmed] = useState(false);
 
+    // Controla se o link do post já foi copiado para a área de transferência
+    const [linkCopied, setLinkCopied] = useState(false);
+
+    useEffect(() => {
+        if (!linkCopied) return;
+
+        const timeoutId = setTimeout(() => setLinkCopied(false), 2500);
+        return () => clearTimeout(timeoutId);
+    }, [linkCopied]);
+
     // Determina quais tags devem ser renderizadas, priorizando post_tags sobre tags
     const renderedTags = Array.isArray(post_tags) && post_tags.length > 0
         ? post_tags
@@ -58,6 +68,41 @@ export default function Post({
     function Repost() {
         //IMPLEMENTAR A LÓGICA DE REPOST DEPOIS, POR ENQUANTO SÓ INVERTE O ESTADO
         setReposted((currentRepost) => !currentRepost);
+    }
+
+    // Função responsável por copiar o link do post para a área de transferência
+    async function copyPostLink(event) {
+        const copyButton = event.currentTarget;
+        const postLink = `${window.location.origin}/post/${post_id}`;
+
+        try {
+            if (navigator.clipboard?.writeText) {
+                await navigator.clipboard.writeText(postLink);
+            } else {
+                throw new Error('Clipboard API indisponível');
+            }
+        } catch {
+            const textArea = document.createElement('textarea');
+            textArea.value = postLink;
+            textArea.setAttribute('readonly', '');
+            textArea.style.position = 'fixed';
+            textArea.style.opacity = '0';
+            document.body.appendChild(textArea);
+            textArea.select();
+            textArea.setSelectionRange(0, postLink.length);
+
+            const copied = document.execCommand('copy');
+            textArea.remove();
+
+            if (!copied) {
+                setLinkCopied(false);
+                copyButton.blur();
+                return;
+            }
+        }
+
+        setLinkCopied(true);
+        copyButton.blur();
     }
 
     // Obtém o objeto de idioma do i18next para definir o idioma atual
@@ -213,7 +258,7 @@ export default function Post({
 
                         {/* Contadores de likes, comentários e reposts */}
                         <div className="card-actions justify-start mt-4">
-                            <div className="flex gap-4">
+                            <div className="flex w-full items-center gap-4">
                                 {/* Botão de like */}
                                 <button
                                     onClick={Like}
@@ -248,15 +293,20 @@ export default function Post({
                                                 }}
                                                 className="flex items-center gap-1 hover:cursor-pointer"
                                                 aria-pressed={reposted}>
-                                                <RotateCcw className="h-5 w-5"/>
-                                                    {reposted
+                                                <RotateCcw className="h-5 w-5" />
+                                                {reposted
                                                     ? <p className='pl-2 w-10'>{t('post.reposted')}</p>
                                                     : <p>{t('post.repost')}</p>}
-                                                
+
                                             </button>
                                         </li>
                                     </ul>
                                 </div>
+
+                                {/* Botão de copiar link do post */}
+                                <button type="button" className="ml-auto flex hover:cursor-pointer hover:text-destaque" onClick={copyPostLink}>
+                                    <Link className="h-5 mr-2" />
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -265,6 +315,16 @@ export default function Post({
             </div >
 
             <div className="divider divider-vertical"></div>
+
+            {linkCopied && (
+                <div
+                    role="status"
+                    aria-live="polite"
+                    className="fixed bottom-20 left-1/2 z-50 -translate-x-1/2 rounded-md bg-destaque px-4 py-3 text-fundo shadow-lg sm:bottom-6"
+                >
+                    {t('post.link_copied')}
+                </div>
+            )}
         </aside>
 
     );

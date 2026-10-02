@@ -1,10 +1,10 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import '@/components/Feed.css';
+import '@/components/feed/Feed.css';
 
-import FeedForyou from '@/components/FeedForyou';
-import FeedFollowing from '@/components/FeedFollowing';
+import FeedForyou from '@/components/feed/FeedForyou';
+import FeedFollowing from '@/components/feed/FeedFollowing';
 
 export default function Feed() {
     const { t } = useTranslation();
