@@ -5,6 +5,8 @@ import dotenv from 'dotenv';
 // banco
 import { database } from './models/index.js';
 
+import authRoutes from './routes/authRoutes.js';
+
 dotenv.config();
 
 const app = express();
@@ -14,6 +16,9 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Registro das rotas de autenticação
+app.use('/auth', authRoutes);
 
 // Rota de teste
 app.get('/', (req, res) => {
@@ -28,7 +33,7 @@ async function startServer() {
         console.log('Conexão com o banco MySQL estabelecida com sucesso.');
 
         // 2. Cria/sincroniza todas as tabelas e relacionamentos
-        await database.sync({ force: false }); 
+        await database.sync({ force: false });
         console.log('Todas as tabelas foram criadas/sincronizadas com sucesso!');
 
         // 3. Inicia o servidor HTTP

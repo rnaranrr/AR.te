@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import { House, Send, CirclePlus, Search, CircleUser, ShieldAlert, LogOut } from 'lucide-react';
@@ -10,9 +10,17 @@ import LangBtn from '@/components/lang/Lang-btn';
 
 export default function Sidebar() {
     const location = useLocation();
+    const navigate = useNavigate();
 
     // Obtém o objeto de idioma do i18next para mudar o idioma atual
     const { t } = useTranslation();
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+
+        navigate('/login');
+    };
 
     return (
         <aside className='h-screen sticky top-0 z-50 hidden sm:flex flex-col w-fit justify-between w-64 border-r border-discreto bg-fundo p-4 min-h-screen font-principal'>
@@ -104,7 +112,7 @@ export default function Sidebar() {
 
                 {/* Botão de Sair no Rodapé */}
                 <div className='mt-4 pt-4 border-t border-discreto'>
-                    <button className='sidebar-link w-full text-left text-cinza'>
+                    <button onClick={handleLogout} className='sidebar-link w-full text-left text-cinza'>
                         <LogOut size={20} />
                         <span>{t('sidebar.logout')}</span>
                     </button>
