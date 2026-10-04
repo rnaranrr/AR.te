@@ -3,7 +3,7 @@ import '@/components/lang/lang-btn.css';
 import { useTranslation } from 'react-i18next';
 
 
-export default function Navbar() {
+export default function LangBtn() {
     // Obtém o objeto de idioma do i18next para mudar o idioma atual
     const { i18n } = useTranslation();
 

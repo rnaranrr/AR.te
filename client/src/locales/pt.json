@@ -25,6 +25,25 @@
     "reposted": "Desfazer repost"
   },
   "login": {
-    "error": "Email ou senha incorretos"
+    "error": "Email ou senha incorretos",
+    "errorregister": "Erro ao criar conta. Tente usar outro usuário ou e-mail.",
+    "nickname" : "Apelido",
+    "username" : "Nome de Usuário",
+    "email": "Email",
+    "password": "Senha",
+    "nickname_placeholder" : "Ex.: xX_joaozinho_Xx",
+    "username_placeholder" : "ex.: joaozonho123 (@joaozinho123)",
+    "email_placeholder": "Ex.: joaozinho123+arte@exemplo.com",
+    "password_placeholder": "Ex.: senhaincrivel123",
+    "login": "Entrar",
+    "logging": "Entrando...",
+    "register": "Registrar-se",
+    "registering": "Registrando...",
+    "create_account": "Criar Conta",
+    "registertip" : "Sugerimos que você customize o seu perfil após criar uma conta!",
+    "registermsg": "Caso ainda não possua uma conta: ",
+    "registermsglink": "Registre-se",
+    "loginmsg": "Caso já possua uma conta: ",
+    "loginmsglink": "Entre"
   }
 }

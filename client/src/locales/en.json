@@ -12,7 +12,7 @@
     "foryou": "For you",
     "following": "Following"
   },
-  "post":{
+  "post": {
     "likes": "Likes",
     "comments": "Comments",
     "reposts": "Reposts",
@@ -25,6 +25,25 @@
     "reposted": "Undo repost"
   },
   "login": {
-    "error": "Invalid email or password"
+    "error": "Invalid email or password",
+    "errorregister": "Failed to create an account. Try using another username or Email adress.",
+    "nickname": "Nickname",
+    "username": "Username",
+    "email": "Email",
+    "password": "Password",
+    "nickname_placeholder": "Ex.: xX_littlejohn_Xx",
+    "username_placeholder": "Ex.: littlejohn123 (@littlejohn123)",
+    "email_placeholder": "Ex.: littlejohn123+arte@example.com",
+    "password_placeholder": "Ex.: veryawesomepassword123",
+    "login": "Log In",
+    "logging": "Logging In...",
+    "register": "Register",
+    "registering": "Registering...",
+    "create_account": "Create Account",
+    "registertip" : "We suggest you customize your profile after creating an account!",
+    "registermsg": "If you do not have an account yet: ",
+    "registermsglink": "Register",
+    "loginmsg": "If you already have an account: ",
+    "loginmsglink": "Login"
   }
 }
