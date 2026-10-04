@@ -59,7 +59,7 @@ export default function Register() {
                                 type="text"
                                 name="name"
                                 placeholder={t('login.nickname_placeholder')}
-                                value={formData.nickname}
+                                value={formData.name}
                                 onChange={handleChange}
                                 required
                                 className="inputform"
