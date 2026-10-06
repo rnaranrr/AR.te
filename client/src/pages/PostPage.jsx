@@ -6,6 +6,7 @@ import Comments from '@/components/comments/CommentSection';
 
 export default function PostPage() {
     const navigate = useNavigate();
+
     const { id } = useParams();
 
     // Simulação de um retorno do Sequelize usando .findAll({ include: [...] })
@@ -43,51 +44,46 @@ export default function PostPage() {
         }
     ]
 
+    const post = dbPosts.find(
+        (post) => post.post_id === Number(id)
+    );
 
-return (
-    <main className="w-full min-h-screen bg-fundo text-texto-main">
+    return (
+        <main className="w-full min-h-screen bg-fundo text-texto-main">
 
-        {/* Cabeçalho */}
-        <div className="w-full mx-auto px-4 pt-6">
-            <button
-                type="button"
-                onClick={() => navigate(-1)}
-                className="flex items-center gap-2 text-texto-main hover:text-destaque transition-colors"
-            >
-                <ArrowLeft size={22} />
-                <span>Voltar</span>
-            </button>
-        </div>
+            {/* Cabeçalho */}
+            <div className="w-full mx-auto px-4 pt-6">
+                <button
+                    type="button"
+                    onClick={() => navigate(-1)}
+                    className="flex items-center gap-2 text-texto-main hover:text-destaque transition-colors"
+                >
+                    <ArrowLeft size={22} />
+                    <span>Voltar</span>
+                </button>
+            </div>
 
-        {/* Post */}
-        <section className="w-full  mx-auto mt-4">
-            {dbPosts.map((post) => (
+            {/* Post */}
+            <section className="w-full  mx-auto mt-4">
                 <Post
-                    key={post.post_id}
                     author={post.author.user_id}
                     authorname={post.author.name}
                     authorusername={post.author.username}
                     authoravatar_url={post.author.avatar_url}
-
                     post_id={post.post_id}
                     post_title={post.post_title}
                     post_content={post.post_content}
                     createdAt={post.createdAt}
-
                     is_nsfw={post.is_nsfw}
-
                     media={post.media}
-
                     likesCount={post.likesCount}
                     commentsCount={post.commentsCount}
                     repostsCount={post.repostsCount}
-
                     tags={post.tags}
                 />
-            ))}
-            <Comments />
-        </section>
+                <Comments />
+            </section>
 
-    </main>
-);
+        </main>
+    );
 }

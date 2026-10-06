@@ -29,7 +29,7 @@ export default function Comments() {
             likesCount: 999,
         },
         {
-            comment_id: 1,
+            comment_id: 2,
             comment_content: "Legal",
             createdAt: "2026-09-30T18:45:00.000Z",
 
