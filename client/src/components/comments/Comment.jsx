@@ -45,9 +45,9 @@ export default function Comment({
         : '';
 
     return (
-        <aside className="w-full flex flex-col justify-center items-center mx-auto">
+        <aside className="w-full flex flex-col justify-center items-center mx-auto top-0">
             {/* Card do comentário */}
-            <div className="card bg-fundo w-full max-w-120 min-w-90 rounded-none">
+            <div className="card bg-fundo w-full max-w-2xl min-w-90 rounded-none">
                 <div className="card-body w-full min-w-90">
 
                     {/* Cabeçalho do comentário */}

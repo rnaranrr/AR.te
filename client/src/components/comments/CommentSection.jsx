@@ -57,9 +57,35 @@ export default function Comments() {
 
     return (
         <section className="w-full mt-6">
-            <h2 className="text-xl font-bold mb-2 ml-8">
-                Comentários
-            </h2>
+
+
+            {/* Campo de comentário */}
+            <div className="card align-self-center w-full bg-fundo flex flex-col items-center justify-center mb-2 px-4">
+                <h2 className="max-w-xl text-xl font-bold mb-1 ml-2">
+                    Comentários
+                </h2>
+
+                <form
+                    onSubmit={handleSubmit}
+                    className="flex gap-3 items-start mt-4 w-full flex-row justify-center max-w-xl"
+                >
+                    <textarea
+                        type="text"
+                        onChange={(event) => setComment(event.target.value)}
+                        placeholder={t('comment.placeholder')}
+                        rows={2}
+                        className="areaform align-center"
+                    />
+
+                    <button
+                        type="submit"
+                        className="btn bg-destaque text-fundo border-none rounded-full w-16"
+                        disabled={!comment.trim()}
+                    >
+                        {t('comment.send')}
+                    </button>
+                </form>
+            </div>
 
             {/* Lista de comentários */}
             <div>
@@ -80,29 +106,7 @@ export default function Comments() {
                 ))}
             </div>
 
-            {/* Campo de comentário */}
-            <div className="card align-self-center w-full bg-fundo flex flex-col items-center justify-center mb-8 px-4">
-                <form
-                    onSubmit={handleSubmit}
-                    className="flex gap-3 items-start mt-4 w-full flex-row justify-center max-w-xl"
-                >
-                    <textarea
-                        type="text"
-                        onChange={(event) => setComment(event.target.value)}
-                        placeholder={t('comment.placeholder')}
-                        rows={2}
-                        className="areaform align-center"
-                    />
 
-                    <button
-                        type="submit"
-                        className="btn bg-destaque text-fundo border-none rounded-full"
-                        disabled={!comment.trim()}
-                    >
-                        Enviar
-                    </button>
-                </form>
-            </div>
         </section>
     );
 }

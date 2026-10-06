@@ -47,6 +47,7 @@
     "loginmsglink": "Entre"
   },
   "comment": {
-    "placeholder": "Escreva um comentário"
+    "placeholder": "Escreva um comentário",
+    "send": "Enviar"
   }
 }
