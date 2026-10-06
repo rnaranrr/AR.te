@@ -12,7 +12,7 @@ export default function FeedFollowing() {
             post_id: 11,
             post_title: "Leafeon rosa",
             post_content: "Um leafeon que é rosa",
-            is_nsfw: false,
+            is_nsfw: true,
             createdAt: "2026-09-30T18:45:00.000Z",
 
             // Post.belongsTo(User, { as: 'author' })

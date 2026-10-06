@@ -12,7 +12,7 @@ export default function FeedForyou() {
             post_id: 1,
             post_title: "Minha nova pintura",
             post_content: "Acabei de finalizar a minha nova pintura!",
-            is_nsfw: true,
+            is_nsfw: false,
             createdAt: "2026-09-28T14:30:00.000Z",
 
             // Post.belongsTo(User, { as: 'author' })

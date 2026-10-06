@@ -45,5 +45,8 @@
     "registermsglink": "Registre-se",
     "loginmsg": "Caso já possua uma conta: ",
     "loginmsglink": "Entre"
+  },
+  "comment": {
+    "placeholder": "Escreva um comentário"
   }
 }
