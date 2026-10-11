@@ -46,7 +46,7 @@ export default function Register() {
     };
 
     return (
-        <aside className="flex justify-center items-center h-screen bg-fundo w-full font-principal p-4">
+        <aside className="flex justify-center items-center h-dvh bg-fundo w-full font-principal p-4">
             <LangBtn />
             <div className="card align-self-center my-auto w-full max-w-md bg-fundo p-6 flex flex-col items-center">
                 <Logo className='w-40 h-40 border-4 mt-6 border-texto rounded-2xl' />

@@ -49,5 +49,17 @@
   "comment": {
     "placeholder": "Escreva um comentário",
     "send": "Enviar"
+  },
+  "profile": {
+    "timeline": "Timeline",
+    "media": "Mídia",
+    "comissions": "Comissões",
+    "loading": "Carregando...",
+    "loading_failed": "Falha ao carregar perfil",
+    "posts": "Posts",
+    "followers": "Seguidores",
+    "following": "Seguindo",
+    "edit": "Editar perfil",
+    "edit_comissions": "Aba de comissões"
   }
 }

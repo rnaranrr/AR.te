@@ -1,0 +1,45 @@
+@import "@/index.css";
+
+.profile-card {
+    @apply relative w-full max-w-xl mx-auto sm:my-5 overflow-hidden sm:rounded-t-xl;
+}
+
+.profile-banner {
+    @apply h-35 bg-cinza flex items-center justify-center text-texto-main rounded-b-xl object-cover;
+}
+
+.profile-info {
+    @apply relative min-h-26 pt-2 pr-3 pb-3 pl-28;
+}
+
+.profile-avatar {
+    @apply absolute w-20 h-20 left-4 -top-10 rounded-full object-cover bg-fundo text-cinza stroke-1 border-2 border-fundo z-2;
+}
+
+.profile-details h2 {
+    @apply m-0 text-texto-main;
+}
+
+.profile-pronouns {
+    @apply block mt-1.5 text-cinza;
+}
+
+.profile-stats {
+    @apply flex justify-between gap-3 mt-2 pr-4 text-sm text-cinza;
+}
+
+.profile-stats div {
+    @apply flex flex-col gap-0.5 w-30;
+}
+
+.profile-bio {
+    @apply pt-2 text-sm overflow-hidden text-ellipsis line-clamp-3;
+}
+
+.isActive {
+    @apply border-b-2 border-destaque text-destaque;
+}
+
+.profile{
+    @apply font-bold text-sm mt-2 w-20 justify-center flex;
+}

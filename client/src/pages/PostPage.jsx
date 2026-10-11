@@ -49,7 +49,7 @@ export default function PostPage() {
     );
 
     return (
-        <main className="w-full min-h-screen bg-fundo text-texto-main">
+        <main className="w-full min-h-fit bg-fundo text-texto-main">
 
             {/* Cabeçalho */}
             <div className="w-full mx-auto px-4 pt-6">

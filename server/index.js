@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import { database } from './models/index.js';
 
 import authRoutes from './routes/authRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Registro das rotas de autenticação
 app.use('/auth', authRoutes);
+app.use('/users', userRoutes);
 
 // Rota de teste
 app.get('/', (req, res) => {
@@ -37,8 +39,9 @@ async function startServer() {
         console.log('Todas as tabelas foram criadas/sincronizadas com sucesso!');
 
         // 3. Inicia o servidor HTTP
-        app.listen(PORT, () => {
-            console.log(`Servidor rodando na porta ${PORT}`);
+
+        app.listen(PORT, '0.0.0.0', () => {
+            console.log(`Backend disponível na porta ${PORT}`);
         });
     } catch (error) {
         console.error('Erro ao conectar ou sincronizar o banco de dados:', error);

@@ -60,8 +60,8 @@ export default function Comments() {
 
 
             {/* Campo de comentário */}
-            <div className="card align-self-center w-full bg-fundo flex flex-col items-center justify-center mb-2 px-4">
-                <h2 className="max-w-xl text-xl font-bold mb-1 ml-2">
+            <div className="card align-self-center w-full bg-fundo flex flex-col items-center justify-center mb-2 pb-4">
+                <h2 className="max-w-xl text-xl font-bold mb-1 ml-2 flex justify-left">
                     Comentários
                 </h2>
 
@@ -86,6 +86,9 @@ export default function Comments() {
                     </button>
                 </form>
             </div>
+
+            {/* Separador entre comentários */}
+            <div className="divider divider-vertical pt-4"></div>
 
             {/* Lista de comentários */}
             <div>

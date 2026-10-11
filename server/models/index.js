@@ -60,14 +60,14 @@ Repost.belongsTo(Post, { foreignKey: 'post_id' });
 User.hasMany(Repost, { foreignKey: 'user_id' });
 Repost.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 
-// 8. Follow (OBRIGATÓRIO TER 'as' - Duas chaves conectando as mesmas tabelas)
+// 8. Follow
 User.hasMany(Follow, { foreignKey: 'follower_id', as: 'following' });
 User.hasMany(Follow, { foreignKey: 'following_id', as: 'followers' });
 
 Follow.belongsTo(User, { foreignKey: 'follower_id', as: 'follower' });
 Follow.belongsTo(User, { foreignKey: 'following_id', as: 'followed' });
 
-// 9. Chat (OBRIGATÓRIO TER 'as' - Duas chaves conectando as mesmas tabelas)
+// 9. Chat
 User.hasMany(Chat, { foreignKey: 'chat_send_id', as: 'sentMessages' });
 User.hasMany(Chat, { foreignKey: 'chat_receiver_id', as: 'receivedMessages' });
 
