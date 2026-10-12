@@ -17,7 +17,7 @@ export default function ProfileForm() {
     const [success, setSuccess] = useState('');
 
     // Mantém os campos controlados pelo React
-    const [form, setForm] = useState({
+    const [formData, setFormData] = useState({
         nickname: '',
         username: '',
         bio: '',
@@ -40,7 +40,7 @@ export default function ProfileForm() {
                 const user = response.data;
 
                 // Converte os dados da API para os nomes usados pelo formulário
-                setForm({
+                setFormData({
                     nickname: user.nickname || '',
                     username: user.username || '',
                     bio: user.bio || '',
@@ -88,7 +88,7 @@ export default function ProfileForm() {
     function handleChange(event) {
         const { name, value } = event.target;
 
-        setForm((previous) => ({
+        setFormData((previous) => ({
             ...previous,
             [name]: value
         }));
@@ -141,11 +141,11 @@ export default function ProfileForm() {
         try {
             const data = new FormData();
 
-            data.append('nickname', form.nickname);
-            data.append('username', form.username);
-            data.append('bio', form.bio);
-            data.append('pronouns', form.pronouns);
-            data.append('artist_type', form.artist_type);
+            data.append('nickname', formData.nickname);
+            data.append('username', formData.username);
+            data.append('bio', formData.bio);
+            data.append('pronouns', formData.pronouns);
+            data.append('artist_type', formData.artist_type);
 
             if (avatarFile) {
                 data.append('avatar', avatarFile);
@@ -273,26 +273,34 @@ export default function ProfileForm() {
                             <input
                                 name="nickname"
                                 type="text"
-                                value={form.nickname}
+                                value={formData.nickname}
                                 onChange={handleChange}
                                 className="inputform"
                                 required
                             />
+
+                            <span className="text-sm text-cinza text-right">
+                                {formData.nickname.length}/50
+                            </span>
                         </fieldset>
 
                         {/* Nome de usuário */}
-                        <fiendset className="fieldset inputlabel">
+                        <fieldset className="fieldset inputlabel">
                             <label>{t('profileform.username')}</label>
 
                             <input
                                 name="username"
                                 type="text"
-                                value={form.username}
+                                value={formData.username}
                                 onChange={handleChange}
                                 className="inputform"
                                 required
                             />
-                        </fiendset>
+
+                            <span className="text-sm text-cinza text-right">
+                                {formData.username.length}/30
+                            </span>
+                        </fieldset>
 
                         {/* Pronomes */}
                         <fieldset className="fieldset inputlabel">
@@ -301,11 +309,15 @@ export default function ProfileForm() {
                             <input
                                 name="pronouns"
                                 type="text"
-                                value={form.pronouns}
+                                value={formData.pronouns}
                                 onChange={handleChange}
                                 className="inputform"
                                 placeholder={t('profileform.wokepreset')}
                             />
+
+                            <span className="text-sm text-cinza text-right">
+                                {formData.pronouns.length}/20
+                            </span>
                         </fieldset>
 
                         {/* Tipo */}
@@ -315,11 +327,15 @@ export default function ProfileForm() {
                             <input
                                 name="artist_type"
                                 type="text"
-                                value={form.artist_type}
+                                value={formData.artist_type}
                                 onChange={handleChange}
                                 className="inputform"
                                 placeholder={t('profileform.typepreset')}
                             />
+
+                            <span className="text-sm text-cinza text-right">
+                                {formData.artist_type.length}/20
+                            </span>
                         </fieldset>
 
                         {/* Biografia */}
@@ -328,7 +344,7 @@ export default function ProfileForm() {
 
                             <textarea
                                 name="bio"
-                                value={form.bio}
+                                value={formData.bio}
                                 onChange={handleChange}
                                 className="areaformprofile"
                                 maxLength={500}
@@ -336,7 +352,7 @@ export default function ProfileForm() {
                             />
 
                             <span className="text-sm text-cinza text-right">
-                                {form.bio.length}/500
+                                {formData.bio.length}/500
                             </span>
                         </fieldset>
 

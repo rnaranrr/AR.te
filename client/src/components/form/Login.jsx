@@ -66,6 +66,7 @@ export default function Login() {
                                 className="inputform"
                             />
                         </fieldset>
+                        
                         <fieldset className="fieldset inputlabel">
                             <label>{t('login.password')}</label>
                             <input

@@ -64,6 +64,9 @@ export default function Register() {
                                 required
                                 className="inputform"
                             />
+                            <span className="text-sm text-cinza text-right">
+                                {formData.name.length}/50
+                            </span>
                         </fieldset>
                         <fieldset className="fieldset inputlabel">
                             <label>{t('login.username')}</label>
@@ -76,7 +79,11 @@ export default function Register() {
                                 required
                                 className="inputform"
                             />
+                            <span className="text-sm text-cinza text-right">
+                                {formData.username.length}/30
+                            </span>
                         </fieldset>
+
                         <fieldset className="fieldset inputlabel">
                             <label>{t('login.email')}</label>
                             <input
@@ -89,6 +96,7 @@ export default function Register() {
                                 className="inputform"
                             />
                         </fieldset>
+
                         <fieldset className="fieldset inputlabel">
                             <label>{t('login.password')}</label>
                             <input
