@@ -50,13 +50,25 @@ export default function App() {
                     <Route path="/post/:id" element={<PostPage />} />
                 </Route>
 
+
                 <Route element={<NavReduced />}>
+                    {/* Perfil próprio */}
+                    <Route path='/profile' element={<Profile />} />
                     <Route path='/profile/' element={<Profile />} />
                     <Route path='/profile/media' element={<Profile />} />
                     <Route path='/profile/comissions' element={<Profile />} />
+
+                    {/* Perfil público */}
+                    <Route path='/user/' element={<Profile />} />
+                    <Route path='/user/:username' element={<Profile />} />
+                    <Route path='/user/:username/media' element={<Profile />} />
+                    <Route path='/user/:username/comissions' element={<Profile />} />
+
+                    {/* Edição: somente no perfil próprio */}
                     <Route path='/profile/edit' element={<ProfileForm />} />
                     <Route path='/profile/comissions/edit' element={<ComissionsForm />} />
                 </Route>
+
 
                 <Route path='/login' element={<Login />} />
                 <Route path='/register' element={<Signin />} />

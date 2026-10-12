@@ -29,6 +29,8 @@ export default function Post({
     post_tags = [],
     tags = []
 }) {
+    const nameURL = String(authorusername ?? '');
+    const authorProfilePath = `/user/${encodeURIComponent(nameURL)}`;
 
     // Controla se o usuário confirmou que deseja ver mídia NSFW
     const [nsfwConfirmed, setNsfwConfirmed] = useState(false);
@@ -157,7 +159,7 @@ export default function Post({
                     <div className="flex items-center gap-3">
 
                         {/* Foto do autor do post */}
-                        <NavLink to={`/user/${authorusername}`}>
+                        <NavLink to={authorProfilePath}>
                             {authoravatar_url ? (
                                 <img
                                     src={new URL(authoravatar_url, import.meta.env.VITE_API_URL).href}
@@ -170,7 +172,7 @@ export default function Post({
 
                         <div>
                             {/* Nome e username do autor do post */}
-                            <NavLink to={`/user/${authorusername}`} className="flex flex-col gap-1 mb-1">
+                            <NavLink to={authorProfilePath} className="flex flex-col gap-1 mb-1">
                                 <div className="flex flex-row gap-1 items-top">
                                     <h3 className="font-bold">{authorname}</h3>
                                     <p className="text-sm text-cinza">@{authorusername}</p>
@@ -188,7 +190,7 @@ export default function Post({
                             <div tabIndex={0} role="button" className="btn border-none bg-fundo px-0"><EllipsisVertical className="text-cinza" /></div>
                             <ul tabIndex={-1} className="dropdown-content menu bg-cinza rounded-box z-1 w-60 p-2 shadow-sm text-[#f1f1e7]">
                                 <li>
-                                    <NavLink to={`/user/${author}`}><CircleUserRound className="h-5 mr-2" />{t('post.author')}</NavLink>
+                                    <NavLink to={authorProfilePath}><CircleUserRound className="h-5 mr-2" />{t('post.author')}</NavLink>
                                 </li>
                                 <li>
                                     <NavLink to={`/post/${post_id}`}><StickyNote className="h-5 mr-2" />{t('post.details')}</NavLink>

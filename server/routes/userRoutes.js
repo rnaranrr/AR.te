@@ -256,4 +256,114 @@ router.put(
         }
     });
 
+// GET /users/:username
+// Busca os dados públicos de um usuário pelo username.
+// Não exige autenticação.
+
+router.get('/:username', async (req, res) => {
+    try {
+        const username = req.params.username.replace(/^@/, '');
+
+        const user = await User.findOne({
+            where: { user_idname: username },
+            attributes: [
+                'user_id',
+                'user_idname',
+                'user_nickname',
+                'user_bio',
+                'user_pronouns',
+                'user_pfpurl',
+                'user_bannerurl',
+                'user_artist_type',
+                'user_commissions_open',
+                'user_commtab_bannerurl',
+                'user_commtab_imgurl'
+            ]
+        });
+
+        if (!user) {
+            return res.status(404).json({
+                error: 'Usuário não encontrado.'
+            });
+        }
+
+        const followersCount = await Follow.count({
+            where: { following_id: user.user_id }
+        });
+
+        const followingCount = await Follow.count({
+            where: { follower_id: user.user_id }
+        });
+
+        const posts = await Post.findAll({
+            where: {
+                user_id: user.user_id,
+                deleted_at: null
+            },
+            include: [
+                {
+                    model: PostMedia,
+                    as: 'media'
+                },
+                {
+                    model: Tag,
+                    as: 'tags',
+                    through: { attributes: [] }
+                }
+            ],
+            order: [['created_at', 'DESC']]
+        });
+
+        const postsWithCounts = await Promise.all(
+            posts.map(async (post) => {
+                const [likesCount, commentsCount, repostsCount] =
+                    await Promise.all([
+                        Postlike.count({
+                            where: { post_id: post.post_id }
+                        }),
+                        Comment.count({
+                            where: {
+                                post_id: post.post_id,
+                                deleted_at: null
+                            }
+                        }),
+                        Repost.count({
+                            where: { post_id: post.post_id }
+                        })
+                    ]);
+
+                return {
+                    ...post.toJSON(),
+                    likesCount,
+                    commentsCount,
+                    repostsCount
+                };
+            })
+        );
+
+        return res.json({
+            id: user.user_id,
+            nickname: user.user_nickname,
+            username: user.user_idname,
+            bio: user.user_bio,
+            pronouns: user.user_pronouns,
+            avatar_url: user.user_pfpurl,
+            banner_url: user.user_bannerurl,
+            artist_type: user.user_artist_type,
+            commissions_open: user.user_commissions_open,
+            commissions_banner_url: user.user_commtab_bannerurl,
+            commissions_image_url: user.user_commtab_imgurl,
+            followersCount,
+            followingCount,
+            posts: postsWithCounts
+        });
+    } catch (error) {
+        console.error('Erro ao buscar perfil público:', error);
+
+        return res.status(500).json({
+            error: 'Erro interno ao buscar perfil.'
+        });
+    }
+});
+
 export default router;

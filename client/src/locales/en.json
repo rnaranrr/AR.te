@@ -56,6 +56,7 @@
     "comissions": "Comissions",
     "loading": "Loading...",
     "loading_failed": "Failed to load profile",
+    "user_not_found": "User not found.",
     "posts": "Posts",
     "followers": "Followers",
     "following": "Following",

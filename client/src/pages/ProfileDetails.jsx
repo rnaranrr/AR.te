@@ -1,48 +1,24 @@
-import { useEffect, useState } from 'react';
-import api from '@/services/api';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CircleUser, ArrowLeft, Dot } from 'lucide-react';
 
 import '@/pages/Profile.css';
 
-export default function Profile() {
-
-
-    // Armazena os dados do usuário carregados da API.
-    const [user, setUser] = useState(null);
-    // Controla o estado de carregamento do perfil.
-    const [loading, setLoading] = useState(true);
-
+export default function ProfileDetails({
+    user,
+    loading,
+    error,
+    isOwnProfile
+}) {
     const { t } = useTranslation();
     const location = useLocation();
 
-    // get dados do usuário pela api
-    useEffect(() => {
-        async function loadProfile() {
-            try {
-                const response = await api.get('/users/me');
-
-                console.log(response.data);
-
-                setUser(response.data);
-            } catch (error) {
-                console.error(t('profile.loading_failed'), error);
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        loadProfile();
-    }, []);
-
-    // 
     if (loading) {
         return <p>{t('profile.loading')}</p>;
     }
 
-    if (!user) {
-        return <p>{t('profile.loading_failed')}</p>;
+    if (error || !user) {
+        return <p>{t(error || 'profile.loading_failed')}</p>;
     }
 
     return (
@@ -134,20 +110,23 @@ export default function Profile() {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 mx-2 mb-2 md:mb-0">
-                    <NavLink
-                        to='/profile/edit'
-                        className="btn bg-destaque text-fundo font-bold hover:bg-destaque/90 border-none rounded-full mt-2 w-full"
-                    >
-                        {t('profile.edit')}
-                    </NavLink>
-                    <NavLink
-                        to='/profile/comissions/edit'
-                        className="btn bg-destaque text-fundo font-bold hover:bg-destaque/90 border-none rounded-full mt-2 w-full"
-                    >
-                        {t('profile.edit_comissions')}
-                    </NavLink>
-                </div>
+                {isOwnProfile && (
+                    <div className="grid grid-cols-2 gap-2 mx-2 mb-2 md:mb-0">
+                        <NavLink
+                            to="/profile/edit"
+                            className="btn bg-destaque text-fundo font-bold hover:bg-destaque/90 border-none rounded-full mt-2 w-full"
+                        >
+                            {t('profile.edit')}
+                        </NavLink>
+
+                        <NavLink
+                            to="/profile/comissions/edit"
+                            className="btn bg-destaque text-fundo font-bold hover:bg-destaque/90 border-none rounded-full mt-2 w-full"
+                        >
+                            {t('profile.edit_comissions')}
+                        </NavLink>
+                    </div>
+                )}
             </div>
         </aside>
     );
