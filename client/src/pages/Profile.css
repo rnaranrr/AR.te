@@ -1,7 +1,7 @@
 @import "@/index.css";
 
 .profile-card {
-    @apply relative w-full max-w-xl mx-auto sm:my-5 overflow-hidden sm:rounded-t-xl;
+    @apply relative w-full max-w-xl mx-auto md:my-5 overflow-hidden md:rounded-t-xl;
 }
 
 .profile-banner {

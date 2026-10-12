@@ -22,27 +22,12 @@ export default function Comments() {
             author: {
                 user_id: 201,
                 name: "Bruno Costa",
-                username: "@brunocosta_paints",
+                username: "brunocosta_paints",
                 avatar_url: "https://i.pravatar.cc/150?u=bruno"
             },
 
             likesCount: 999,
         },
-        {
-            comment_id: 2,
-            comment_content: "Legal",
-            createdAt: "2026-09-30T18:45:00.000Z",
-
-            // Comment.belongsTo(User, { as: 'author' })
-            author: {
-                user_id: 201,
-                name: "Bruno Costa",
-                username: "@brunocosta_paints",
-                avatar_url: "https://i.pravatar.cc/150?u=bruno"
-            },
-
-            likesCount: 999,
-        }
     ]
 
     function handleSubmit(event) {
@@ -60,31 +45,34 @@ export default function Comments() {
 
 
             {/* Campo de comentário */}
-            <div className="card align-self-center w-full bg-fundo flex flex-col items-center justify-center mb-2 pb-4">
-                <h2 className="max-w-xl text-xl font-bold mb-1 ml-2 flex justify-left">
-                    Comentários
-                </h2>
+            <div className="w-full px-4 mb-2">
+                <div className="card w-full max-w-xl mx-auto bg-fundo flex flex-col items-center justify-center pb-4">
 
-                <form
-                    onSubmit={handleSubmit}
-                    className="flex gap-3 items-start mt-4 w-full flex-row justify-center max-w-xl"
-                >
-                    <textarea
-                        type="text"
-                        onChange={(event) => setComment(event.target.value)}
-                        placeholder={t('comment.placeholder')}
-                        rows={2}
-                        className="areaform align-center"
-                    />
+                    <h2 className="max-w-xl text-xl font-bold mb-1 ml-2 flex justify-left">
+                        Comentários
+                    </h2>
 
-                    <button
-                        type="submit"
-                        className="btn bg-destaque text-fundo border-none rounded-full w-16"
-                        disabled={!comment.trim()}
+                    <form
+                        onSubmit={handleSubmit}
+                        className="flex gap-3 items-start mt-4 w-full mx-4 flex-row justify-center max-w-xl"
                     >
-                        {t('comment.send')}
-                    </button>
-                </form>
+                        <textarea
+                            type="text"
+                            onChange={(event) => setComment(event.target.value)}
+                            placeholder={t('comment.placeholder')}
+                            rows={2}
+                            className="areaform align-center"
+                        />
+
+                        <button
+                            type="submit"
+                            className="btn bg-destaque text-fundo border-none rounded-full w-16"
+                            disabled={!comment.trim()}
+                        >
+                            {t('comment.send')}
+                        </button>
+                    </form>
+                </div>
             </div>
 
             {/* Separador entre comentários */}

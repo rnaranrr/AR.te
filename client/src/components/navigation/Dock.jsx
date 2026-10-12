@@ -6,7 +6,7 @@ import '@/components/navigation/Dock.css';
 // Dock para telas pequenas
 export default function Dock() {
     return (
-        <div className='dock bg-fundo border-t border-discreto font-principal sm:hidden'>
+        <div className='dock bg-fundo border-t border-discreto font-principal md:hidden'>
 
             {/* 
                 className={({ isActive }) => isActive ? 'isActive' : ''}

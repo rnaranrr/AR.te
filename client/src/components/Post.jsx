@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { EllipsisVertical, Heart, MessageCircle, RotateCcw, CircleUserRound, StickyNote, TriangleAlert, Link, X } from 'lucide-react';
+import { EllipsisVertical, Heart, MessageCircle, RotateCcw, CircleUserRound, StickyNote, TriangleAlert, Link, X, CircleUser } from 'lucide-react';
 
 import '@/components/Post.css';
 
@@ -157,19 +157,23 @@ export default function Post({
                     <div className="flex items-center gap-3">
 
                         {/* Foto do autor do post */}
-                        <NavLink to={`/user/${author}`}>
-                            <img
-                                src={authoravatar_url}
-                                className="w-10 h-10 rounded-full"
-                            />
+                        <NavLink to={`/user/${authorusername}`}>
+                            {authoravatar_url ? (
+                                <img
+                                    src={new URL(authoravatar_url, import.meta.env.VITE_API_URL).href}
+                                    className="w-10 h-10 rounded-full"
+                                />
+                            ) : (
+                                <CircleUser className="w-10 h-10 rounded-full bg-fundo text-texto-main stroke-1" />
+                            )}
                         </NavLink>
 
                         <div>
                             {/* Nome e username do autor do post */}
-                            <NavLink to={`/user/${author}`} className="flex flex-col gap-1">
+                            <NavLink to={`/user/${authorusername}`} className="flex flex-col gap-1 mb-1">
                                 <div className="flex flex-row gap-1 items-top">
                                     <h3 className="font-bold">{authorname}</h3>
-                                    <p className="text-sm text-cinza">{authorusername}</p>
+                                    <p className="text-sm text-cinza">@{authorusername}</p>
                                 </div>
                             </NavLink>
 
@@ -252,7 +256,7 @@ export default function Post({
                                                 >
                                                     <img
                                                         src={item.media_url}
-                                                        className={`w-full rounded-lg 
+                                                        className={`w-full rounded-lg max-h-xl object-cover
                                                         ${media.length > 1 ? thirdPost ? 'aspect-[2/1] object-cover' : 'aspect-square object-cover' : ''}`}
                                                         loading="lazy"
                                                     />
@@ -269,7 +273,8 @@ export default function Post({
                                                     controls
                                                     playsInline
                                                     preload="metadata"
-                                                    className={`w-full rounded-lg ${media.length > 1 ? thirdPost ? 'aspect-[2/1] object-cover' : 'aspect-square object-cover' : ''} ${thirdPost ? 'col-span-2' : ''}`}
+                                                    className={`w-full rounded-lg max-h-xl object-cover 
+                                                        ${media.length > 1 ? thirdPost ? 'aspect-[2/1] object-cover' : 'aspect-square object-cover' : ''} ${thirdPost ? 'col-span-2' : ''}`}
                                                 />
                                             );
                                         }
@@ -311,7 +316,7 @@ export default function Post({
                                 {/* Botão de like */}
                                 <button
                                     onClick={Like}
-                                    className="flex items-center gap-1 hover:cursor-pointer"
+                                    className="flex items-center gap-1 hover:cursor-pointer w-15"
                                 >
                                     <Heart
                                         className={`interaction ${liked ? 'interactedlike' : ''
@@ -321,13 +326,13 @@ export default function Post({
                                 </button>
 
                                 {/* Botão de comentários */}
-                                <NavLink to={`/post/${post_id}`} className="flex items-center gap-1 hover:cursor-pointer">
+                                <NavLink to={`/post/${post_id}`} className="flex items-center gap-1 hover:cursor-pointer w-15">
                                     <MessageCircle className='interaction' />
                                     <span>{commentsCount}</span>
                                 </NavLink>
 
                                 {/* Botão de repost */}
-                                <div className="dropdown dropdown-end">
+                                <div className="dropdown dropdown-end w-15">
                                     <div tabIndex={0} role="button" className="btn border-none bg-fundo px-0 font-normal">
                                         <RotateCcw className={`interaction ${reposted ? 'interactedrepost' : ''}`} />
                                         <span>{displayedReposts}</span>
@@ -340,7 +345,7 @@ export default function Post({
                                                     event.currentTarget.blur();
                                                 }}
                                                 className="flex items-center gap-1 hover:cursor-pointer"
-                                                >
+                                            >
                                                 <RotateCcw className="h-5 w-5" />
                                                 {reposted
                                                     ? <p className='pl-2 w-10'>{t('post.reposted')}</p>
@@ -390,7 +395,7 @@ export default function Post({
             {linkCopied && (
                 <div
                     role="status"
-                    className="fixed bottom-20 left-1/2 z-50 -translate-x-1/2 rounded-md bg-destaque px-4 py-3 text-fundo shadow-lg sm:bottom-6"
+                    className="fixed bottom-20 left-1/2 z-50 -translate-x-1/2 rounded-md bg-destaque px-4 py-3 text-fundo shadow-lg md:bottom-6"
                 >
                     {t('post.link_copied')}
                 </div>

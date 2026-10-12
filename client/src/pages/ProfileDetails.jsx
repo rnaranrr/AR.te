@@ -48,7 +48,7 @@ export default function Profile() {
     return (
         <aside className='w-full'>
             {/* navbar de navegação mobile */}
-            <div className='navbar sm:hidden font-principal sticky top-0 z-50 bg-fundo'>
+            <div className='navbar md:hidden font-principal sticky top-0 z-50 bg-fundo'>
 
                 {/* Botão para voltar pro feed*/}
                 <div className='flex gap-2 pt-3 pl-2 fixed top-0 left-0 z-[999]'>
@@ -134,7 +134,7 @@ export default function Profile() {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 mx-2 mb-2 sm:mb-0">
+                <div className="grid grid-cols-2 gap-2 mx-2 mb-2 md:mb-0">
                     <NavLink
                         to='/profile/edit'
                         className="btn bg-destaque text-fundo font-bold hover:bg-destaque/90 border-none rounded-full mt-2 w-full"

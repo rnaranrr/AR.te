@@ -15,8 +15,8 @@ export default function Feed() {
     return (
         <aside className="w-full">
             {/* Aba seletora de foryou */}
-            <div className="sm:pt-9 h-9 sm:h-fit font-principal bg-fundo border-b border-discreto w-full flex justify-center items-center px-4 py-2 sticky top-16 z-10 sm:top-0">
-                <div className="join h-9 sm:h-fit mb-2">
+            <div className="md:pt-9 h-9 md:h-fit font-principal bg-fundo border-b border-discreto w-full flex justify-center items-center px-4 py-2 sticky top-16 z-10 md:top-0">
+                <div className="join h-9 md:h-fit mb-2">
 
                         <NavLink
                             to='/feed'

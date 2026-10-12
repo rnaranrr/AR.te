@@ -54,12 +54,15 @@ export default function Comment({
                     <div className="flex items-start gap-3">
 
                         {/* Foto do autor */}
-                        <NavLink to={`/user/${author}`}>
-                            <img
-                                src={authoravatar_url}
-                                alt={`Foto de ${authorname}`}
-                                className="w-10 h-10 rounded-full"
-                            />
+                        <NavLink to={`/user/${authorusername}`}>
+                            {authoravatar_url ? (
+                                <img
+                                    src={new URL(authoravatar_url, import.meta.env.VITE_API_URL).href}
+                                    className="w-10 h-10 rounded-full"
+                                />
+                            ) : (
+                                <CircleUser className="w-10 h-10 rounded-full bg-fundo text-texto-main stroke-1" />
+                            )}
                         </NavLink>
 
                         {/* Informações do autor e conteúdo */}
@@ -67,12 +70,12 @@ export default function Comment({
 
                             {/* Nome e username */}
                             <NavLink
-                                to={`/user/${author}`}
+                                to={`/user/${authorusername}`}
                                 className="flex flex-row flex-wrap gap-1 items-center"
                             >
                                 <h3 className="font-bold">{authorname}</h3>
                                 <p className="text-sm text-cinza">
-                                    {authorusername}
+                                    @{authorusername}
                                 </p>
                             </NavLink>
 

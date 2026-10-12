@@ -11,6 +11,7 @@ import PostPage from '@/pages/PostPage';
 import Profile from '@/pages/Profile';
 import ProfileForm from './pages/Profile/form/ProfileForm';
 import ComissionsForm from './pages/Profile/form/ComissionsForm';
+import Scroll from '@/components/Scroll';
 
 function NavLayout() {
     return (
@@ -37,8 +38,8 @@ export default function App() {
 
 
     return (
-        <div className='flex flex-col sm:flex-row min-h-dvh bg-fundo mb-16 sm:mb-0'>
-
+        <div className='flex flex-col md:flex-row min-h-dvh bg-fundo mb-16 md:mb-0'>
+            <Scroll />
             {/* Conteúdo */}
             <Routes>
                 <Route element={<NavLayout />}>

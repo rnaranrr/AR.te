@@ -13,34 +13,61 @@ export default function PostPage() {
     const dbPosts = [
         {
             post_id: 1,
-            post_title: "Minha nova pintura",
-            post_content: "Acabei de finalizar a minha nova pintura!",
+            post_title: 'Estudo de cores',
+            post_content: 'Explorando novas combinações de cores para meu próximo projeto',
+            createdAt: '2026-10-10T14:30:00.000Z',
             is_nsfw: false,
-            createdAt: "2026-09-28T14:30:00.000Z",
-
-            // Post.belongsTo(User, { as: 'author' })
             author: {
-                user_id: 101,
-                name: "Maria Silva",
-                username: "@mariasilva_art",
-                avatar_url: "https://i.pravatar.cc/150?u=maria"
+                user_id: 1,
+                name: 'rnaranrr',
+                username: 'rnaranrr',
+                avatar_url: 'https://pbs.twimg.com/profile_images/2021635657391575041/1M2qZobz_400x400.jpg'
             },
-            // Post.hasMany(PostMedia, { as: 'media' })
             media: [
-                { media_id: 1, media_url: "https://images.unsplash.com/photo-1547826039-bfc35e0f1ea8", media_type: "image" },
+                {
+                    media_id: 1,
+                    media_url: 'https://images.unsplash.com/photo-1770129703548-e1ced0e4f118?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D',
+                    media_type: 'image'
+                },
+                {
+                    media_id: 1,
+                    media_url: 'https://plus.unsplash.com/premium_vector-1724811760472-63b7fecc61e9?q=80&w=704&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D',
+                    media_type: 'image'
+                }
             ],
-
-            // Post.belongsToMany(Tag, { through: Ptag, as: 'tags' })
             tags: [
-                { tag_id: 1, tag_name: "arte" },
-                { tag_id: 2, tag_name: "pintura" }
+                { tag_id: 1, tag_name: 'arte' },
+                { tag_id: 2, tag_name: 'pintura' }
             ],
-
-            // O Sequelize geralmente pode trazer contagens usando Sequelize.fn('COUNT')
-            // ou arrays dependendo de como fazes a query. Vamos assumir contagens diretas.
             likesCount: 189,
-            commentsCount: 200,
+            commentsCount: 24,
             repostsCount: 5
+        },
+        {
+            post_id: 2,
+            post_title: 'Personagem original',
+            post_content: 'Um dos meus estudos recentes de personagem',
+            createdAt: '2026-10-08T17:00:00.000Z',
+            is_nsfw: false,
+            author: {
+                user_id: 1,
+                name: 'rnaranrr',
+                username: 'rnaranrr',
+                avatar_url: 'https://pbs.twimg.com/profile_images/2021635657391575041/1M2qZobz_400x400.jpg'
+            },
+            media: [
+                {
+                    media_id: 2,
+                    media_url: 'https://images.unsplash.com/vector-1742996363326-7a2fb198a63d?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D',
+                    media_type: 'image'
+                }
+            ],
+            tags: [
+                { tag_id: 3, tag_name: 'ilustração' }
+            ],
+            likesCount: 92,
+            commentsCount: 12,
+            repostsCount: 3
         }
     ]
 

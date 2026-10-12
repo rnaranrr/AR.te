@@ -22,7 +22,7 @@ export default function Profile() {
             {/* Aba seletora de exibição */}
             <div className="h-fit font-principal bg-fundo border-b border-discreto w-full flex justify-center items-center px-4 py-2">
 
-                <div className="join h-9 sm:h-fit mb-2">
+                <div className="join h-9 md:h-fit mb-2">
 
                         <NavLink
                             to='/profile'

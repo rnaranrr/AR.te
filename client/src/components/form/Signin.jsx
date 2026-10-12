@@ -52,7 +52,7 @@ export default function Register() {
                 <Logo className='w-40 h-40 border-4 mt-6 border-texto rounded-2xl' />
 
                 <div className="w-full mt-6">
-                    <form onSubmit={handleSubmit} className="flex flex-col gap-2 sm:gap-1">
+                    <form onSubmit={handleSubmit} className="flex flex-col gap-2 md:gap-1">
                         <fieldset className="fieldset inputlabel">
                             <label>{t('login.nickname')}</label>
                             <input
