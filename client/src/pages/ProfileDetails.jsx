@@ -2,18 +2,22 @@ import { useEffect, useState } from 'react';
 import api from '@/services/api';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { CircleUser, ArrowLeft } from 'lucide-react';
+import { CircleUser, ArrowLeft, Dot } from 'lucide-react';
 
 import '@/pages/Profile.css';
 
 export default function Profile() {
+
+
+    // Armazena os dados do usuário carregados da API.
     const [user, setUser] = useState(null);
+    // Controla o estado de carregamento do perfil.
     const [loading, setLoading] = useState(true);
 
     const { t } = useTranslation();
     const location = useLocation();
 
-
+    // get dados do usuário pela api
     useEffect(() => {
         async function loadProfile() {
             try {
@@ -23,7 +27,7 @@ export default function Profile() {
 
                 setUser(response.data);
             } catch (error) {
-                console.error('Erro ao carregar perfil:', error);
+                console.error(t('profile.loading_failed'), error);
             } finally {
                 setLoading(false);
             }
@@ -32,6 +36,7 @@ export default function Profile() {
         loadProfile();
     }, []);
 
+    // 
     if (loading) {
         return <p>{t('profile.loading')}</p>;
     }
@@ -49,7 +54,7 @@ export default function Profile() {
                 <div className='flex gap-2 pt-3 pl-2 fixed top-0 left-0 z-[999]'>
                     <NavLink
                         to='/feed'
-                        className='btn btn-lang w-[40px]'
+                        className='btn btn-lang w-10'
                     >
                         <ArrowLeft />
                     </NavLink>
@@ -57,7 +62,7 @@ export default function Profile() {
 
                 {/* username */}
 
-                <div className='mr-1 flex w-[100%] justify-center flex-row items-center'>
+                <div className='mr-1 flex w-full justify-center flex-row items-center'>
                     <h1 className='text-lg text-texto-main h-fit'>@{user.username}</h1>
                 </div>
 
@@ -68,7 +73,10 @@ export default function Profile() {
 
                 {/* banner do usuário */}
                 {user.banner_url ? (
-                    <img src={user.banner_url} className='profile-banner' />
+                    <img
+                        src={new URL(user.banner_url, import.meta.env.VITE_API_URL).href}
+                        className="profile-banner"
+                    />
                 ) : (
                     <div className="profile-banner" />
                 )}
@@ -78,7 +86,10 @@ export default function Profile() {
 
                     {/* imagem de perfil do usuário */}
                     {user.avatar_url ? (
-                        <img src={user.avatar_url} className='profile-avatar' />
+                        <img
+                            src={new URL(user.avatar_url, import.meta.env.VITE_API_URL).href}
+                            className="profile-avatar"
+                        />
                     ) : (
                         <CircleUser className='profile-avatar' />
                     )}
@@ -92,7 +103,9 @@ export default function Profile() {
                         </div>
 
                         <span className="profile-pronouns">
-                            {user.pronouns || ''}
+                            <p>{user.pronouns || ''}</p>
+                            {user.pronouns ? (<Dot />) : ('')}
+                            <p>{user.artist_type || ''}</p>
                         </span>
 
                     </div>
@@ -117,7 +130,7 @@ export default function Profile() {
 
                     {/* biografia do perfil */}
                     <p className='profile-bio'>
-                        {user.bio || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'}
+                        {user.bio || ''}
                     </p>
                 </div>
 

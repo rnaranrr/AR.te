@@ -5,7 +5,7 @@
 }
 
 .profile-banner {
-    @apply h-35 bg-cinza flex items-center justify-center text-texto-main rounded-b-xl object-cover;
+    @apply h-35 w-full bg-cinza flex items-center justify-center text-texto-main rounded-b-xl object-cover;
 }
 
 .profile-info {
@@ -13,7 +13,7 @@
 }
 
 .profile-avatar {
-    @apply absolute w-20 h-20 left-4 -top-10 rounded-full object-cover bg-fundo text-cinza stroke-1 border-2 border-fundo z-2;
+    @apply absolute w-20 h-20 left-4 -top-10 rounded-full object-cover bg-fundo text-texto-main stroke-1 border-2 border-fundo z-2;
 }
 
 .profile-details h2 {
@@ -21,7 +21,7 @@
 }
 
 .profile-pronouns {
-    @apply block mt-1.5 text-cinza;
+    @apply block mt-1.5 text-cinza gap-2 flex flex-row;
 }
 
 .profile-stats {

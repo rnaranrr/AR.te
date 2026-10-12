@@ -16,6 +16,7 @@
     "express-session": "^1.19.0",
     "formidable": "^3.5.4",
     "jsonwebtoken": "^9.0.3",
+    "multer": "^2.4.0",
     "mysql2": "^3.24.4",
     "sequelize": "^6.37.8"
   },

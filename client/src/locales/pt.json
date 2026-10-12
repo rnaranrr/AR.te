@@ -61,5 +61,27 @@
     "following": "Seguindo",
     "edit": "Editar perfil",
     "edit_comissions": "Aba de comissões"
+  },
+  "profileform": {
+    "banner_label": "Banner do perfil",
+    "banner_message": "Nenhum banner selecionado",
+    "banner_filetype": "JPG, PNG, WEBP ou GIF. Tamanho máximo do arquivo 5 MB.",
+    "pfp_label": "Foto de perfil",
+    "pfp_message": "Nenhuma foto selecionada",
+    "nickname": "Apelido",
+    "username": "Nome de Usuário",
+    "woke": "Pronomes",
+    "wokepreset": "Ex.: Ela/Dela, Elu/Delu, Ele/Dele, etc",
+    "type": "Identificação de artista",
+    "typepreset": "Ex.: Artista digital, Pintor, etc",
+    "bio": "Biografia",
+    "biopreset": "Escreva um pouco sobre você...",
+    "load_error": "Não foi possível carregar os dados do perfil.",
+    "invalid_image_type": "Selecione uma imagem JPG, PNG, WEBP ou GIF.",
+    "image_too_large": "A imagem deve ter no máximo 5 MB.",
+    "update_success": "Perfil atualizado com sucesso.",
+    "update_error": "Não foi possível atualizar o perfil.",
+    "saving": "Salvando...",
+    "save": "Salvar alterações"
   }
 }

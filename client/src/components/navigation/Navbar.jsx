@@ -25,7 +25,7 @@ export default function Navbar() {
 
             {/* Logo do site */}
 
-            <div className='mr-1 flex w-[100%] justify-center flex-row items-center'>
+            <div className='mr-1 flex w-full justify-center flex-row items-center'>
                 <Logo className='w-9 pt-3 text-texto-main' />
                 <h1 className='text-3xl font-logo text-texto-main h-fit pt-4'>AR.te</h1>
             </div>

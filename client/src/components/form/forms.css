@@ -6,6 +6,17 @@
 .areaform{
     @apply w-full max-w-xl border-2 rounded-3xl border-discreto bg-fundo text-texto-main px-4 py-4 sm:py-2 focus:outline-none focus:ring-2 focus:ring-destaque focus:border-destaque font-normal text-sm;
 }
+.areaformprofile{
+    @apply w-full max-w-xl border-2 rounded-3xl border-discreto bg-fundo text-texto-main px-4 py-4 sm:py-2 focus:outline-none focus:ring-2 focus:ring-destaque focus:border-destaque font-normal text-sm;
+}
 .inputlabel{
-    @apply font-principal text-texto-main text-xl font-semibold mb-2;
+    @apply font-principal text-texto-main text-lg font-semibold mb-2;
+}
+
+.fileform{
+    @apply w-full max-w-xl border-2 rounded-xl border-discreto bg-fundo text-texto-main px-4 py-4 sm:py-2 focus:outline-none focus:ring-2 focus:ring-destaque focus:border-destaque font-normal text-sm;
+}
+
+.desc{
+    @apply text-sm text-cinza
 }

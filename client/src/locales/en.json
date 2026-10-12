@@ -61,5 +61,27 @@
     "following": "Following",
     "edit": "Edit profile",
     "edit_comissions": "Comissions tab"
+  },
+  "profileform": {
+    "banner_label": "Profile banner",
+    "banner_message": "No banner selected",
+    "banner_filetype": "JPG, PNG, WEBP ou GIF. Max file size 5 MB.",
+    "pfp_label": "Profile photo",
+    "pfp_message": "No picture selected",
+    "nickname": "Nickname",
+    "username": "Username",
+    "woke": "Pronoums",
+    "wokepreset": "Ex.: She/Her, He/Him, They/It, etc",
+    "type": "Artist identification",
+    "typepreset": "Ex.: Digital artist, Painter, etc",
+    "bio": "Biography",
+    "biopreset": "Write little about yourself...",
+    "load_error": "Could not load profile data.",
+    "invalid_image_type": "Choose a JPG, PNG, WEBP, or GIF image.",
+    "image_too_large": "The image must be no larger than 5 MB.",
+    "update_success": "Profile updated successfully.",
+    "update_error": "Could not update the profile.",
+    "saving": "Saving...",
+    "save": "Save alterations"
   }
 }

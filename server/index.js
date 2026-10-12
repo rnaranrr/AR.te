@@ -11,6 +11,18 @@ import userRoutes from './routes/userRoutes.js';
 dotenv.config();
 
 const app = express();
+
+//
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+// Caminho da pasta server
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Disponibiliza as imagens em /uploads
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 const PORT = process.env.PORT || 3000;
 
 // Middlewares
