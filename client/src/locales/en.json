@@ -12,6 +12,10 @@
     "foryou": "For you",
     "following": "Following"
   },
+  "messages": {
+    "title": "Messages",
+    "empty": "No conversations found."
+  },
   "post": {
     "likes": "Likes",
     "comments": "Comments",

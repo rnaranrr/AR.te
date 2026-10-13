@@ -12,7 +12,7 @@ export default function Comissions() {
 
     return (
 
-        <aside className="w-full min-h-dvh bg-fundo text-texto-main">
+        <aside className="w-full min-h-full bg-fundo text-texto-main">
             {isOpen ? (<DMList />) : (<DMuser />)}
         </aside>
     );

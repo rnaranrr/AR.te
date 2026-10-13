@@ -12,6 +12,10 @@
     "foryou": "Para você",
     "following": "Seguindo"
   },
+  "messages": {
+    "title": "Mensagens",
+    "empty": "Nenhuma conversa encontrada."
+  },
   "post": {
     "likes": "Curtidas",
     "comments": "Comentários",
