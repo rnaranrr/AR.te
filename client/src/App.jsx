@@ -46,6 +46,7 @@ export default function App() {
                     <Route path='/feed/*' element={<Feed />} />
                     <Route path='/following/*' element={<Feed />} />
                     <Route path='/post/new' element={<NewPost />} />
+                    <Route path='/raffle/new' element={<NewPost />} />
                     <Route path='/*'></Route>
                     <Route path="/post/:id" element={<PostPage />} />
                 </Route>

@@ -262,8 +262,10 @@ router.put(
 
 router.get('/:username', async (req, res) => {
     try {
+        // Remove o @ inicial caso o username tenha sido enviado com ele
         const username = req.params.username.replace(/^@/, '');
 
+        // Busca apenas os dados públicos do usuário
         const user = await User.findOne({
             where: { user_idname: username },
             attributes: [
@@ -282,19 +284,23 @@ router.get('/:username', async (req, res) => {
         });
 
         if (!user) {
+            // Retorna erro caso o username não corresponda a nenhum usuário
             return res.status(404).json({
                 error: 'Usuário não encontrado.'
             });
         }
 
+        // Conta os seguidores do usuário
         const followersCount = await Follow.count({
             where: { following_id: user.user_id }
         });
 
+        // Conta quantos usuários ele segue
         const followingCount = await Follow.count({
             where: { follower_id: user.user_id }
         });
 
+        // Busca os posts não excluídos, incluindo mídias e tags
         const posts = await Post.findAll({
             where: {
                 user_id: user.user_id,
@@ -314,6 +320,7 @@ router.get('/:username', async (req, res) => {
             order: [['created_at', 'DESC']]
         });
 
+        // Adiciona a contagem de likes, comentários e reposts a cada post
         const postsWithCounts = await Promise.all(
             posts.map(async (post) => {
                 const [likesCount, commentsCount, repostsCount] =
@@ -341,6 +348,7 @@ router.get('/:username', async (req, res) => {
             })
         );
 
+        // Retorna os dados públicos do perfil e seus posts
         return res.json({
             id: user.user_id,
             nickname: user.user_nickname,
@@ -358,6 +366,7 @@ router.get('/:username', async (req, res) => {
             posts: postsWithCounts
         });
     } catch (error) {
+        // Registra o erro e informa que não foi possível buscar o perfil
         console.error('Erro ao buscar perfil público:', error);
 
         return res.status(500).json({

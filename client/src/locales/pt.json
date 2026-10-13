@@ -12,7 +12,7 @@
     "foryou": "Para você",
     "following": "Seguindo"
   },
-  "post":{
+  "post": {
     "likes": "Curtidas",
     "comments": "Comentários",
     "reposts": "Reposts",
@@ -27,12 +27,12 @@
   "login": {
     "error": "Email ou senha incorretos",
     "errorregister": "Erro ao criar conta. Tente usar outro usuário ou e-mail.",
-    "nickname" : "Apelido",
-    "username" : "Nome de Usuário",
+    "nickname": "Apelido",
+    "username": "Nome de Usuário",
     "email": "Email",
     "password": "Senha",
-    "nickname_placeholder" : "Ex.: xX_joaozinho_Xx",
-    "username_placeholder" : "ex.: joaozonho123 (@joaozinho123)",
+    "nickname_placeholder": "Ex.: xX_joaozinho_Xx",
+    "username_placeholder": "ex.: joaozonho123 (@joaozinho123)",
     "email_placeholder": "Ex.: joaozinho123+arte@exemplo.com",
     "password_placeholder": "Ex.: senhaincrivel123",
     "login": "Entrar",
@@ -40,7 +40,7 @@
     "register": "Registrar-se",
     "registering": "Registrando...",
     "create_account": "Criar Conta",
-    "registertip" : "Sugerimos que você customize o seu perfil após criar uma conta!",
+    "registertip": "Sugerimos que você customize o seu perfil após criar uma conta!",
     "registermsg": "Caso ainda não possua uma conta: ",
     "registermsglink": "Registre-se",
     "loginmsg": "Caso já possua uma conta: ",
@@ -84,5 +84,32 @@
     "update_error": "Não foi possível atualizar o perfil.",
     "saving": "Salvando...",
     "save": "Salvar alterações"
+  },
+  "newpost": {
+    "title": "Nova publicação",
+    "post": "Postagem",
+    "raffle": "Concurso",
+    "media": "Mídia",
+    "adddesc": "Adicione de 1 a 4 anexos ao seu post",
+    "titlepost": "Título",
+    "content": "Conteúdo",
+    "tags": "Tags",
+    "tagspreset": "Separe as tags por um ';'",
+    "save": "Publicar",
+    "saving": "Publicando...",
+    "check": "Marcar esse post como conteúdo sensível",
+    "invalid_media_type": "Formato inválido. Selecione JPG, PNG, WEBP, GIF ou MP4.",
+    "media_too_large": "Cada arquivo deve ter no máximo 20 MB.",
+    "title_required": "Informe um título.",
+    "title_too_long": "O título deve ter no máximo 255 caracteres.",
+    "success": "Publicação validada. Ela ainda não foi enviada ao servidor."
+  },
+  "raffleform": {
+    "title": "Título do sorteio",
+    "content": "Descrição do sorteio",
+    "title_required": "Informe um título para o sorteio.",
+    "title_too_long": "O título do sorteio deve ter no máximo 100 caracteres.",
+    "success": "Sorteio validado. Ele ainda não foi enviado ao servidor.",
+    "save": "Criar sorteio"
   }
 }

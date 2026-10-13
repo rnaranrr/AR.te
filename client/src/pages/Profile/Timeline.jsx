@@ -10,20 +10,25 @@ export default function Timeline({ posts = [], user }) {
                 {displayedPosts.map((post) => (
                     <Post
                         key={post.post_id}
-                        author={post.author?.user_id ?? user?.id}
-                        authorname={post.author?.name ?? user?.nickname}
-                        authorusername={post.author?.username ?? user?.username}
-                        authoravatar_url={post.author?.avatar_url ?? user?.avatar_url}
+                        author={post.author.user_id}
+                        authorname={post.author.name}
+                        authorusername={post.author.username}
+                        authoravatar_url={post.author.avatar_url}
+
                         post_id={post.post_id}
                         post_title={post.post_title}
                         post_content={post.post_content}
                         createdAt={post.createdAt}
+
                         is_nsfw={post.is_nsfw}
+
                         media={post.media}
-                        tags={post.tags}
+
                         likesCount={post.likesCount}
                         commentsCount={post.commentsCount}
                         repostsCount={post.repostsCount}
+
+                        tags={post.tags}
                     />
                 ))}
             </div>

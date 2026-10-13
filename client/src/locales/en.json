@@ -40,7 +40,7 @@
     "register": "Register",
     "registering": "Registering...",
     "create_account": "Create Account",
-    "registertip" : "We suggest you customize your profile after creating an account!",
+    "registertip": "We suggest you customize your profile after creating an account!",
     "registermsg": "If you do not have an account yet: ",
     "registermsglink": "Register",
     "loginmsg": "If you already have an account: ",
@@ -84,5 +84,32 @@
     "update_error": "Could not update the profile.",
     "saving": "Saving...",
     "save": "Save alterations"
+  },
+  "newpost": {
+    "title": "New post",
+    "post": "Post",
+    "raffle": "Raffle",
+    "media": "Media",
+    "adddesc": "Add 1 to 4 atatchments to your post",
+    "titlepost": "Title",
+    "content": "Content",
+    "tags": "Tags",
+    "tagspreset": "Divide the different tags using a ';' ",
+    "save": "Post",
+    "saving": "Posting...",
+    "check": "Mark this post as NSFW",
+    "invalid_media_type": "Invalid format. Select JPG, PNG, WEBP, GIF, or MP4.",
+    "media_too_large": "Each file must be no larger than 20 MB.",
+    "title_required": "Enter a title.",
+    "title_too_long": "The title must be no longer than 255 characters.",
+    "success": "Post validated. It has not been sent to the server yet."
+  },
+  "raffleform": {
+    "title": "Raffle title",
+    "content": "Raffle description",
+    "title_required": "Enter a title for the raffle.",
+    "title_too_long": "The raffle title must be no longer than 100 characters.",
+    "success": "Raffle validated. It has not been sent to the server yet.",
+    "save": "Create raffle"
   }
 }
