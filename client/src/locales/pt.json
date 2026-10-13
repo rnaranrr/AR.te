@@ -61,12 +61,24 @@
     "followers": "Seguidores",
     "following": "Seguindo",
     "edit": "Editar perfil",
-    "edit_comissions": "Aba de comissões"
+    "edit_comissions": "Editar comissões",
+    "commissions_status": "Status das comissões",
+    "commissions_open": "Abertas",
+    "commissions_closed": "Fechadas",
+    "commissions_banner_empty": "Banner das comissões",
+    "commissions_image_empty": "Tabela de preços das comissões"
   },
   "profileform": {
     "banner_label": "Banner do perfil",
     "banner_message": "Nenhum banner selecionado",
     "banner_filetype": "JPG, PNG, WEBP ou GIF. Tamanho máximo do arquivo 5 MB.",
+    "commissions_title": "Editar imagens das comissões",
+    "commissions_banner_label": "Banner das comissões",
+    "commissions_banner_message": "Nenhum banner das comissões selecionado",
+    "commissions_image_label": "Tabela de preços das comissões",
+    "commissions_image_message": "Nenhuma tabela de preços selecionada",
+    "select_image_required": "Selecione pelo menos uma imagem para atualizar.",
+    "commissions_open": "Manter comissões abertas",
     "pfp_label": "Foto de perfil",
     "pfp_message": "Nenhuma foto selecionada",
     "nickname": "Apelido",
@@ -105,11 +117,11 @@
     "success": "Publicação validada. Ela ainda não foi enviada ao servidor."
   },
   "raffleform": {
-    "title": "Título do sorteio",
-    "content": "Descrição do sorteio",
-    "title_required": "Informe um título para o sorteio.",
-    "title_too_long": "O título do sorteio deve ter no máximo 100 caracteres.",
-    "success": "Sorteio validado. Ele ainda não foi enviado ao servidor.",
-    "save": "Criar sorteio"
+    "title": "Título do concurso",
+    "content": "Descrição do concurso",
+    "title_required": "Informe um título para o concurso.",
+    "title_too_long": "O título do concurso deve ter no máximo 100 caracteres.",
+    "success": "Concurso validado",
+    "save": "Criar concurso"
   }
 }

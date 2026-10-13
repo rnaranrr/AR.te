@@ -61,12 +61,24 @@
     "followers": "Followers",
     "following": "Following",
     "edit": "Edit profile",
-    "edit_comissions": "Comissions tab"
+    "edit_comissions": "Edit commissions",
+    "commissions_status": "Commissions status",
+    "commissions_open": "Open",
+    "commissions_closed": "Closed",
+    "commissions_banner_empty": "Commissions banner",
+    "commissions_image_empty": "Commissions price sheet"
   },
   "profileform": {
     "banner_label": "Profile banner",
     "banner_message": "No banner selected",
     "banner_filetype": "JPG, PNG, WEBP ou GIF. Max file size 5 MB.",
+    "commissions_title": "Edit commissions images",
+    "commissions_banner_label": "Commissions banner",
+    "commissions_banner_message": "No commissions banner selected",
+    "commissions_image_label": "Commissions price sheet",
+    "commissions_image_message": "No price sheet selected",
+    "select_image_required": "Select at least one image to update.",
+    "commissions_open": "Keep commissions open",
     "pfp_label": "Profile photo",
     "pfp_message": "No picture selected",
     "nickname": "Nickname",
@@ -109,7 +121,7 @@
     "content": "Raffle description",
     "title_required": "Enter a title for the raffle.",
     "title_too_long": "The raffle title must be no longer than 100 characters.",
-    "success": "Raffle validated. It has not been sent to the server yet.",
+    "success": "Raffle validated",
     "save": "Create raffle"
   }
 }

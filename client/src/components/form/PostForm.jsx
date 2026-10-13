@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import '@/components/form/forms.css';
 
-export default function ProfileForm() {
+export default function PostForm() {
     const { t } = useTranslation();
 
     // Controla o carregamento e o salvamento do formulário

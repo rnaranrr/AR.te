@@ -145,7 +145,9 @@ router.put(
     authMiddleware,
     uploadProfile.fields([
         { name: 'avatar', maxCount: 1 },
-        { name: 'banner', maxCount: 1 }
+        { name: 'banner', maxCount: 1 },
+        { name: 'commissions_banner', maxCount: 1 },
+        { name: 'commissions_image', maxCount: 1 }
     ]),
     async (req, res) => {
 
@@ -188,6 +190,8 @@ router.put(
 
             const avatarFile = req.files?.avatar?.[0];
             const bannerFile = req.files?.banner?.[0];
+            const commissionsBannerFile = req.files?.commissions_banner?.[0];
+            const commissionsImageFile = req.files?.commissions_image?.[0];
 
             // Guarda o nome e localização do arquivo anterior, e define bannerUrl com o novo arquivo
             const previousBannerUrl = user.user_bannerurl;
@@ -200,6 +204,14 @@ router.put(
             const avatarUrl = avatarFile
                 ? `/uploads/profiles/${avatarFile.filename}`
                 : previousAvatarUrl;
+            const previousCommissionsBannerUrl = user.user_commtab_bannerurl;
+            const commissionsBannerUrl = commissionsBannerFile
+                ? `/uploads/profiles/${commissionsBannerFile.filename}`
+                : previousCommissionsBannerUrl;
+            const previousCommissionsImageUrl = user.user_commtab_imgurl;
+            const commissionsImageUrl = commissionsImageFile
+                ? `/uploads/profiles/${commissionsImageFile.filename}`
+                : previousCommissionsImageUrl;
 
             // Atualiza os dados
             // operador ?? considera se o valor for null ou indefinido e mantem o valor antigo se for o caso
@@ -210,7 +222,12 @@ router.put(
                 user_pronouns: req.body.pronouns ?? user.user_pronouns,
                 user_pfpurl: avatarUrl,
                 user_bannerurl: bannerUrl,
-                user_artist_type: artist_type
+                user_artist_type: artist_type,
+                user_commtab_bannerurl: commissionsBannerUrl,
+                user_commtab_imgurl: commissionsImageUrl,
+                user_commissions_open: commissions_open === undefined
+                    ? user.user_commissions_open
+                    : commissions_open === true || commissions_open === 'true'
             });
 
             // Dá unlink no arquivo anterior do banner
@@ -241,10 +258,44 @@ router.put(
                 });
             }
 
+            if (
+                commissionsBannerFile &&
+                previousCommissionsBannerUrl?.startsWith('/uploads/profiles/')
+            ) {
+                const oldCommissionsBannerPath = path.resolve(
+                    'uploads/profiles',
+                    path.basename(previousCommissionsBannerUrl)
+                );
+
+                await unlink(oldCommissionsBannerPath).catch((error) => {
+                    if (error.code !== 'ENOENT') {
+                        console.error('Não foi possível apagar o banner de comissões anterior:', error);
+                    }
+                });
+            }
+
+            if (
+                commissionsImageFile &&
+                previousCommissionsImageUrl?.startsWith('/uploads/profiles/')
+            ) {
+                const oldCommissionsImagePath = path.resolve(
+                    'uploads/profiles',
+                    path.basename(previousCommissionsImageUrl)
+                );
+
+                await unlink(oldCommissionsImagePath).catch((error) => {
+                    if (error.code !== 'ENOENT') {
+                        console.error('Não foi possível apagar a imagem de comissões anterior:', error);
+                    }
+                });
+            }
+
             return res.json({
                 message: 'Perfil atualizado com sucesso.',
                 avatar_url: avatarUrl,
-                banner_url: bannerUrl
+                banner_url: bannerUrl,
+                commissions_banner_url: commissionsBannerUrl,
+                commissions_image_url: commissionsImageUrl
             });
 
         } catch (error) {

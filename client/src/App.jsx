@@ -9,8 +9,10 @@ import Login from '@/components/form/Login';
 import Signin from '@/components/form/Signin';
 import PostPage from '@/pages/PostPage';
 import Profile from '@/pages/Profile';
-import ProfileForm from './pages/Profile/form/ProfileForm';
-import ComissionsForm from './pages/Profile/form/ComissionsForm';
+import ProfileForm from '@/pages/Profile/form/ProfileForm';
+import ComissionsForm from '@/pages/Profile/form/ComissionsForm';
+import DMList from '@/pages/Messages/DMList';
+import DMuser from '@/pages/Messages/DMuser';
 import Scroll from '@/components/Scroll';
 
 function NavLayout() {
@@ -68,6 +70,10 @@ export default function App() {
                     {/* Edição: somente no perfil próprio */}
                     <Route path='/profile/edit' element={<ProfileForm />} />
                     <Route path='/profile/comissions/edit' element={<ComissionsForm />} />
+
+                    {/* Mensagens diretasasd DM */}
+                    <Route path='/chat' element={<DMList />} />
+                    <Route path='/chat/:username' element={<DMuser />} />
                 </Route>
 
 

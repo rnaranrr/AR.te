@@ -110,7 +110,7 @@ export default function Profile() {
 
                     {/* Renderiza o conteúdo do feed com base na rota atual */}
                     {isMedia ? (<Media posts={user.posts ?? []} />) :
-                        isComissions ? (<Comissions user={user} />) :
+                        isComissions ? (<Comissions user={user} isOwnProfile={isOwnProfile} />) :
                             (<Timeline posts={user.posts ?? []} user={user} />)}
                 </div>
             )}
