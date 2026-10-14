@@ -14,6 +14,8 @@ import ComissionsForm from '@/pages/Profile/form/ComissionsForm';
 import DMList from '@/pages/Messages/DMList';
 import DMuser from '@/pages/Messages/DMuser';
 import Scroll from '@/components/Scroll';
+import SearchPage from '@/pages/SearchPage';
+import ModPage from '@/pages/ModPage';
 
 function NavLayout() {
     return (
@@ -40,7 +42,7 @@ export default function App() {
 
 
     return (
-        <div className='flex flex-col md:flex-row min-h-dvh bg-fundo mb-16 md:mb-0'>
+        <div className='flex flex-col md:flex-row min-h-dvh bg-fundo '>
             <Scroll />
             {/* Conteúdo */}
             <Routes>
@@ -74,6 +76,9 @@ export default function App() {
                     {/* Mensagens diretasasd DM */}
                     <Route path='/chat' element={<DMList />} />
                     <Route path='/chat/:username' element={<DMuser />} />
+
+                    <Route path='/search' element={<SearchPage />}/>
+                    <Route path='/mod' element={<ModPage />}/>
                 </Route>
 
 

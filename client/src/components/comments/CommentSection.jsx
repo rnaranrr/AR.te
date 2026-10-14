@@ -19,12 +19,14 @@ export default function Comments() {
             createdAt: "2026-09-30T18:45:00.000Z",
 
             // Comment.belongsTo(User, { as: 'author' })
-            sender: {
+            author: {
                 user_id: 201,
                 name: "Bruno Costa",
                 username: "brunocosta_paints",
                 avatar_url: "https://i.pravatar.cc/150?u=bruno"
-            }
+            },
+
+            likesCount: 999,
         },
     ]
 

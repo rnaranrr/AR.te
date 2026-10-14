@@ -107,13 +107,10 @@ export default function Comissions() {
                     >
                         <input
                             type="text"
-                            placeholder={t('comment.placeholder')}
-                            aria-label={t('comment.placeholder')}
                             className="inputform min-w-0 flex-1"
                         />
                         <button
                             type="submit"
-                            aria-label={t('comment.placeholder')}
                             className="flex size-11 shrink-0 items-center justify-center rounded-full border-none bg-destaque font-bold text-fundo transition-opacity hover:opacity-85"
                         >
                             <ArrowUp />
