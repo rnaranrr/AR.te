@@ -14,7 +14,8 @@
   },
   "messages": {
     "title": "Messages",
-    "empty": "No conversations found."
+    "empty": "No conversations found.",
+    "new": "Each new person you send or recieve a message will be shown here"
   },
   "post": {
     "likes": "Likes",

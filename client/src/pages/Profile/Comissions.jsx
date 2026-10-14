@@ -13,9 +13,9 @@ export default function Comissions({ user }) {
                     </span>
 
                     <span
-                        className={`badge ${user.commissions_open
-                                ? 'badge-success'
-                                : 'badge-error'
+                        className={`rounded-full px-4 py-1 ${user.commissions_open
+                                ? 'bg-destaque text-[#f1f1e7]'
+                                : 'bg-discreto'
                             }`}
                     >
                         {user.commissions_open

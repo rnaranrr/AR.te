@@ -14,7 +14,8 @@
   },
   "messages": {
     "title": "Mensagens",
-    "empty": "Nenhuma conversa encontrada."
+    "empty": "Nenhuma conversa encontrada.",
+    "new": "Novas pessoas que você mandar mensagem aparecerão aqui"
   },
   "post": {
     "likes": "Curtidas",

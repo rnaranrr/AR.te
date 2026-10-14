@@ -39,10 +39,10 @@ export default function Comissions() {
 
                 {/* navbar*/}
                 <div className='navbar font-principal sticky top-0 bg-fundo align-center mb-4 flex flex-col z-999 border-b-1 border-discreto'>
-                    <p className='my-4 font-bold text-lg'>{t('newpost.title')}</p>
+                    <p className='my-4 font-bold text-lg'>{t('messages.title')}</p>
                 </div>
 
-                <div className='card md:border-1 border-discreto h-full max-w-xl w-full mb-4'>
+                <div className='card md:border-1 border-discreto h-full md:max-w-xl w-full mb-4'>
                     {dbComm.map((dm) => (
                         <ListElement
                             key={dm.chat}
@@ -58,6 +58,8 @@ export default function Comissions() {
                             likesCount={dm.likesCount}
                         />
                     ))}
+
+                    <p className='text-sm text-cinza text-center w-full'>{t('messages.new')}</p>
                 </div>
             </div>
         </aside >

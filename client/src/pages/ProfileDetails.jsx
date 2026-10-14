@@ -110,7 +110,7 @@ export default function ProfileDetails({
                     </p>
                 </div>
 
-                {isOwnProfile && (
+                {isOwnProfile ?(
                     <div className="grid grid-cols-2 gap-2 mx-2 mb-2 md:mb-0">
                         <NavLink
                             to="/profile/edit"
@@ -124,6 +124,25 @@ export default function ProfileDetails({
                             className="btn bg-destaque text-fundo font-bold hover:bg-destaque/90 border-none rounded-full mt-2 w-full"
                         >
                             {t('profile.edit_comissions')}
+                        </NavLink>
+                    </div>
+
+                    
+                ) : (
+                    //ARRUMAR DPS
+                    <div className="grid grid-cols-2 gap-2 mx-2 mb-2 md:mb-0">
+                        <NavLink
+                            to="/profile/edit"
+                            className="btn bg-cinza text-[#f1f1e7] font-bold hover:bg-discreto/90 border-2 border-cinza rounded-full mt-2 w-full"
+                        >
+                            Seguir
+                        </NavLink>
+
+                        <NavLink
+                            to="/profile/comissions/edit"
+                            className="btn bg-fundo font-bold hover:bg-discreto/90 border-2 border-cinza rounded-full mt-2 w-full"
+                        >
+                            Mensagens
                         </NavLink>
                     </div>
                 )}
