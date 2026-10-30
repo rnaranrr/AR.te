@@ -31,3 +31,23 @@ export default function authMiddleware(req, res, next) {
         return res.status(401).json({ error: 'Token inválido ou expirado.' });
     }
 }
+
+// Versão "opcional": se houver token válido, preenche req.userId; se não houver (ou for inválido),
+// segue como visitante. Usada em rotas públicas que mostram dados extras para quem está logado
+// (ex.: "likedByMe" nos posts, "isFollowing" no perfil).
+export function optionalAuth(req, _res, next) {
+    const authHeader = req.headers.authorization;
+
+    if (authHeader) {
+        const [scheme, token] = authHeader.split(' ');
+        if (scheme === 'Bearer' && token) {
+            try {
+                req.userId = jwt.verify(token, process.env.SECRET_KEY).id;
+            } catch {
+                // token inválido: trata como visitante
+            }
+        }
+    }
+
+    next();
+}

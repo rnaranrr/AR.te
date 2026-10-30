@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import api, { apiError } from '@/services/api';
+
 import '@/components/form/forms.css';
 
 export default function RaffleForm() {
@@ -8,6 +10,7 @@ export default function RaffleForm() {
 
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [saving, setSaving] = useState(false);
     const [formData, setFormData] = useState({
         raffle_title: '',
         raffle_content: ''
@@ -25,7 +28,7 @@ export default function RaffleForm() {
         setSuccess('');
     }
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault();
 
         setError('');
@@ -41,8 +44,24 @@ export default function RaffleForm() {
             return;
         }
 
-        // O cadastro ainda não possui uma rota disponível no servidor.
-        setSuccess(t('raffleform.success'));
+        if (saving) return;
+        setSaving(true);
+
+        try {
+            // Cria o concurso na API
+            await api.post('/raffles', {
+                raffle_title: formData.raffle_title.trim(),
+                raffle_content: formData.raffle_content.trim()
+            });
+
+            setSuccess(t('raffleform.success'));
+            setFormData({ raffle_title: '', raffle_content: '' });
+        } catch (err) {
+            console.error('Erro ao criar concurso:', err);
+            setError(apiError(err, t('raffleform.error')));
+        } finally {
+            setSaving(false);
+        }
     }
 
     return (
@@ -102,6 +121,7 @@ export default function RaffleForm() {
 
                         <button
                             type="submit"
+                            disabled={saving}
                             className="btn mt-2 w-full rounded-full border-none bg-destaque font-bold text-fundo hover:bg-destaque/90"
                         >
                             {t('raffleform.save')}

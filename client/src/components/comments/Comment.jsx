@@ -1,7 +1,9 @@
-import { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { useRef, useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Heart } from 'lucide-react';
+import { Heart, CircleUser } from 'lucide-react';
+
+import api, { assetUrl, isLoggedIn } from '@/services/api';
 
 // Componente Comment recebe os dados do comentário e de seu autor
 
@@ -11,21 +13,50 @@ export default function Comment({
     authorusername,
     authoravatar_url,
 
+    comment_id,
     comment_content,
 
     createdAt,
     likesCount,
+    likedByMe = false,
 }) {
-    // Controla o estado de like do comentário
-    const [liked, setLiked] = useState(false);
+    const navigate = useNavigate();
 
-    // Calcula o número de likes exibido
-    const displayedLikes = (Number(likesCount) || 0) + (liked ? 1 : 0);
+    // Estado de like e contador (valores iniciais vindos do servidor)
+    const [liked, setLiked] = useState(Boolean(likedByMe));
+    const [displayedLikes, setDisplayedLikes] = useState(Number(likesCount) || 0);
 
-    // Função responsável pelo like
-    function Like() {
-        // IMPLEMENTAR A LÓGICA DE LIKE DEPOIS
-        setLiked((currentLiked) => !currentLiked);
+    // Impede cliques repetidos enquanto a requisição está em andamento
+    const pendingRef = useRef(false);
+
+    // Função responsável pelo like: atualiza a tela na hora, confirma com o servidor e desfaz se falhar
+    async function Like() {
+        // Curtir exige login
+        if (!isLoggedIn()) {
+            navigate('/login');
+            return;
+        }
+
+        if (pendingRef.current) return;
+        pendingRef.current = true;
+
+        const wasLiked = liked;
+        setLiked(!wasLiked);
+        setDisplayedLikes((current) => Math.max(0, current + (wasLiked ? -1 : 1)));
+
+        try {
+            const response = await api.post(`/posts/comments/${comment_id}/like`);
+
+            setLiked(response.data.liked);
+            setDisplayedLikes(response.data.likesCount);
+        } catch (err) {
+            console.error('Erro ao curtir comentário:', err);
+
+            setLiked(wasLiked);
+            setDisplayedLikes((current) => Math.max(0, current + (wasLiked ? 1 : -1)));
+        } finally {
+            pendingRef.current = false;
+        }
     }
 
     // Obtém o idioma atual
@@ -57,7 +88,7 @@ export default function Comment({
                         <NavLink to={`/user/${authorusername}`}>
                             {authoravatar_url ? (
                                 <img
-                                    src={new URL(authoravatar_url, import.meta.env.VITE_API_URL).href}
+                                    src={assetUrl(authoravatar_url)}
                                     className="w-10 h-10 rounded-full"
                                 />
                             ) : (

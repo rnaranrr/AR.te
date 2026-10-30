@@ -1,142 +1,97 @@
-// MUDAR MSGs DE ERROS E COISADASD DPS
-
 import { Router } from 'express';
 import { unlink } from 'node:fs/promises';
 import path from 'node:path';
 
 // Importa as models
-import {
-    User,
-    Follow,
-    Post,
-    PostMedia,
-    Tag,
-    Postlike,
-    Comment,
-    Repost
-} from '../models/index.js';
+import { User, Follow } from '../models/index.js';
 
-// importa a rota de autenticação
-import authMiddleware from '../middlewares/authMiddleware.js';
+// Middlewares
+import authMiddleware, { optionalAuth } from '../middlewares/authMiddleware.js';
 import uploadProfile from '../middlewares/uploadProfile.js';
 
+// Serialização padrão dos posts (mesmo formato do feed)
+import { VISIBLE_POST, findPosts, serializePosts } from '../utils/serializePost.js';
+
 const router = Router();
+
+// Apaga do disco um arquivo antigo de /uploads/profiles (ignora se já não existir)
+async function removeOldFile(previousUrl) {
+    if (!previousUrl?.startsWith('/uploads/profiles/')) return;
+
+    const filePath = path.resolve('uploads/profiles', path.basename(previousUrl));
+
+    await unlink(filePath).catch((error) => {
+        if (error.code !== 'ENOENT') {
+            console.error('Não foi possível apagar o arquivo anterior:', error);
+        }
+    });
+}
+
+// Monta o JSON de perfil (usado tanto em /me quanto em /:username)
+async function buildProfile(user, viewerId, { includePrivate = false } = {}) {
+    // Contagem de seguidores e de quem o usuário segue
+    const [followersCount, followingCount] = await Promise.all([
+        Follow.count({ where: { following_id: user.user_id } }),
+        Follow.count({ where: { follower_id: user.user_id } })
+    ]);
+
+    // Posts do usuário (sem apagados/banidos), já no formato do front.
+    // O autor é o próprio dono do perfil (author override), então não precisa de include.
+    const posts = await findPosts({ user_id: user.user_id, ...VISIBLE_POST });
+    const serializedPosts = await serializePosts(posts, viewerId, user);
+
+    // O visitante já segue esse perfil?
+    const isFollowing = viewerId && viewerId !== user.user_id
+        ? Boolean(
+            await Follow.findOne({
+                where: { follower_id: viewerId, following_id: user.user_id }
+            })
+        )
+        : false;
+
+    return {
+        id: user.user_id,
+        nickname: user.user_nickname,
+        username: user.user_idname,
+        // O e-mail só é enviado ao próprio dono
+        ...(includePrivate ? { email: user.user_email } : {}),
+        bio: user.user_bio,
+        pronouns: user.user_pronouns,
+        avatar_url: user.user_pfpurl,
+        banner_url: user.user_bannerurl,
+        artist_type: user.user_artist_type,
+        commissions_open: user.user_commissions_open,
+        commissions_banner_url: user.user_commtab_bannerurl,
+        commissions_image_url: user.user_commtab_imgurl,
+
+        followersCount,
+        followingCount,
+        isFollowing,
+
+        posts: serializedPosts
+    };
+}
 
 // GET /users/me
 // Retorna o perfil do usuário logado
 router.get('/me', authMiddleware, async (req, res) => {
-
-    // pega as informações do usuário através do ID
     try {
         const user = await User.findByPk(req.userId, {
-            attributes: {
-                exclude: ['user_passwd_hash']
-            }
+            attributes: { exclude: ['user_passwd_hash'] }
         });
 
         if (!user) {
-            return res.status(404).json({
-                error: 'Usuário não encontrado.'
-            });
+            return res.status(404).json({ error: 'Usuário não encontrado.' });
         }
 
-        //contagem de seguidores
-        const followersCount = await Follow.count({
-            where: {
-                following_id: user.user_id
-            }
-        });
-
-        // contagem de seguindo
-        const followingCount = await Follow.count({
-            where: {
-                follower_id: user.user_id
-            }
-        });
-
-        // posts do usuário
-        const posts = await Post.findAll({
-            where: {
-                user_id: user.user_id,
-                deleted_at: null
-            },
-            include: [
-                {
-                    model: PostMedia,
-                    as: 'media'
-                },
-                {
-                    model: Tag,
-                    as: 'tags',
-                    through: {
-                        attributes: []
-                    }
-                }
-            ],
-            order: [['created_at', 'DESC']]
-        });
-
-        // contagem de likes comentários e reposts
-        const postsWithCounts = await Promise.all(
-            posts.map(async (post) => {
-                const likesCount = await Postlike.count({
-                    where: {
-                        post_id: post.post_id
-                    }
-                });
-
-                const commentsCount = await Comment.count({
-                    where: {
-                        post_id: post.post_id,
-                        deleted_at: null
-                    }
-                });
-
-                const repostsCount = await Repost.count({
-                    where: {
-                        post_id: post.post_id
-                    }
-                });
-
-                return {
-                    ...post.toJSON(),
-                    likesCount,
-                    commentsCount,
-                    repostsCount
-                };
-            })
+        return res.json(
+            await buildProfile(user, req.userId, { includePrivate: true })
         );
-
-        // retorna dados
-        return res.json({
-            id: user.user_id,
-            nickname: user.user_nickname,
-            username: user.user_idname,
-            email: user.user_email,
-            bio: user.user_bio,
-            pronouns: user.user_pronouns,
-            avatar_url: user.user_pfpurl,
-            banner_url: user.user_bannerurl,
-            artist_type: user.user_artist_type,
-            commissions_open: user.user_commissions_open,
-            commissions_banner_url: user.user_commtab_bannerurl,
-            commissions_image_url: user.user_commtab_imgurl,
-
-            followersCount,
-            followingCount,
-
-            posts: postsWithCounts
-        });
-
     } catch (error) {
         console.error('Erro ao buscar perfil:', error);
-
-        return res.status(500).json({
-            error: 'Erro interno ao buscar perfil.'
-        });
+        return res.status(500).json({ error: 'Erro interno ao buscar perfil.' });
     }
 });
-
 
 // PUT /users/me
 // Atualiza o perfil do usuário logado
@@ -150,14 +105,11 @@ router.put(
         { name: 'commissions_image', maxCount: 1 }
     ]),
     async (req, res) => {
-
         try {
             const user = await User.findByPk(req.userId);
 
             if (!user) {
-                return res.status(404).json({
-                    error: 'Usuário não encontrado.'
-                });
+                return res.status(404).json({ error: 'Usuário não encontrado.' });
             }
 
             const {
@@ -165,64 +117,59 @@ router.put(
                 username,
                 bio,
                 pronouns,
-                avatar_url,
-                banner_url,
                 artist_type,
-                commissions_open,
-                commissions_banner_url,
-                commissions_image_url
+                commissions_open
             } = req.body;
 
-            // Verifica se o username foi alterado
+            // Verifica se o username foi alterado e se já está em uso
             if (username && username !== user.user_idname) {
                 const usernameExists = await User.findOne({
-                    where: {
-                        user_idname: username
-                    }
+                    where: { user_idname: username }
                 });
 
                 if (usernameExists) {
-                    return res.status(400).json({
-                        error: 'Nome de usuário já está em uso.'
-                    });
+                    return res.status(400).json({ error: 'Nome de usuário já está em uso.' });
                 }
             }
 
+            // Arquivos enviados (cada campo pode ou não ter vindo)
             const avatarFile = req.files?.avatar?.[0];
             const bannerFile = req.files?.banner?.[0];
             const commissionsBannerFile = req.files?.commissions_banner?.[0];
             const commissionsImageFile = req.files?.commissions_image?.[0];
 
-            // Guarda o nome e localização do arquivo anterior, e define bannerUrl com o novo arquivo
-            const previousBannerUrl = user.user_bannerurl;
-            const bannerUrl = bannerFile
-                ? `/uploads/profiles/${bannerFile.filename}`
-                : previousBannerUrl;
+            // URLs anteriores (para apagar do disco depois) e novas URLs
+            const previous = {
+                avatar: user.user_pfpurl,
+                banner: user.user_bannerurl,
+                commissionsBanner: user.user_commtab_bannerurl,
+                commissionsImage: user.user_commtab_imgurl
+            };
 
-            // Guarda o nome e localização do arquivo anterior, e define avatarUrl com o novo arquivo
-            const previousAvatarUrl = user.user_pfpurl;
             const avatarUrl = avatarFile
                 ? `/uploads/profiles/${avatarFile.filename}`
-                : previousAvatarUrl;
-            const previousCommissionsBannerUrl = user.user_commtab_bannerurl;
+                : previous.avatar;
+            const bannerUrl = bannerFile
+                ? `/uploads/profiles/${bannerFile.filename}`
+                : previous.banner;
             const commissionsBannerUrl = commissionsBannerFile
                 ? `/uploads/profiles/${commissionsBannerFile.filename}`
-                : previousCommissionsBannerUrl;
-            const previousCommissionsImageUrl = user.user_commtab_imgurl;
+                : previous.commissionsBanner;
             const commissionsImageUrl = commissionsImageFile
                 ? `/uploads/profiles/${commissionsImageFile.filename}`
-                : previousCommissionsImageUrl;
+                : previous.commissionsImage;
 
             // Atualiza os dados
-            // operador ?? considera se o valor for null ou indefinido e mantem o valor antigo se for o caso
+            // operador ?? mantém o valor antigo quando o campo não foi enviado
+            // (importante: o formulário de comissões não envia nickname/artist_type etc.)
             await user.update({
-                user_nickname: req.body.nickname ?? user.user_nickname,
-                user_idname: req.body.username ?? user.user_idname,
-                user_bio: req.body.bio ?? user.user_bio,
-                user_pronouns: req.body.pronouns ?? user.user_pronouns,
+                user_nickname: nickname ?? user.user_nickname,
+                user_idname: username ?? user.user_idname,
+                user_bio: bio ?? user.user_bio,
+                user_pronouns: pronouns ?? user.user_pronouns,
+                user_artist_type: artist_type ?? user.user_artist_type,
                 user_pfpurl: avatarUrl,
                 user_bannerurl: bannerUrl,
-                user_artist_type: artist_type,
                 user_commtab_bannerurl: commissionsBannerUrl,
                 user_commtab_imgurl: commissionsImageUrl,
                 user_commissions_open: commissions_open === undefined
@@ -230,93 +177,71 @@ router.put(
                     : commissions_open === true || commissions_open === 'true'
             });
 
-            // Dá unlink no arquivo anterior do banner
-            if (bannerFile && previousBannerUrl?.startsWith('/uploads/profiles/')) {
-                const oldBannerPath = path.resolve(
-                    'uploads/profiles',
-                    path.basename(previousBannerUrl)
-                );
-
-                await unlink(oldBannerPath).catch((error) => {
-                    if (error.code !== 'ENOENT') {
-                        console.error('Não foi possível apagar o banner anterior:', error);
-                    }
-                });
-            }
-
-            // Dá unlink no arquivo anterior do avatar
-            if (avatarFile && previousAvatarUrl?.startsWith('/uploads/profiles/')) {
-                const oldAvatarPath = path.resolve(
-                    'uploads/profiles',
-                    path.basename(previousAvatarUrl)
-                );
-
-                await unlink(oldAvatarPath).catch((error) => {
-                    if (error.code !== 'ENOENT') {
-                        console.error('Não foi possível apagar o avatar anterior:', error);
-                    }
-                });
-            }
-
-            if (
-                commissionsBannerFile &&
-                previousCommissionsBannerUrl?.startsWith('/uploads/profiles/')
-            ) {
-                const oldCommissionsBannerPath = path.resolve(
-                    'uploads/profiles',
-                    path.basename(previousCommissionsBannerUrl)
-                );
-
-                await unlink(oldCommissionsBannerPath).catch((error) => {
-                    if (error.code !== 'ENOENT') {
-                        console.error('Não foi possível apagar o banner de comissões anterior:', error);
-                    }
-                });
-            }
-
-            if (
-                commissionsImageFile &&
-                previousCommissionsImageUrl?.startsWith('/uploads/profiles/')
-            ) {
-                const oldCommissionsImagePath = path.resolve(
-                    'uploads/profiles',
-                    path.basename(previousCommissionsImageUrl)
-                );
-
-                await unlink(oldCommissionsImagePath).catch((error) => {
-                    if (error.code !== 'ENOENT') {
-                        console.error('Não foi possível apagar a imagem de comissões anterior:', error);
-                    }
-                });
-            }
+            // Apaga do disco os arquivos que foram substituídos
+            if (avatarFile) await removeOldFile(previous.avatar);
+            if (bannerFile) await removeOldFile(previous.banner);
+            if (commissionsBannerFile) await removeOldFile(previous.commissionsBanner);
+            if (commissionsImageFile) await removeOldFile(previous.commissionsImage);
 
             return res.json({
                 message: 'Perfil atualizado com sucesso.',
+                nickname: user.user_nickname,
+                username: user.user_idname,
                 avatar_url: avatarUrl,
                 banner_url: bannerUrl,
                 commissions_banner_url: commissionsBannerUrl,
                 commissions_image_url: commissionsImageUrl
             });
-
         } catch (error) {
             console.error('Erro ao atualizar perfil:', error);
-
-            return res.status(500).json({
-                error: 'Erro interno ao atualizar perfil.'
-            });
+            return res.status(500).json({ error: 'Erro interno ao atualizar perfil.' });
         }
-    });
+    }
+);
+
+// POST /users/:username/follow
+// Alterna seguir / deixar de seguir. Retorna { following, followersCount }.
+router.post('/:username/follow', authMiddleware, async (req, res) => {
+    try {
+        const username = req.params.username.replace(/^@/, '');
+
+        const target = await User.findOne({ where: { user_idname: username } });
+        if (!target) {
+            return res.status(404).json({ error: 'Usuário não encontrado.' });
+        }
+
+        if (target.user_id === req.userId) {
+            return res.status(400).json({ error: 'Você não pode seguir a si mesmo.' });
+        }
+
+        const where = { follower_id: req.userId, following_id: target.user_id };
+        const existing = await Follow.findOne({ where });
+
+        if (existing) {
+            await existing.destroy();
+        } else {
+            await Follow.create(where);
+        }
+
+        const followersCount = await Follow.count({
+            where: { following_id: target.user_id }
+        });
+
+        return res.json({ following: !existing, followersCount });
+    } catch (error) {
+        console.error('Erro ao seguir usuário:', error);
+        return res.status(500).json({ error: 'Não foi possível atualizar o seguimento.' });
+    }
+});
 
 // GET /users/:username
 // Busca os dados públicos de um usuário pelo username.
-// Não exige autenticação.
-
-router.get('/:username', async (req, res) => {
+// Não exige autenticação (mas, se houver token, informa se o visitante já segue o perfil).
+router.get('/:username', optionalAuth, async (req, res) => {
     try {
         // Remove o @ inicial caso o username tenha sido enviado com ele
         const username = req.params.username.replace(/^@/, '');
 
-        // Busca apenas os dados públicos do usuário
         const user = await User.findOne({
             where: { user_idname: username },
             attributes: [
@@ -335,94 +260,13 @@ router.get('/:username', async (req, res) => {
         });
 
         if (!user) {
-            // Retorna erro caso o username não corresponda a nenhum usuário
-            return res.status(404).json({
-                error: 'Usuário não encontrado.'
-            });
+            return res.status(404).json({ error: 'Usuário não encontrado.' });
         }
 
-        // Conta os seguidores do usuário
-        const followersCount = await Follow.count({
-            where: { following_id: user.user_id }
-        });
-
-        // Conta quantos usuários ele segue
-        const followingCount = await Follow.count({
-            where: { follower_id: user.user_id }
-        });
-
-        // Busca os posts não excluídos, incluindo mídias e tags
-        const posts = await Post.findAll({
-            where: {
-                user_id: user.user_id,
-                deleted_at: null
-            },
-            include: [
-                {
-                    model: PostMedia,
-                    as: 'media'
-                },
-                {
-                    model: Tag,
-                    as: 'tags',
-                    through: { attributes: [] }
-                }
-            ],
-            order: [['created_at', 'DESC']]
-        });
-
-        // Adiciona a contagem de likes, comentários e reposts a cada post
-        const postsWithCounts = await Promise.all(
-            posts.map(async (post) => {
-                const [likesCount, commentsCount, repostsCount] =
-                    await Promise.all([
-                        Postlike.count({
-                            where: { post_id: post.post_id }
-                        }),
-                        Comment.count({
-                            where: {
-                                post_id: post.post_id,
-                                deleted_at: null
-                            }
-                        }),
-                        Repost.count({
-                            where: { post_id: post.post_id }
-                        })
-                    ]);
-
-                return {
-                    ...post.toJSON(),
-                    likesCount,
-                    commentsCount,
-                    repostsCount
-                };
-            })
-        );
-
-        // Retorna os dados públicos do perfil e seus posts
-        return res.json({
-            id: user.user_id,
-            nickname: user.user_nickname,
-            username: user.user_idname,
-            bio: user.user_bio,
-            pronouns: user.user_pronouns,
-            avatar_url: user.user_pfpurl,
-            banner_url: user.user_bannerurl,
-            artist_type: user.user_artist_type,
-            commissions_open: user.user_commissions_open,
-            commissions_banner_url: user.user_commtab_bannerurl,
-            commissions_image_url: user.user_commtab_imgurl,
-            followersCount,
-            followingCount,
-            posts: postsWithCounts
-        });
+        return res.json(await buildProfile(user, req.userId));
     } catch (error) {
-        // Registra o erro e informa que não foi possível buscar o perfil
         console.error('Erro ao buscar perfil público:', error);
-
-        return res.status(500).json({
-            error: 'Erro interno ao buscar perfil.'
-        });
+        return res.status(500).json({ error: 'Erro interno ao buscar perfil.' });
     }
 });
 

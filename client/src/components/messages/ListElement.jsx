@@ -1,7 +1,11 @@
 //TELA DE MENSAGENS
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { CircleUser } from 'lucide-react';
 
+import { assetUrl } from '@/services/api';
+
+// Linha da lista de conversas: mostra o contato e a última mensagem
 export default function ListElement({
     sender,
     sendername,
@@ -14,14 +18,12 @@ export default function ListElement({
 
     likesCount
 }) {
-    const location = useLocation();
-
     const senderProfilePath = `/chat/${encodeURIComponent(senderusername)}`;
 
     // Obtém o objeto de idioma do i18next para definir o idioma atual
     const { t, i18n } = useTranslation();
 
-    // Formata a data de criação do post de acordo com o idioma atual
+    // Formata a data da última mensagem de acordo com o idioma atual
     const dateLocale = i18n.language?.toLowerCase().startsWith('pt')
         ? 'pt-BR'
         : 'en-US';
@@ -33,10 +35,14 @@ export default function ListElement({
         : '';
     return (
 
-        <NavLink 
+        <NavLink
         to={senderProfilePath}
         className="bg-fundo hover:bg-discreto text-texto-main flex flex-row px-4 my-2 py-4 gap-8 border-b border-discreto rounded-none transition-colors duration-200 ease-in-out">
-            <img className="size-16 shrink-0 rounded-full" src={senderavatar_url}/>
+            {senderavatar_url ? (
+                <img className="size-16 shrink-0 rounded-full object-cover" src={assetUrl(senderavatar_url)}/>
+            ) : (
+                <CircleUser className="size-16 shrink-0 rounded-full stroke-1" />
+            )}
             <div className='flex min-w-0 flex-col'>
                 <p className='truncate font-bold'>{sendername}</p>
                 <p className='truncate text-cinza'>@{senderusername}</p>

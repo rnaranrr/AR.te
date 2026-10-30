@@ -55,14 +55,16 @@ export default function Profile() {
         }
     }, [isOwnProfile, username]);
 
-    // 
+    //
     useEffect(() => {loadProfile();}, [loadProfile]);
 
     return (
 
         <aside className="w-full min-h-dvh bg-fundo text-texto-main">
             {/* Detalhes do perfil */}
+            {/* key: reinicia o cabeçalho quando os dados chegam (estado inicial do botão Seguir) */}
             <Details
+                key={user?.id ?? 'loading'}
                 user={user}
                 loading={loading}
                 error={error}

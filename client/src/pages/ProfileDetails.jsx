@@ -1,6 +1,9 @@
-import { NavLink, useLocation } from 'react-router-dom';
+import { useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CircleUser, ArrowLeft, Dot } from 'lucide-react';
+
+import api, { assetUrl, isLoggedIn } from '@/services/api';
 
 import '@/pages/Profile.css';
 
@@ -11,7 +14,35 @@ export default function ProfileDetails({
     isOwnProfile
 }) {
     const { t } = useTranslation();
-    const location = useLocation();
+    const navigate = useNavigate();
+
+    // Estado do botão "Seguir" (valores iniciais vêm da API; o Profile.jsx remonta este componente ao carregar)
+    const [isFollowing, setIsFollowing] = useState(Boolean(user?.isFollowing));
+    const [followersCount, setFollowersCount] = useState(user?.followersCount || 0);
+    const [followPending, setFollowPending] = useState(false);
+
+    // Segue / deixa de seguir o usuário do perfil
+    async function toggleFollow() {
+        // Seguir exige login
+        if (!isLoggedIn()) {
+            navigate('/login');
+            return;
+        }
+
+        if (followPending) return;
+        setFollowPending(true);
+
+        try {
+            const response = await api.post(`/users/${encodeURIComponent(user.username)}/follow`);
+
+            setIsFollowing(response.data.following);
+            setFollowersCount(response.data.followersCount);
+        } catch (err) {
+            console.error('Erro ao seguir usuário:', err);
+        } finally {
+            setFollowPending(false);
+        }
+    }
 
     if (loading) {
         return <p>{t('profile.loading')}</p>;
@@ -50,7 +81,7 @@ export default function ProfileDetails({
                 {/* banner do usuário */}
                 {user.banner_url ? (
                     <img
-                        src={new URL(user.banner_url, import.meta.env.VITE_API_URL).href}
+                        src={assetUrl(user.banner_url)}
                         className="profile-banner"
                     />
                 ) : (
@@ -63,7 +94,7 @@ export default function ProfileDetails({
                     {/* imagem de perfil do usuário */}
                     {user.avatar_url ? (
                         <img
-                            src={new URL(user.avatar_url, import.meta.env.VITE_API_URL).href}
+                            src={assetUrl(user.avatar_url)}
                             className="profile-avatar"
                         />
                     ) : (
@@ -94,7 +125,7 @@ export default function ProfileDetails({
                         </div>
 
                         <div>
-                            <strong>{user.followersCount || 0}</strong>
+                            <strong>{followersCount}</strong>
                             <span>{t('profile.followers')}</span>
                         </div>
 
@@ -127,19 +158,24 @@ export default function ProfileDetails({
                         </NavLink>
                     </div>
 
-                    
-                ) : (
-                    //ARRUMAR DPS
-                    <div className="grid grid-cols-2 gap-2 mx-2 mb-2 md:mb-0">
-                        <NavLink
-                            to="/profile/edit"
-                            className="btn bg-cinza text-[#f1f1e7] font-bold hover:bg-discreto/90 border-2 border-cinza rounded-full mt-2 w-full"
-                        >
-                            Seguir
-                        </NavLink>
 
+                ) : (
+                    <div className="grid grid-cols-2 gap-2 mx-2 mb-2 md:mb-0">
+                        {/* Seguir / Seguindo: mesmo estilo dos botões originais, invertendo as cores conforme o estado */}
+                        <button
+                            type="button"
+                            onClick={toggleFollow}
+                            disabled={followPending}
+                            className={isFollowing
+                                ? "btn bg-fundo font-bold hover:bg-discreto/90 border-2 border-cinza rounded-full mt-2 w-full"
+                                : "btn bg-cinza text-[#f1f1e7] font-bold hover:bg-discreto/90 border-2 border-cinza rounded-full mt-2 w-full"}
+                        >
+                            {isFollowing ? 'Seguindo' : 'Seguir'}
+                        </button>
+
+                        {/* Abre a conversa direta com o usuário */}
                         <NavLink
-                            to="/profile/comissions/edit"
+                            to={`/chat/${encodeURIComponent(user.username)}`}
                             className="btn bg-fundo font-bold hover:bg-discreto/90 border-2 border-cinza rounded-full mt-2 w-full"
                         >
                             Mensagens
@@ -149,4 +185,4 @@ export default function ProfileDetails({
             </div>
         </aside>
     );
-}   
+}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import api from '@/services/api';
+import api, { apiError, assetUrl, getStoredUser } from '@/services/api';
 import { ArrowLeft } from 'lucide-react';
 
 import '@/components/form/forms.css';
@@ -31,6 +31,9 @@ export default function ProfileForm() {
     const [avatarPreview, setAvatarPreview] = useState('');
     const [bannerPreview, setBannerPreview] = useState('');
 
+    // Imagens que o usuário já tem salvas (exibidas enquanto nenhuma nova for escolhida)
+    const [currentImages, setCurrentImages] = useState({ avatar: '', banner: '' });
+
     // Carrega os dados atuais do perfil
     useEffect(() => {
         async function loadProfile() {
@@ -45,6 +48,11 @@ export default function ProfileForm() {
                     bio: user.bio || '',
                     pronouns: user.pronouns || '',
                     artist_type: user.artist_type || ''
+                });
+
+                setCurrentImages({
+                    avatar: assetUrl(user.avatar_url),
+                    banner: assetUrl(user.banner_url)
                 });
             } catch (error) {
                 console.error('Erro ao carregar perfil:', error);
@@ -154,7 +162,15 @@ export default function ProfileForm() {
                 data.append('banner', bannerFile);
             }
 
-            await api.put('/users/me', data);
+            const response = await api.put('/users/me', data);
+
+            // Mantém o usuário guardado no navegador (salvo no login) sincronizado com as alterações
+            localStorage.setItem('user', JSON.stringify({
+                ...getStoredUser(),
+                name: response.data.nickname,
+                username: response.data.username,
+                avatar_url: response.data.avatar_url
+            }));
 
             setSuccess(t('profileform.update_success'));
 
@@ -162,10 +178,8 @@ export default function ProfileForm() {
         } catch (error) {
             console.error('Erro ao atualizar perfil:', error);
 
-            setError(
-                error.response?.data?.message ||
-                t('profileform.update_error')
-            );
+            // A API responde erros na chave "error" (ex.: nome de usuário já em uso)
+            setError(apiError(error, t('profileform.update_error')));
         } finally {
             setSaving(false);
         }
@@ -209,9 +223,9 @@ export default function ProfileForm() {
                         {/* Banner */}
                         <fieldset className="fieldset inputlabel">
                             <label>{t('profileform.banner_label')}</label>
-                            {bannerPreview ? (
+                            {(bannerPreview || currentImages.banner) ? (
                                 <img
-                                    src={bannerPreview}
+                                    src={bannerPreview || currentImages.banner}
                                     className="w-full h-36 object-cover rounded-xl"
                                 />
                             ) : (
@@ -239,9 +253,9 @@ export default function ProfileForm() {
                         <fieldset className="fieldset inputlabel">
                             <label>{t('profileform.pfp_label')}</label>
 
-                            {avatarPreview ? (
+                            {(avatarPreview || currentImages.avatar) ? (
                                 <img
-                                    src={avatarPreview}
+                                    src={avatarPreview || currentImages.avatar}
                                     className="w-26 h-26 rounded-full object-cover justify-self-center mx-auto"
                                 />
                             ) : (

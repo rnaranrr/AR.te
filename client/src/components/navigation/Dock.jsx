@@ -1,16 +1,19 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { House, Send, ShieldAlert, Search, CircleUser } from 'lucide-react';
 
 import '@/components/navigation/Dock.css';
 
 // Dock para telas pequenas
 export default function Dock() {
+    // location precisa vir do router (antes usava o window.location, que não atualiza sozinho)
+    const location = useLocation();
+
     return (
         <div className='dock bg-fundo border-t border-discreto font-principal md:hidden'>
 
-            {/* 
+            {/*
                 className={({ isActive }) => isActive ? 'isActive' : ''}
-                
+
                 Navlink recebe função na sua classe
                 a biblioteca react-router-com compara o endereço da página com o endereço do NavLink (to='')
                 isActive ? 'isActive' : '' funciona como if-else

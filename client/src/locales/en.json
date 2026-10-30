@@ -10,12 +10,17 @@
   },
   "feed": {
     "foryou": "For you",
-    "following": "Following"
+    "following": "Following",
+    "error": "Could not load the posts.",
+    "empty": "No posts here yet.",
+    "empty_following": "Follow some artists to see their posts here."
   },
   "messages": {
     "title": "Messages",
     "empty": "No conversations found.",
-    "new": "Each new person you send or recieve a message will be shown here"
+    "new": "Each new person you send or recieve a message will be shown here",
+    "load_error": "Could not load the messages.",
+    "send_error": "Could not send the message."
   },
   "post": {
     "likes": "Likes",
@@ -27,7 +32,11 @@
     "report": "Report post",
     "nsfw_warning": "Confirm and show sensitive media",
     "repost": "Repost",
-    "reposted": "Undo repost"
+    "reposted": "Undo repost",
+    "action_error": "Could not complete the action.",
+    "report_confirm": "Report this post? It will be put under review by the moderation.",
+    "reported_ok": "Report sent. The post is now under review.",
+    "not_found": "Post not found."
   },
   "login": {
     "error": "Invalid email or password",
@@ -53,7 +62,9 @@
   },
   "comment": {
     "placeholder": "Write a comment",
-    "send": "Send"
+    "send": "Send",
+    "load_error": "Could not load the comments.",
+    "send_error": "Could not send the comment."
   },
   "profile": {
     "timeline": "Timeline",
@@ -71,7 +82,8 @@
     "commissions_open": "Open",
     "commissions_closed": "Closed",
     "commissions_banner_empty": "Commissions banner",
-    "commissions_image_empty": "Commissions price sheet"
+    "commissions_image_empty": "Commissions price sheet",
+    "no_posts": "No posts yet."
   },
   "profileform": {
     "banner_label": "Profile banner",
@@ -119,14 +131,36 @@
     "media_too_large": "Each file must be no larger than 20 MB.",
     "title_required": "Enter a title.",
     "title_too_long": "The title must be no longer than 255 characters.",
-    "success": "Post validated. It has not been sent to the server yet."
+    "success": "Post created successfully.",
+    "error": "Could not publish. Please try again."
   },
   "raffleform": {
     "title": "Raffle title",
     "content": "Raffle description",
     "title_required": "Enter a title for the raffle.",
     "title_too_long": "The raffle title must be no longer than 100 characters.",
-    "success": "Raffle validated",
-    "save": "Create raffle"
+    "success": "Contest created successfully.",
+    "save": "Create raffle",
+    "error": "Could not create the contest."
+  },
+  "mod": {
+    "label": "Moderation Space",
+    "create": "Register a Moderator",
+    "description": "Here you can see the reported posts and, with the help of the AR.te user community, decide whether or not a post should be removed from the platform.",
+    "recent": "Recent reports:",
+    "status_default": "Default",
+    "status_in_analysis": "Under review",
+    "status_restored": "Restored",
+    "status_banned": "Banned",
+    "load_error": "Could not load the reported posts.",
+    "empty": "No reported posts at the moment."
+  },
+  "search": {
+    "placeholder": "Search here",
+    "users": "Users",
+    "posts": "Posts",
+    "no_results": "No results found.",
+    "min_chars": "Type at least 2 characters.",
+    "error": "Could not perform the search."
   }
 }

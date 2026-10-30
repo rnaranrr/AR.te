@@ -10,12 +10,17 @@
   },
   "feed": {
     "foryou": "Para você",
-    "following": "Seguindo"
+    "following": "Seguindo",
+    "error": "Não foi possível carregar as publicações.",
+    "empty": "Nenhuma publicação por aqui ainda.",
+    "empty_following": "Siga alguns artistas para ver as publicações deles aqui."
   },
   "messages": {
     "title": "Mensagens",
     "empty": "Nenhuma conversa encontrada.",
-    "new": "Novas pessoas que você mandar mensagem aparecerão aqui"
+    "new": "Novas pessoas que você mandar mensagem aparecerão aqui",
+    "load_error": "Não foi possível carregar as mensagens.",
+    "send_error": "Não foi possível enviar a mensagem."
   },
   "post": {
     "likes": "Curtidas",
@@ -27,7 +32,11 @@
     "report": "Denunciar post",
     "nsfw_warning": "Confirmar e mostrar mídia sensível",
     "repost": "Republicar",
-    "reposted": "Desfazer repost"
+    "reposted": "Desfazer repost",
+    "action_error": "Não foi possível concluir a ação.",
+    "report_confirm": "Denunciar este post? Ele ficará em análise pela moderação.",
+    "reported_ok": "Denúncia enviada. O post está em análise.",
+    "not_found": "Publicação não encontrada."
   },
   "login": {
     "error": "Email ou senha incorretos",
@@ -53,7 +62,9 @@
   },
   "comment": {
     "placeholder": "Escreva um comentário",
-    "send": "Enviar"
+    "send": "Enviar",
+    "load_error": "Não foi possível carregar os comentários.",
+    "send_error": "Não foi possível enviar o comentário."
   },
   "profile": {
     "timeline": "Timeline",
@@ -71,7 +82,8 @@
     "commissions_open": "Abertas",
     "commissions_closed": "Fechadas",
     "commissions_banner_empty": "Banner das comissões",
-    "commissions_image_empty": "Tabela de preços das comissões"
+    "commissions_image_empty": "Tabela de preços das comissões",
+    "no_posts": "Nenhuma publicação ainda."
   },
   "profileform": {
     "banner_label": "Banner do perfil",
@@ -119,14 +131,36 @@
     "media_too_large": "Cada arquivo deve ter no máximo 20 MB.",
     "title_required": "Informe um título.",
     "title_too_long": "O título deve ter no máximo 255 caracteres.",
-    "success": "Publicação validada. Ela ainda não foi enviada ao servidor."
+    "success": "Publicação criada com sucesso.",
+    "error": "Não foi possível publicar. Tente novamente."
   },
   "raffleform": {
     "title": "Título do concurso",
     "content": "Descrição do concurso",
     "title_required": "Informe um título para o concurso.",
     "title_too_long": "O título do concurso deve ter no máximo 100 caracteres.",
-    "success": "Concurso validado",
-    "save": "Criar concurso"
+    "success": "Concurso criado com sucesso.",
+    "save": "Criar concurso",
+    "error": "Não foi possível criar o concurso."
+  },
+  "mod": {
+    "label": "Espaço de moderação",
+    "create": "Cadastrar um Moderador",
+    "description": "Aqui você poderá ver os posts denunciados e, com a ajuda da comunidade de usuários do AR.te, ter uma decisão sobre se um post deve, ou não, ser removido da plataforma.",
+    "recent": "Denuncias recentes:",
+    "status_default": "Padrão",
+    "status_in_analysis": "Em análise",
+    "status_restored": "Restaurado",
+    "status_banned": "Banido",
+    "load_error": "Não foi possível carregar os posts denunciados.",
+    "empty": "Nenhum post denunciado no momento."
+  },
+  "search": {
+    "placeholder": "Pesquise aqui",
+    "users": "Usuários",
+    "posts": "Publicações",
+    "no_results": "Nenhum resultado encontrado.",
+    "min_chars": "Digite pelo menos 2 caracteres.",
+    "error": "Não foi possível realizar a pesquisa."
   }
 }

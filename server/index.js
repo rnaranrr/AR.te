@@ -7,6 +7,11 @@ import { database } from './models/index.js';
 
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import postRoutes from './routes/postRoutes.js';
+import chatRoutes from './routes/chatRoutes.js';
+import searchRoutes from './routes/searchRoutes.js';
+import modRoutes from './routes/modRoutes.js';
+import raffleRoutes from './routes/raffleRoutes.js';
 
 dotenv.config();
 
@@ -30,13 +35,34 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Registro das rotas de autenticação
+// Registro das rotas
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
+app.use('/posts', postRoutes);
+app.use('/chat', chatRoutes);
+app.use('/search', searchRoutes);
+app.use('/mod', modRoutes);
+app.use('/raffles', raffleRoutes);
 
 // Rota de teste
 app.get('/', (req, res) => {
     res.json({ message: 'API rodando' });
+});
+
+// Tratamento de erros (multer: formato inválido, arquivo grande demais, etc.)
+// Precisa vir DEPOIS das rotas. Responde em JSON com a chave "error", como o restante da API.
+app.use((err, req, res, next) => {
+    if (res.headersSent) return next(err);
+
+    // Erros do multer (tamanho, quantidade de arquivos) e do fileFilter são erros do cliente
+    const isUploadError = err?.name === 'MulterError' || /Formato/.test(err?.message ?? '');
+    const status = isUploadError ? 400 : 500;
+
+    if (status === 500) console.error('Erro não tratado:', err);
+
+    res.status(status).json({
+        error: isUploadError ? err.message : 'Erro interno no servidor.'
+    });
 });
 
 // Autenticar no banco de dados e sincronizar as tabelas

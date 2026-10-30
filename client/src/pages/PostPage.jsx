@@ -1,79 +1,48 @@
+import { useEffect, useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
+import api, { apiError } from '@/services/api';
 import Post from '@/components/Post';
 import Comments from '@/components/comments/CommentSection';
 
 export default function PostPage() {
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     const { id } = useParams();
 
-    // Simulação de um retorno do Sequelize usando .findAll({ include: [...] })
-    const dbPosts = [
-        {
-            post_id: 1,
-            post_title: 'Estudo de cores',
-            post_content: 'Explorando novas combinações de cores para meu próximo projeto',
-            createdAt: '2026-10-10T14:30:00.000Z',
-            is_nsfw: false,
-            author: {
-                user_id: 1,
-                name: 'rnaranrr',
-                username: 'rnaranrr',
-                avatar_url: 'https://pbs.twimg.com/profile_images/2021635657391575041/1M2qZobz_400x400.jpg'
-            },
-            media: [
-                {
-                    media_id: 1,
-                    media_url: 'https://images.unsplash.com/photo-1770129703548-e1ced0e4f118?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D',
-                    media_type: 'image'
-                },
-                {
-                    media_id: 1,
-                    media_url: 'https://plus.unsplash.com/premium_vector-1724811760472-63b7fecc61e9?q=80&w=704&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D',
-                    media_type: 'image'
-                }
-            ],
-            tags: [
-                { tag_id: 1, tag_name: 'arte' },
-                { tag_id: 2, tag_name: 'pintura' }
-            ],
-            likesCount: 189,
-            commentsCount: 24,
-            repostsCount: 5
-        },
-        {
-            post_id: 2,
-            post_title: 'Personagem original',
-            post_content: 'Um dos meus estudos recentes de personagem',
-            createdAt: '2026-10-08T17:00:00.000Z',
-            is_nsfw: false,
-            author: {
-                user_id: 1,
-                name: 'rnaranrr',
-                username: 'rnaranrr',
-                avatar_url: 'https://pbs.twimg.com/profile_images/2021635657391575041/1M2qZobz_400x400.jpg'
-            },
-            media: [
-                {
-                    media_id: 2,
-                    media_url: 'https://images.unsplash.com/vector-1742996363326-7a2fb198a63d?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D',
-                    media_type: 'image'
-                }
-            ],
-            tags: [
-                { tag_id: 3, tag_name: 'ilustração' }
-            ],
-            likesCount: 92,
-            commentsCount: 12,
-            repostsCount: 3
-        }
-    ]
+    // Post carregado da API
+    const [post, setPost] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
 
-    const post = dbPosts.find(
-        (post) => post.post_id === Number(id)
-    );
+    // Busca o post sempre que o id da URL mudar
+    useEffect(() => {
+        let isMounted = true;
+
+        async function loadPost() {
+            setLoading(true);
+            setError('');
+            setPost(null);
+
+            try {
+                const response = await api.get(`/posts/${id}`);
+                if (isMounted) setPost(response.data.post);
+            } catch (err) {
+                console.error('Erro ao carregar post:', err);
+                if (isMounted) setError(apiError(err, t('post.not_found')));
+            } finally {
+                if (isMounted) setLoading(false);
+            }
+        }
+
+        loadPost();
+        return () => {
+            isMounted = false;
+        };
+    }, [id, t]);
 
     return (
         <main className="w-full min-h-fit bg-fundo text-texto-main">
@@ -90,26 +59,35 @@ export default function PostPage() {
                 </button>
             </div>
 
+            {loading && <p className="px-4 pt-6">{t('profile.loading')}</p>}
+            {!loading && error && <p className="px-4 pt-6 text-red-500">{error}</p>}
+
             {/* Post */}
-            <section className="w-full  mx-auto mt-4">
-                <Post
-                    author={post.author.user_id}
-                    authorname={post.author.name}
-                    authorusername={post.author.username}
-                    authoravatar_url={post.author.avatar_url}
-                    post_id={post.post_id}
-                    post_title={post.post_title}
-                    post_content={post.post_content}
-                    createdAt={post.createdAt}
-                    is_nsfw={post.is_nsfw}
-                    media={post.media}
-                    likesCount={post.likesCount}
-                    commentsCount={post.commentsCount}
-                    repostsCount={post.repostsCount}
-                    tags={post.tags}
-                />
-                <Comments />
-            </section>
+            {post && (
+                <section className="w-full  mx-auto mt-4">
+                    {/* key força o Post a reiniciar seus estados (like/repost) ao trocar de post */}
+                    <Post
+                        key={post.post_id}
+                        author={post.author?.user_id}
+                        authorname={post.author?.name}
+                        authorusername={post.author?.username}
+                        authoravatar_url={post.author?.avatar_url}
+                        post_id={post.post_id}
+                        post_title={post.post_title}
+                        post_content={post.post_content}
+                        createdAt={post.createdAt}
+                        is_nsfw={post.is_nsfw}
+                        media={post.media}
+                        likesCount={post.likesCount}
+                        commentsCount={post.commentsCount}
+                        repostsCount={post.repostsCount}
+                        likedByMe={post.likedByMe}
+                        repostedByMe={post.repostedByMe}
+                        tags={post.tags}
+                    />
+                    <Comments postId={post.post_id} />
+                </section>
+            )}
 
         </main>
     );

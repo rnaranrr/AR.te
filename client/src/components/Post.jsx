@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+
+import api, { assetUrl, apiError, isLoggedIn } from '@/services/api';
 
 import { EllipsisVertical, Heart, MessageCircle, RotateCcw, CircleUserRound, StickyNote, TriangleAlert, Link, X, CircleUser } from 'lucide-react';
 
@@ -26,9 +28,14 @@ export default function Post({
     commentsCount,
     repostsCount,
 
+    // Estado das interações do usuário logado (vem da API)
+    likedByMe = false,
+    repostedByMe = false,
+
     post_tags = [],
     tags = []
 }) {
+    const navigate = useNavigate();
     const nameURL = String(authorusername ?? '');
     const authorProfilePath = `/user/${encodeURIComponent(nameURL)}`;
 
@@ -74,24 +81,98 @@ export default function Post({
             ? tags
             : [];
 
-    // Controla o estado de like do post e calcula o número de likes exibido ao usuário
-    const [liked, setLiked] = useState(false);
-    const displayedLikes = (Number(likesCount) || 0) + (liked ? 1 : 0);
+    // Estado de like/repost e contadores. Os valores iniciais vêm do servidor (já incluem a interação do usuário).
+    const [liked, setLiked] = useState(Boolean(likedByMe));
+    const [displayedLikes, setDisplayedLikes] = useState(Number(likesCount) || 0);
+    const [reposted, setReposted] = useState(Boolean(repostedByMe));
+    const [displayedReposts, setDisplayedReposts] = useState(Number(repostsCount) || 0);
+
+    // Mensagem curta (toast) para erros e avisos de ações do post
+    const [notice, setNotice] = useState('');
+
+    useEffect(() => {
+        if (!notice) return;
+
+        const timeout = setTimeout(() => setNotice(''), 3000);
+        return () => clearTimeout(timeout);
+    }, [notice]);
+
+    // Impede cliques repetidos enquanto uma requisição de like/repost está em andamento
+    const pendingRef = useRef(false);
+
+    // Alterna uma interação (like ou repost).
+    // 1) atualiza a tela na hora (otimista); 2) chama a API; 3) confirma com os valores do servidor
+    // ou desfaz a alteração caso a requisição falhe.
+    async function toggleInteraction({ endpoint, active, setActive, setCount, activeKey, countKey }) {
+        // Interagir exige login
+        if (!isLoggedIn()) {
+            navigate('/login');
+            return;
+        }
+
+        if (pendingRef.current) return;
+        pendingRef.current = true;
+
+        setActive(!active);
+        setCount((current) => Math.max(0, current + (active ? -1 : 1)));
+
+        try {
+            const response = await api.post(`/posts/${post_id}/${endpoint}`);
+
+            setActive(response.data[activeKey]);
+            setCount(response.data[countKey]);
+        } catch (err) {
+            // Desfaz a alteração otimista
+            setActive(active);
+            setCount((current) => Math.max(0, current + (active ? 1 : -1)));
+            setNotice(apiError(err, t('post.action_error')));
+        } finally {
+            pendingRef.current = false;
+        }
+    }
 
     // Função responsável pelo like do post
     function Like() {
-        //IMPLEMENTAR A LÓGICA DE LIKE DEPOIS, POR ENQUANTO SÓ INVERTE O ESTADO
-        setLiked((currentLiked) => !currentLiked);
+        return toggleInteraction({
+            endpoint: 'like',
+            active: liked,
+            setActive: setLiked,
+            setCount: setDisplayedLikes,
+            activeKey: 'liked',
+            countKey: 'likesCount'
+        });
     }
-
-    // Controla o estado de repost do post e calcula o número de reposts exibido ao usuário
-    const [reposted, setReposted] = useState(false);
-    const displayedReposts = (Number(repostsCount) || 0) + (reposted ? 1 : 0);
 
     // Função responsável pelo repost do post
     function Repost() {
-        //IMPLEMENTAR A LÓGICA DE REPOST DEPOIS, POR ENQUANTO SÓ INVERTE O ESTADO
-        setReposted((currentRepost) => !currentRepost);
+        return toggleInteraction({
+            endpoint: 'repost',
+            active: reposted,
+            setActive: setReposted,
+            setCount: setDisplayedReposts,
+            activeKey: 'reposted',
+            countKey: 'repostsCount'
+        });
+    }
+
+    // Função responsável por denunciar o post.
+    // O servidor registra a denúncia e coloca o post automaticamente "Em análise".
+    async function reportPost(event) {
+        event.currentTarget.blur();
+
+        if (!isLoggedIn()) {
+            navigate('/login');
+            return;
+        }
+
+        if (!window.confirm(t('post.report_confirm'))) return;
+
+        try {
+            await api.post(`/posts/${post_id}/report`);
+            setNotice(t('post.reported_ok'));
+        } catch (err) {
+            setNotice(apiError(err, t('post.action_error')));
+        }
     }
 
     // Função responsável por copiar o link do post para a área de transferência
@@ -162,7 +243,7 @@ export default function Post({
                         <NavLink to={authorProfilePath}>
                             {authoravatar_url ? (
                                 <img
-                                    src={new URL(authoravatar_url, import.meta.env.VITE_API_URL).href}
+                                    src={assetUrl(authoravatar_url)}
                                     className="w-10 h-10 rounded-full"
                                 />
                             ) : (
@@ -196,7 +277,7 @@ export default function Post({
                                     <NavLink to={`/post/${post_id}`}><StickyNote className="h-5 mr-2" />{t('post.details')}</NavLink>
                                 </li>
                                 <li>
-                                    <NavLink to={`/post/${post_id}/report`}><TriangleAlert className="h-5 mr-2" />{t('post.report')}</NavLink>
+                                    <button type="button" onClick={reportPost}><TriangleAlert className="h-5 mr-2" />{t('post.report')}</button>
                                 </li>
                             </ul>
                         </div>
@@ -221,13 +302,13 @@ export default function Post({
                                         {/* Renderiza a primeira mídia para ajustar o tamanho do botão */}
                                         {media[0]?.media_type?.toLowerCase().startsWith('image') && (
                                             <img
-                                                src={media[0].media_url}
+                                                src={assetUrl(media[0].media_url)}
                                                 className="invisible block w-full rounded-lg"
                                             />
                                         )}
                                         {media[0]?.media_type?.toLowerCase().startsWith('video') && (
                                             <video
-                                                src={media[0].media_url}
+                                                src={assetUrl(media[0].media_url)}
                                                 preload="metadata"
                                                 playsInline
                                                 className="invisible block w-full rounded-lg"
@@ -252,12 +333,12 @@ export default function Post({
                                                     key={key}
                                                     type="button"
                                                     onClick={() => setFullscreenImage({
-                                                        src: item.media_url,
+                                                        src: assetUrl(item.media_url),
                                                     })}
                                                     className={`block w-full cursor-zoom-in ${media.length === 3 && index === 2 ? 'col-span-2' : ''}`}
                                                 >
                                                     <img
-                                                        src={item.media_url}
+                                                        src={assetUrl(item.media_url)}
                                                         className={`w-full rounded-lg max-h-xl object-cover
                                                         ${media.length > 1 ? thirdPost ? 'aspect-[2/1] object-cover' : 'aspect-square object-cover' : ''}`}
                                                         loading="lazy"
@@ -271,11 +352,11 @@ export default function Post({
                                             return (
                                                 <video
                                                     key={key}
-                                                    src={item.media_url}
+                                                    src={assetUrl(item.media_url)}
                                                     controls
                                                     playsInline
                                                     preload="metadata"
-                                                    className={`w-full rounded-lg max-h-xl object-cover 
+                                                    className={`w-full rounded-lg max-h-xl object-cover
                                                         ${media.length > 1 ? thirdPost ? 'aspect-[2/1] object-cover' : 'aspect-square object-cover' : ''} ${thirdPost ? 'col-span-2' : ''}`}
                                                 />
                                             );
@@ -284,7 +365,7 @@ export default function Post({
                                         return (
                                             <a
                                                 key={key}
-                                                href={item.media_url}
+                                                href={assetUrl(item.media_url)}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className={`link ${media.length === 3 && index === 2 ? 'col-span-2' : ''}`}
@@ -301,7 +382,7 @@ export default function Post({
                         {/* Tags do post */}
                         <div className="flex flex-wrap gap-2 mt-2">
                             {renderedTags.map((tag) => (
-                                <NavLink key={tag.tag_id} to={`/tag/${tag.tag_name}`} className="badge bg-fundo border-discreto text-cinza hover:bg-destaque hover:text-fundo transition-colors duration-200">
+                                <NavLink key={tag.tag_id} to={`/search?q=${encodeURIComponent('#' + tag.tag_name)}`} className="badge bg-fundo border-discreto text-cinza hover:bg-destaque hover:text-fundo transition-colors duration-200">
                                     {tag.tag_name}
                                 </NavLink>
                             ))}
@@ -390,6 +471,16 @@ export default function Post({
                         onClick={(event) => event.stopPropagation()}
                         className="max-h-[calc(100vh-2rem)] max-w-full object-contain"
                     />
+                </div>
+            )}
+
+            {/* Toast de erros e avisos (denúncia enviada, falha ao curtir etc.) */}
+            {notice && (
+                <div
+                    role="status"
+                    className="fixed bottom-20 left-1/2 z-50 -translate-x-1/2 rounded-md bg-destaque px-4 py-3 text-fundo shadow-lg md:bottom-6"
+                >
+                    {notice}
                 </div>
             )}
 

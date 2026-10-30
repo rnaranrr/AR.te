@@ -1,10 +1,14 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+
+import api, { apiError } from '@/services/api';
 
 import '@/components/form/forms.css';
 
 export default function PostForm() {
     const { t } = useTranslation();
+    const navigate = useNavigate();
 
     // Controla o carregamento e o salvamento do formulário
     const [loading, setLoading] = useState(false);
@@ -119,8 +123,8 @@ export default function PostForm() {
         setSuccess('');
     }
 
-    // Impede o recarregamento da página e valida os dados do formulário
-    function handleSubmit(event) {
+    // Impede o recarregamento da página, valida os dados e envia a publicação para a API
+    async function handleSubmit(event) {
         event.preventDefault();
 
         setError('');
@@ -141,9 +145,32 @@ export default function PostForm() {
             return;
         }
 
-        // Neste momento, o formulário está em modo de teste.
-        // Nenhum dado ou arquivo é enviado ao backend.
-        setSuccess(t('newpost.success'));
+        setSaving(true);
+
+        try {
+            // Texto + arquivos precisam ir como multipart/form-data (o servidor usa multer)
+            const data = new FormData();
+
+            data.append('title', formData.title.trim());
+            data.append('content', formData.content);
+            data.append('tags', formData.tags);
+            data.append('is_nsfw', String(isNsfw));
+
+            // Só anexa os slots que realmente têm arquivo (campo "media", até 4)
+            mediaFiles.filter(Boolean).forEach((file) => data.append('media', file));
+
+            const response = await api.post('/posts', data);
+
+            setSuccess(t('newpost.success'));
+
+            // Abre o post recém-criado
+            navigate(`/post/${response.data.post_id}`);
+        } catch (err) {
+            console.error('Erro ao publicar:', err);
+            setError(apiError(err, t('newpost.error')));
+        } finally {
+            setSaving(false);
+        }
     }
 
     // Exibe uma mensagem enquanto o carregamento estiver ativo

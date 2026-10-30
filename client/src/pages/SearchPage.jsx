@@ -1,20 +1,96 @@
-//ARRUMAR PLACEHOLDERS DPS
-import { useEffect, useRef } from 'react';
-
-import { useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { NavLink, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Search, X, ArrowUpRight } from 'lucide-react';
+import { Search, X, ArrowUpRight, CircleUser } from 'lucide-react';
+
+import api, { apiError, assetUrl } from '@/services/api';
+import Post from '@/components/Post';
 
 import '@/components/form/forms.css';
 
-export default function Comissions() {
+// Pesquisas recentes ficam salvas no navegador
+const RECENT_KEY = 'recentSearches';
+const MAX_RECENT = 5;
+
+function readRecent() {
+    try {
+        return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
+    } catch {
+        return [];
+    }
+}
+
+export default function SearchPage() {
 
     const { t } = useTranslation();
-    const { pathname } = useLocation();
 
+    // O termo pesquisado fica na URL (/search?q=...), assim as tags dos posts (#tag) abrem direto a pesquisa
+    const [searchParams, setSearchParams] = useSearchParams();
+    const query = (searchParams.get('q') ?? '').trim();
+
+    // Texto digitado no campo (só vira pesquisa ao enviar o formulário)
+    const [input, setInput] = useState(query);
+
+    const [results, setResults] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [recent, setRecent] = useState(readRecent);
+
+    // Executa a pesquisa sempre que o termo da URL mudar
+    useEffect(() => {
+        setInput(query);
+
+        if (query.replace(/^[@#]/, '').length < 2) {
+            setResults(null);
+            return;
+        }
+
+        let isMounted = true;
+
+        async function runSearch() {
+            setLoading(true);
+            setError('');
+
+            try {
+                const response = await api.get('/search', { params: { q: query } });
+                if (isMounted) setResults(response.data);
+            } catch (err) {
+                console.error('Erro na pesquisa:', err);
+                if (isMounted) setError(apiError(err, t('search.error')));
+            } finally {
+                if (isMounted) setLoading(false);
+            }
+        }
+
+        runSearch();
+        return () => {
+            isMounted = false;
+        };
+    }, [query, t]);
+
+    // Guarda o termo nas pesquisas recentes (sem repetir, máximo de 5)
+    function saveRecent(term) {
+        const next = [term, ...recent.filter((item) => item !== term)].slice(0, MAX_RECENT);
+
+        setRecent(next);
+        localStorage.setItem(RECENT_KEY, JSON.stringify(next));
+    }
+
+    function removeRecent(term) {
+        const next = recent.filter((item) => item !== term);
+
+        setRecent(next);
+        localStorage.setItem(RECENT_KEY, JSON.stringify(next));
+    }
 
     function handleSubmit(event) {
         event.preventDefault();
+
+        const term = input.trim();
+        if (!term) return;
+
+        saveRecent(term);
+        setSearchParams({ q: term });
     }
 
     return (
@@ -28,7 +104,9 @@ export default function Comissions() {
                 >
                     <input
                         type="text"
-                        placeholder="Pesquise aqui"
+                        value={input}
+                        onChange={(event) => setInput(event.target.value)}
+                        placeholder={t('search.placeholder')}
                         className="inputform min-w-0 flex-1"
                     />
                     <button
@@ -39,13 +117,103 @@ export default function Comissions() {
                     </button>
                 </form>
 
-                <div className='text-sm text-cinza mt-2 px-4 flex flex-row gap-4 items-center w-full'>
+                {/* Sem pesquisa ativa: mostra as pesquisas recentes */}
+                {!query && recent.map((term) => (
+                    <div key={term} className='text-sm text-cinza mt-2 px-4 flex flex-row gap-4 items-center w-full'>
 
-                    <a><X /></a>
-                    <p>Pesquisa recente</p>
+                        <button type="button" onClick={() => removeRecent(term)} aria-label="Remover">
+                            <X />
+                        </button>
+                        <p>{term}</p>
 
-                    <ArrowUpRight className='justify-self-right ml-auto'/>
-                </div>
+                        <button
+                            type="button"
+                            onClick={() => setSearchParams({ q: term })}
+                            className='justify-self-right ml-auto'
+                            aria-label="Pesquisar"
+                        >
+                            <ArrowUpRight />
+                        </button>
+                    </div>
+                ))}
+
+                {/* Resultados */}
+                {loading && <p className="text-cinza text-sm text-center py-6">{t('profile.loading')}</p>}
+                {error && <p className="text-red-500 text-sm text-center py-6">{error}</p>}
+
+                {query && !loading && !error && results === null && (
+                    <p className="text-cinza text-sm text-center py-6">{t('search.min_chars')}</p>
+                )}
+
+                {results && !loading && (
+                    <div className="w-full">
+                        {results.users.length === 0 && results.posts.length === 0 && (
+                            <p className="text-cinza text-sm text-center py-6">{t('search.no_results')}</p>
+                        )}
+
+                        {/* Usuários encontrados */}
+                        {results.users.length > 0 && (
+                            <section>
+                                <p className="text-cinza px-4 pt-4 pb-2 text-sm">{t('search.users')}</p>
+
+                                {results.users.map((user) => (
+                                    <NavLink
+                                        key={user.user_id}
+                                        to={`/user/${encodeURIComponent(user.username)}`}
+                                        className="bg-fundo hover:bg-discreto text-texto-main flex flex-row items-center px-4 py-3 gap-4 border-b border-discreto transition-colors duration-200 ease-in-out"
+                                    >
+                                        {user.avatar_url ? (
+                                            <img
+                                                src={assetUrl(user.avatar_url)}
+                                                className="size-12 shrink-0 rounded-full object-cover"
+                                            />
+                                        ) : (
+                                            <CircleUser className="size-12 shrink-0 rounded-full stroke-1" />
+                                        )}
+                                        <div className="flex min-w-0 flex-col">
+                                            <p className="truncate font-bold">{user.name}</p>
+                                            <p className="truncate text-cinza">@{user.username}</p>
+                                        </div>
+                                    </NavLink>
+                                ))}
+                            </section>
+                        )}
+
+                        {/* Posts encontrados */}
+                        {results.posts.length > 0 && (
+                            <section className="pb-20 md:pb-4">
+                                <p className="text-cinza px-4 pt-4 pb-2 text-sm">{t('search.posts')}</p>
+
+                                {results.posts.map((post) => (
+                                    <Post
+                                        key={post.post_id}
+                                        author={post.author?.user_id}
+                                        authorname={post.author?.name}
+                                        authorusername={post.author?.username}
+                                        authoravatar_url={post.author?.avatar_url}
+
+                                        post_id={post.post_id}
+                                        post_title={post.post_title}
+                                        post_content={post.post_content}
+                                        createdAt={post.createdAt}
+
+                                        is_nsfw={post.is_nsfw}
+
+                                        media={post.media}
+
+                                        likesCount={post.likesCount}
+                                        commentsCount={post.commentsCount}
+                                        repostsCount={post.repostsCount}
+                                        likedByMe={post.likedByMe}
+                                        repostedByMe={post.repostedByMe}
+
+                                        tags={post.tags}
+                                    />
+                                ))}
+                            </section>
+                        )}
+                    </div>
+                )}
 
             </div>
         </main >

@@ -1,36 +1,48 @@
-//FAZENDO
-
-import { NavLink, useLocation } from 'react-router-dom';
+//TELA DE MENSAGENS
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
 
+import api, { apiError, isLoggedIn } from '@/services/api';
 import ListElement from '@/components/messages/ListElement';
 
-export default function Comissions() {
+// Lista de conversas do usuário logado (uma por contato, com a última mensagem)
+export default function DMList() {
 
     const { t } = useTranslation();
-    const location = useLocation();
+    const navigate = useNavigate();
 
-    const [Dm, setDm] = useState('');
+    const [conversations, setConversations] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
 
-    // Mock temporário
-    const dbComm = [
-        {
-            chat: 1,
-            chat_message: "Obrigado! Que bom que você gostou.",
-            chat_data: "2026-09-30T18:45:00.000Z",
+    // Carrega as conversas da API
+    useEffect(() => {
+        // Mensagens diretas exigem login
+        if (!isLoggedIn()) {
+            navigate('/login');
+            return;
+        }
 
-            // Dm.belongsTo(User, { as: 'author' })
-            sender: {
-                user_id: 1,
-                name: "rnaranrr",
-                username: "rnaranrr",
-                avatar_url: "https://pbs.twimg.com/profile_images/2021635657391575041/1M2qZobz_400x400.jpg"
-            },
+        let isMounted = true;
 
-            likesCount: 999,
-        },
-    ]
+        async function loadConversations() {
+            try {
+                const response = await api.get('/chat');
+                if (isMounted) setConversations(response.data.conversations ?? []);
+            } catch (err) {
+                console.error('Erro ao carregar conversas:', err);
+                if (isMounted) setError(apiError(err, t('messages.load_error')));
+            } finally {
+                if (isMounted) setLoading(false);
+            }
+        }
+
+        loadConversations();
+        return () => {
+            isMounted = false;
+        };
+    }, [t, navigate]);
 
     return (
 
@@ -43,19 +55,20 @@ export default function Comissions() {
                 </div>
 
                 <div className='card md:border-1 border-discreto h-full md:max-w-xl w-full mb-4'>
-                    {dbComm.map((dm) => (
+                    {loading && <p className='text-sm text-cinza text-center w-full py-4'>{t('profile.loading')}</p>}
+                    {error && <p className='text-sm text-red-500 text-center w-full py-4'>{error}</p>}
+
+                    {conversations.map((dm) => (
                         <ListElement
-                            key={dm.chat}
-                            sender={dm.sender.user_id}
-                            sendername={dm.sender.name}
-                            senderusername={dm.sender.username}
-                            senderavatar_url={dm.sender.avatar_url}
+                            key={dm.contact.user_id}
+                            sender={dm.contact.user_id}
+                            sendername={dm.contact.name}
+                            senderusername={dm.contact.username}
+                            senderavatar_url={dm.contact.avatar_url}
 
                             chat_id={dm.chat}
                             chat_content={dm.chat_message}
                             chat_data={dm.chat_data}
-
-                            likesCount={dm.likesCount}
                         />
                     ))}
 

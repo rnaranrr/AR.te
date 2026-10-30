@@ -1,11 +1,11 @@
 import { NavLink } from 'react-router-dom';
 import { ImageIcon } from 'lucide-react';
-import { timelineMock } from '@/mockup/timelinemock';
+
+import { assetUrl } from '@/services/api';
 
 // A aba mostra somente posts que possuem mídia.
 export default function Media({ posts = [] }) {
-    const displayedPosts = posts.length > 0 ? posts : timelineMock;
-    const postsWithMedia = displayedPosts.filter(
+    const postsWithMedia = posts.filter(
         (post) => Array.isArray(post.media) && post.media.length > 0
     );
 
@@ -16,6 +16,10 @@ export default function Media({ posts = [] }) {
                     {postsWithMedia.map((post) => {
                         const firstMedia = post.media[0];
                         const extraMediaCount = post.media.length - 1;
+                        const isVideo = (firstMedia.media_type || '').toLowerCase().startsWith('video');
+
+                        // Conteúdo sensível fica desfocado na grade do portfólio
+                        const mediaClass = `w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 ${post.is_nsfw ? 'blur-xl' : ''}`;
 
                         return (
                             <NavLink
@@ -27,12 +31,22 @@ export default function Media({ posts = [] }) {
                                     }`}
                                 className="group relative aspect-square overflow-hidden rounded-xl bg-cinza focus:outline-none focus:ring-2 focus:ring-destaque"
                             >
-                                <img
-                                    src={firstMedia.media_url}
-                                    alt={post.post_title}
-                                    loading="lazy"
-                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                />
+                                {isVideo ? (
+                                    <video
+                                        src={assetUrl(firstMedia.media_url)}
+                                        preload="metadata"
+                                        muted
+                                        playsInline
+                                        className={mediaClass}
+                                    />
+                                ) : (
+                                    <img
+                                        src={assetUrl(firstMedia.media_url)}
+                                        alt={post.post_title}
+                                        loading="lazy"
+                                        className={mediaClass}
+                                    />
+                                )}
 
                                 {extraMediaCount > 0 && (
                                     <div className="absolute top-2 right-2 flex items-center gap-1 rounded-full bg-cinza px-2.5 py-1 text-xs font-semibold text-[#f1f1e7] shadow">
@@ -53,4 +67,4 @@ export default function Media({ posts = [] }) {
             </div>
         </section>
     );
-}                 
+}

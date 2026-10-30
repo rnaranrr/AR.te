@@ -1,43 +1,72 @@
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
+import api, { apiError, isLoggedIn } from '@/services/api';
 import Comment from '@/components/comments/Comment';
 import '@/components/form/forms.css';
 
-export default function Comments() {
+// Seção de comentários de um post. Recebe o id do post exibido.
+export default function Comments({ postId }) {
     // Obtém o objeto de idioma do i18next para definir o idioma atual
     const { t } = useTranslation();
+    const navigate = useNavigate();
 
-    //
+    // Texto do campo de novo comentário
     const [comment, setComment] = useState('');
 
-    // Mock temporário
-    const dbComm = [
-        {
-            comment_id: 1,
-            comment_content: "Legal",
-            createdAt: "2026-09-30T18:45:00.000Z",
+    // Lista de comentários carregados da API
+    const [comments, setComments] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [sending, setSending] = useState(false);
+    const [error, setError] = useState('');
 
-            // Comment.belongsTo(User, { as: 'author' })
-            author: {
-                user_id: 201,
-                name: "Bruno Costa",
-                username: "brunocosta_paints",
-                avatar_url: "https://i.pravatar.cc/150?u=bruno"
-            },
+    // Carrega os comentários do post
+    const loadComments = useCallback(async () => {
+        setLoading(true);
 
-            likesCount: 999,
-        },
-    ]
+        try {
+            const response = await api.get(`/posts/${postId}/comments`);
+            setComments(response.data.comments ?? []);
+        } catch (err) {
+            console.error('Erro ao carregar comentários:', err);
+            setError(apiError(err, t('comment.load_error')));
+        } finally {
+            setLoading(false);
+        }
+    }, [postId, t]);
 
-    function handleSubmit(event) {
+    useEffect(() => {
+        loadComments();
+    }, [loadComments]);
+
+    // Envia um novo comentário e o coloca no topo da lista
+    async function handleSubmit(event) {
         event.preventDefault();
 
-        if (!comment.trim()) return;
+        const content = comment.trim();
+        if (!content || sending) return;
 
-        console.log('Comentário:', comment);
+        // Comentar exige login
+        if (!isLoggedIn()) {
+            navigate('/login');
+            return;
+        }
 
-        setComment('');
+        setSending(true);
+        setError('');
+
+        try {
+            const response = await api.post(`/posts/${postId}/comments`, { content });
+
+            setComments((previous) => [response.data.comment, ...previous]);
+            setComment('');
+        } catch (err) {
+            console.error('Erro ao comentar:', err);
+            setError(apiError(err, t('comment.send_error')));
+        } finally {
+            setSending(false);
+        }
     }
 
     return (
@@ -58,20 +87,24 @@ export default function Comments() {
                     >
                         <textarea
                             type="text"
+                            value={comment}
                             onChange={(event) => setComment(event.target.value)}
                             placeholder={t('comment.placeholder')}
                             rows={2}
+                            maxLength={1000}
                             className="areaform align-center"
                         />
 
                         <button
                             type="submit"
                             className="btn bg-destaque text-fundo border-none rounded-full w-16"
-                            disabled={!comment.trim()}
+                            disabled={!comment.trim() || sending}
                         >
                             {t('comment.send')}
                         </button>
                     </form>
+
+                    {error && <p role="alert" className="text-red-500 text-sm mt-2">{error}</p>}
                 </div>
             </div>
 
@@ -80,19 +113,22 @@ export default function Comments() {
 
             {/* Lista de comentários */}
             <div>
-                {dbComm.map((comment) => (
+                {loading && <p className="text-cinza text-sm text-center">{t('profile.loading')}</p>}
+
+                {comments.map((item) => (
                     <Comment
-                        key={comment.comment_id}
-                        author={comment.author.user_id}
-                        authorname={comment.author.name}
-                        authorusername={comment.author.username}
-                        authoravatar_url={comment.author.avatar_url}
+                        key={item.comment_id}
+                        author={item.author?.user_id}
+                        authorname={item.author?.name}
+                        authorusername={item.author?.username}
+                        authoravatar_url={item.author?.avatar_url}
 
-                        comment_id={comment.comment_id}
-                        comment_content={comment.comment_content}
-                        createdAt={comment.createdAt}
+                        comment_id={item.comment_id}
+                        comment_content={item.comment_content}
+                        createdAt={item.createdAt}
 
-                        likesCount={comment.likesCount}
+                        likesCount={item.likesCount}
+                        likedByMe={item.likedByMe}
                     />
                 ))}
             </div>
