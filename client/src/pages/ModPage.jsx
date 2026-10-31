@@ -13,7 +13,7 @@ import ModPost from '@/components/ModPost';
 import Logo from '@/assets/logo/icon-logo-big.svg?react';
 
 // Lista os posts denunciados com o número de denúncias de cada um
-export default function Comissions() {
+export default function ModPage() {
 
     const { t } = useTranslation();
     // Navega para outra tela sem recarregar a página

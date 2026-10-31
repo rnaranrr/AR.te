@@ -13,7 +13,7 @@ import '@/components/form/forms.css';
 const POLL_INTERVAL = 5000;
 
 // Mostra o histórico, busca novas mensagens a cada 5 segundos e envia mensagens
-export default function Comissions() {
+export default function DMuser() {
 
     const { t } = useTranslation();
     // Navega para outra tela sem recarregar a página
