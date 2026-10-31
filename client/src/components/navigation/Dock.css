@@ -1,3 +1,4 @@
+/* Estilo: dock de navegação (telas pequenas) */
 @import "@/index.css";
 
 /* Estilo padrão de todos os links da Dock */
@@ -5,6 +6,7 @@
     @apply text-texto-main transition-colors border-none duration-200 ease-in-out;
 }
 
+/* Cor de destaque ao passar o mouse */
 .dock a:hover {
     @apply text-destaque;
 }

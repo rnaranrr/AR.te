@@ -1,3 +1,4 @@
+// Componente: barra de navegação inferior (telas pequenas)
 import { NavLink, useLocation } from 'react-router-dom';
 import { House, Send, ShieldAlert, Search, CircleUser } from 'lucide-react';
 
@@ -5,7 +6,7 @@ import '@/components/navigation/Dock.css';
 
 // Dock para telas pequenas
 export default function Dock() {
-    // location precisa vir do router (antes usava o window.location, que não atualiza sozinho)
+    // Caminho atual da URL (mantém o botão Início ativo em "Seguindo")
     const location = useLocation();
 
     return (
@@ -51,7 +52,7 @@ export default function Dock() {
                 <Search />
             </NavLink>
 
-            {/* Criar Post */}
+            {/* Moderação */}
             <NavLink
                 to='/mod'
                 className={({ isActive }) => isActive ? 'isActive' : ''}

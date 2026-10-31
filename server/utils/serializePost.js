@@ -1,8 +1,8 @@
-// Utilitário único para montar posts no formato que o front-end espera.
+// Utilitário: monta os posts no formato que o front-end espera
 // Todas as rotas que devolvem posts (feed, post único, perfil, busca, moderação) usam estas funções,
-// assim o JSON é idêntico em todos os lugares.
+// assim o JSON é idêntico em todos os lugares
 import { Op } from 'sequelize';
-import { User, Post, PostMedia, Tag, Ptag, Postlike, Comment, Repost } from '../models/index.js';
+import { User, Post, PostMedia, Tag, Ptag, Postlike, Comment, Repost, Raffle } from '../models/index.js';
 
 // Filtro de posts "visíveis": não apagados (soft-delete) e não banidos
 export const VISIBLE_POST = {
@@ -22,8 +22,8 @@ export const postInclude = [
 ];
 
 // Busca uma "página" de posts em duas etapas:
-// 1) pega só os IDs já paginados (limit/offset); 2) carrega os posts completos com os includes.
-// Evita os problemas de LIMIT + include hasMany do Sequelize.
+// 1) pega só os IDs já paginados (limit/offset); 2) carrega os posts completos com os includes
+// Evita os problemas de LIMIT + include hasMany do Sequelize
 export async function findPosts(where, { limit, offset = 0 } = {}) {
     const order = [['created_at', 'DESC'], ['post_id', 'DESC']];
 
@@ -44,18 +44,28 @@ export async function findPosts(where, { limit, offset = 0 } = {}) {
     });
 }
 
-// Converte um post do Sequelize no objeto usado pelo front.
+// Converte um post do Sequelize no objeto usado pelo front
 // viewerId       -> usuário logado (para likedByMe / repostedByMe), ou null
 // authorOverride -> usado nas rotas de perfil, onde os posts não carregam o include do autor
 export async function serializePost(post, viewerId = null, authorOverride = null) {
     const postId = post.post_id;
 
-    const [likesCount, commentsCount, repostsCount, myLike, myRepost] = await Promise.all([
+    // Participação em concurso: identifica o concurso (título + post do concurso) para o front exibir o selo/link
+    const isEntry = Boolean(post.raffle_id) && !post.is_raffle;
+
+    const [likesCount, commentsCount, repostsCount, myLike, myRepost, raffleRow, rafflePost] = await Promise.all([
         Postlike.count({ where: { post_id: postId } }),
         Comment.count({ where: { post_id: postId, deleted_at: null } }),
         Repost.count({ where: { post_id: postId } }),
         viewerId ? Postlike.findOne({ where: { post_id: postId, user_id: viewerId } }) : null,
-        viewerId ? Repost.findOne({ where: { post_id: postId, user_id: viewerId } }) : null
+        viewerId ? Repost.findOne({ where: { post_id: postId, user_id: viewerId } }) : null,
+        isEntry ? Raffle.findByPk(post.raffle_id) : null,
+        isEntry
+            ? Post.findOne({
+                where: { raffle_id: post.raffle_id, is_raffle: true, deleted_at: null },
+                attributes: ['post_id']
+            })
+            : null
     ]);
 
     const author = authorOverride ?? post.author;
@@ -67,6 +77,13 @@ export async function serializePost(post, viewerId = null, authorOverride = null
         post_status: post.post_status,
         is_nsfw: post.is_nsfw,
         createdAt: post.created_at,
+
+        // Concursos: is_raffle = o post é o concurso; raffle = concurso ao qual a participação pertence
+        is_raffle: Boolean(post.is_raffle),
+        raffle_id: post.raffle_id ?? null,
+        raffle: raffleRow && rafflePost
+            ? { raffle_id: raffleRow.raffle_id, post_id: rafflePost.post_id, title: raffleRow.raffle_title }
+            : null,
 
         author: author
             ? {

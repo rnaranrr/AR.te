@@ -1,3 +1,4 @@
+// Página: edição do perfil (imagens e dados pessoais) e exclusão de conta
 import { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -6,14 +7,23 @@ import { ArrowLeft } from 'lucide-react';
 
 import '@/components/form/forms.css';
 
+// Carrega o perfil atual, envia as alterações e permite excluir a conta
 export default function ProfileForm() {
     const { t } = useTranslation();
+    // Navega para outra tela sem recarregar a página
     const navigate = useNavigate();
 
+    // Estado da tela: carregando, salvando e mensagens
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+
+    // Exclusão de conta: a confirmação (com senha) só aparece depois de clicar em "Excluir conta"
+    const [showDelete, setShowDelete] = useState(false);
+    const [deletePassword, setDeletePassword] = useState('');
+    const [deleting, setDeleting] = useState(false);
+    const [deleteError, setDeleteError] = useState('');
 
     // Mantém os campos controlados pelo React
     const [formData, setFormData] = useState({
@@ -78,7 +88,7 @@ export default function ProfileForm() {
         return () => URL.revokeObjectURL(url);
     }, [avatarFile]);
 
-    //exata msm coisa pro banner
+    // Mesma lógica para a prévia do banner
     useEffect(() => {
         if (!bannerFile) {
             setBannerPreview('');
@@ -185,6 +195,29 @@ export default function ProfileForm() {
         }
     }
 
+    // Exclui a conta (e todas as produções) na API e volta para o login
+    async function handleDeleteAccount() {
+        if (!deletePassword || deleting) return;
+
+        setDeleting(true);
+        setDeleteError('');
+
+        try {
+            await api.delete('/users/me', { data: { password: deletePassword } });
+
+            // A conta não existe mais: limpa a sessão guardada no navegador
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+
+            navigate('/login');
+        } catch (err) {
+            console.error('Erro ao excluir conta:', err);
+            setDeleteError(apiError(err, t('profileform.delete_error')));
+        } finally {
+            setDeleting(false);
+        }
+    }
+
     if (loading) {
         return (
             <aside className="w-full min-h-dvh bg-fundo text-texto-main p-6">
@@ -197,10 +230,10 @@ export default function ProfileForm() {
         <aside className="flex justify-center items-center min-h-dvh bg-fundo w-full font-principal p-4">
             <div className="card align-self-center my-auto w-full max-w-md bg-fundo p-6 flex flex-col items-center">
 
-                {/* navbar*/}
+                {/* Barra superior com título e botão de voltar */}
                 <div className='navbar font-principal sticky top-0 bg-fundo align-center mb-4'>
 
-                    {/* Botão para voltar pro feed*/}
+                    {/* Botão de voltar */}
                     <div className='flex gap-2 pt-3 pl-2'>
                         <NavLink
                             to='/profile'
@@ -210,7 +243,7 @@ export default function ProfileForm() {
                         </NavLink>
                     </div>
 
-                    {/* username */}
+                    {/* Nome de usuário (@) exibido no topo */}
                     <div className='mr-6 flex w-full justify-center flex-row items-center'>
                         <h1 className='text-xl mt-2 font-bold text-texto-main h-fit'>{t('profile.edit')}</h1>
                     </div>
@@ -382,6 +415,61 @@ export default function ProfileForm() {
                             {saving ? t('profileform.saving') : t('profileform.save')}
                         </button>
                     </form>
+
+                    {/* Exclusão da conta (pede a senha para confirmar) */}
+                    <div className="flex flex-col gap-4 mt-8 pt-6 border-t border-discreto">
+                        {!showDelete ? (
+                            <button
+                                type="button"
+                                onClick={() => setShowDelete(true)}
+                                className="btn bg-fundo text-red-500 font-bold border-2 border-red-500 hover:bg-red-500/10 rounded-full w-full"
+                            >
+                                {t('profileform.delete_account')}
+                            </button>
+                        ) : (
+                            <>
+                                <p className="text-sm text-red-500">{t('profileform.delete_warning')}</p>
+
+                                <fieldset className="fieldset inputlabel">
+                                    <label htmlFor="delete-password">{t('profileform.delete_password')}</label>
+
+                                    <input
+                                        id="delete-password"
+                                        type="password"
+                                        autoComplete="current-password"
+                                        value={deletePassword}
+                                        onChange={(event) => setDeletePassword(event.target.value)}
+                                        className="inputform"
+                                    />
+                                </fieldset>
+
+                                {deleteError && <p role="alert" className="text-red-500 text-sm">{deleteError}</p>}
+
+                                <div className="grid grid-cols-2 gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setShowDelete(false);
+                                            setDeletePassword('');
+                                            setDeleteError('');
+                                        }}
+                                        className="btn bg-fundo font-bold hover:bg-discreto/90 border-2 border-cinza rounded-full w-full"
+                                    >
+                                        {t('profileform.delete_cancel')}
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={handleDeleteAccount}
+                                        disabled={!deletePassword || deleting}
+                                        className="btn bg-red-500 text-white font-bold hover:bg-red-500/90 border-none rounded-full w-full"
+                                    >
+                                        {deleting ? t('profileform.deleting') : t('profileform.delete_confirm')}
+                                    </button>
+                                </div>
+                            </>
+                        )}
+                    </div>
                 </div>
             </div>
         </aside >

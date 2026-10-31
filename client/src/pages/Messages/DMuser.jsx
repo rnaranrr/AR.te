@@ -1,4 +1,4 @@
-//TELA DE MENSAGENS
+// Página: conversa de mensagens diretas com um usuário
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useNavigate, useParams } from 'react-router-dom';
@@ -12,14 +12,17 @@ import '@/components/form/forms.css';
 // Intervalo (ms) para buscar novas mensagens enquanto a conversa está aberta
 const POLL_INTERVAL = 5000;
 
+// Mostra o histórico, busca novas mensagens a cada 5 segundos e envia mensagens
 export default function Comissions() {
 
     const { t } = useTranslation();
+    // Navega para outra tela sem recarregar a página
     const navigate = useNavigate();
 
     // Username do contato vem da rota /chat/:username
     const { username } = useParams();
 
+    // Marcador no fim da conversa, usado para rolar até a última mensagem
     const messagesEndRef = useRef(null);
 
     // Id do usuário logado (salvo no login)
@@ -91,12 +94,14 @@ export default function Comissions() {
 
         <main className="flex min-h-dvh w-full min-w-0 justify-center bg-fundo font-principal text-texto-main">
             <div className="flex min-h-dvh w-full min-w-0 max-w-3xl flex-col border-x border-discreto bg-fundo">
+                {/* Barra superior com o contato */}
                 <header className="sticky top-0 z-10 flex min-h-16 shrink-0 items-center justify-center border-b border-discreto bg-fundo px-4">
                     <p className="truncate text-base font-bold">
                         {contact?.name ?? contact?.username ?? username}
                     </p>
                 </header>
 
+                {/* Mensagens da conversa */}
                 <section className="flex min-h-0 flex-1 flex-col">
                     <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 py-6 pb-24 md:pb-6">
                         {messages.map((message) => {
@@ -117,6 +122,7 @@ export default function Comissions() {
                         <div ref={messagesEndRef} />
                     </div>
 
+                    {/* Campo para escrever e enviar a mensagem */}
                     <form
                         onSubmit={handleSubmit}
                         className="flex shrink-0 items-center gap-3 border-t border-discreto bg-fundo px-4 py-3 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-4"

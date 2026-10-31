@@ -1,3 +1,4 @@
+// Componente: aba "Seguindo" (posts de quem o usuário segue)
 import FeedList from '@/components/feed/FeedList';
 
 // Aba "Seguindo": somente posts de quem o usuário logado segue

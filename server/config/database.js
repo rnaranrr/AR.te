@@ -1,11 +1,12 @@
+// Configuração: conexão com o MySQL usando Sequelize
 import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-//define classe sequelize
+// Cria a conexão com o banco
 const sequelize = new Sequelize(
-    //passa banco pra classe com parametros do .env
+    // Nome do banco, usuário, senha e host vêm do arquivo .env
     process.env.DB_NAME,
     process.env.DB_USER,
     process.env.DB_PASS,
@@ -15,5 +16,5 @@ const sequelize = new Sequelize(
         logging: false
     }
 );
-//exporta classe
+// Exporta a conexão para os modelos
 export default sequelize;

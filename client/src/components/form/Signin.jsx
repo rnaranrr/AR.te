@@ -1,3 +1,4 @@
+// Página: cadastro de novos usuários
 import { useState } from 'react';
 import { useNavigate, NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -7,8 +8,10 @@ import '@/components/form/forms.css';
 import LangBtn from '@/components/lang/Lang-btn';
 import Logo from '@/assets/logo/icon-logo-big.svg?react';
 
+// Envia os dados de cadastro para a API e abre o login em seguida
 export default function Register() {
     const { t } = useTranslation();
+    // Navega para outra tela sem recarregar a página
     const navigate = useNavigate();
 
     // Define as variáveis de estado para o formulário, erro e carregamento
@@ -47,12 +50,16 @@ export default function Register() {
 
     return (
         <aside className="flex justify-center items-center h-dvh bg-fundo w-full font-principal p-4">
+            {/* Botões de idioma */}
             <LangBtn />
             <div className="card align-self-center my-auto w-full max-w-md bg-fundo p-6 flex flex-col items-center">
+                {/* Logo */}
                 <Logo className='w-40 h-40 border-4 mt-6 border-texto rounded-2xl' />
 
                 <div className="w-full mt-6">
+                    {/* Formulário de cadastro */}
                     <form onSubmit={handleSubmit} className="flex flex-col gap-2 md:gap-1">
+                        {/* Campo de apelido (até 50 caracteres) */}
                         <fieldset className="fieldset inputlabel">
                             <label>{t('login.nickname')}</label>
                             <input
@@ -68,6 +75,7 @@ export default function Register() {
                                 {formData.name.length}/50
                             </span>
                         </fieldset>
+                        {/* Campo de nome de usuário (até 30 caracteres) */}
                         <fieldset className="fieldset inputlabel">
                             <label>{t('login.username')}</label>
                             <input
@@ -84,6 +92,7 @@ export default function Register() {
                             </span>
                         </fieldset>
 
+                        {/* Campo de e-mail */}
                         <fieldset className="fieldset inputlabel">
                             <label>{t('login.email')}</label>
                             <input
@@ -97,6 +106,7 @@ export default function Register() {
                             />
                         </fieldset>
 
+                        {/* Campo de senha */}
                         <fieldset className="fieldset inputlabel">
                             <label>{t('login.password')}</label>
                             <input
@@ -110,11 +120,14 @@ export default function Register() {
                             />
                         </fieldset>
 
+                        {/* Mensagem de erro do cadastro */}
                         {error && <p className="text-red-500 text-sm">{error}</p>}
 
+                        {/* Dica para personalizar o perfil depois */}
                         <p className='text-cinza w-full flex text-center itens-center'>{t('login.registertip')}</p>
 
                         <div className="grid grid-cols-1 gap-2 mt-2">
+                            {/* Botão de criar conta */}
                             <button
                                 type="submit"
                                 disabled={loading}
@@ -124,6 +137,7 @@ export default function Register() {
                             </button>
                         </div>
 
+                        {/* Link para quem já tem conta */}
                         <p className='text-cinza text-sm w-full flex justify-center'>{t('login.loginmsg')}<NavLink to="/login" className='pl-1 text-destaque'>{t('login.loginmsglink')}</NavLink></p>
 
                     </form>

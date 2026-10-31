@@ -36,7 +36,9 @@
     "action_error": "Could not complete the action.",
     "report_confirm": "Report this post? It will be put under review by the moderation.",
     "reported_ok": "Report sent. The post is now under review.",
-    "not_found": "Post not found."
+    "not_found": "Post not found.",
+    "raffle": "Raffle",
+    "raffle_entry": "Raffle entry: {{title}}"
   },
   "login": {
     "error": "Invalid email or password",
@@ -83,7 +85,8 @@
     "commissions_closed": "Closed",
     "commissions_banner_empty": "Commissions banner",
     "commissions_image_empty": "Commissions price sheet",
-    "no_posts": "No posts yet."
+    "no_posts": "No posts yet.",
+    "reposted_by": "{{name}} reposted"
   },
   "profileform": {
     "banner_label": "Profile banner",
@@ -112,7 +115,14 @@
     "update_success": "Profile updated successfully.",
     "update_error": "Could not update the profile.",
     "saving": "Saving...",
-    "save": "Save alterations"
+    "save": "Save alterations",
+    "delete_account": "Delete account",
+    "delete_warning": "This action is permanent: your profile, posts, comments, likes, reposts and messages will be erased.",
+    "delete_password": "Type your password to confirm",
+    "delete_cancel": "Cancel",
+    "delete_confirm": "Delete permanently",
+    "deleting": "Deleting...",
+    "delete_error": "Could not delete the account."
   },
   "newpost": {
     "title": "New post",
@@ -132,16 +142,18 @@
     "title_required": "Enter a title.",
     "title_too_long": "The title must be no longer than 255 characters.",
     "success": "Post created successfully.",
-    "error": "Could not publish. Please try again."
+    "error": "Could not publish. Please try again.",
+    "raffle_notice": "This post will be linked to the raffle and will appear on its page.",
+    "raffle_back": "Back to the raffle"
   },
   "raffleform": {
     "title": "Raffle title",
     "content": "Raffle description",
     "title_required": "Enter a title for the raffle.",
     "title_too_long": "The raffle title must be no longer than 100 characters.",
-    "success": "Contest created successfully.",
+    "success": "Raffle created successfully.",
     "save": "Create raffle",
-    "error": "Could not create the contest."
+    "error": "Could not create the raffle."
   },
   "mod": {
     "label": "Moderation Space",
@@ -162,5 +174,10 @@
     "no_results": "No results found.",
     "min_chars": "Type at least 2 characters.",
     "error": "Could not perform the search."
+  },
+  "raffle": {
+    "participations": "Entries",
+    "join": "Join the raffle",
+    "empty": "Nobody has entered this raffle yet."
   }
 }

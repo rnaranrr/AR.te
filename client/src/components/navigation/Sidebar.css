@@ -1,7 +1,8 @@
+/* Estilo: menu lateral (links e estado ativo) */
 @import "tailwindcss";
 @import "@/index.css";
 
-/* Estilo padão de cada link da sidebar */
+/* Estilo padrão de cada link do menu */
 .sidebar-link {
     @apply flex items-center gap-3 px-4 py-3 my-2 rounded-full font-medium text-texto-main transition-all duration-200 ease-in-out;
 }
@@ -11,7 +12,7 @@
     @apply bg-discreto;
 }
 
-/* Item ATIVO */
+/* Item ativo */
 .sidebar-link.isActive {
     @apply text-fundo bg-destaque font-bold;
 }
@@ -21,6 +22,7 @@
     @apply stroke-[2.5px];
 }
 
+/* Botão ativo (abas do perfil e do feed) */
 .btn.isActive {
     @apply text-fundo bg-destaque font-bold;
 }

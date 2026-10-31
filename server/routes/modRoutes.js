@@ -1,3 +1,4 @@
+// Rotas: espaço de moderação (posts denunciados)
 import { Router } from 'express';
 import { Op } from 'sequelize';
 
@@ -5,11 +6,12 @@ import authMiddleware from '../middlewares/authMiddleware.js';
 import { Reports } from '../models/index.js';
 import { findPosts, serializePost } from '../utils/serializePost.js';
 
+// Roteador com as rotas deste arquivo
 const router = Router();
 
 // GET /mod/posts
-// Lista os posts denunciados (em análise, restaurados ou banidos) com o número de denúncias.
-// Leitura liberada para qualquer usuário logado (espaço de moderação colaborativa).
+// Lista os posts denunciados (em análise, restaurados ou banidos) com o número de denúncias
+// Leitura liberada para qualquer usuário logado (espaço de moderação colaborativa)
 router.get('/posts', authMiddleware, async (req, res) => {
     try {
         const posts = await findPosts({
@@ -29,9 +31,11 @@ router.get('/posts', authMiddleware, async (req, res) => {
 
         return res.json({ posts: result });
     } catch (error) {
+        // Falha inesperada: registra no console e responde com erro
         console.error('Erro ao listar posts denunciados:', error);
         return res.status(500).json({ error: 'Não foi possível carregar os posts denunciados.' });
     }
 });
 
+// Exporta o roteador para ser registrado no index.js
 export default router;

@@ -1,22 +1,29 @@
+/* Estilo: campos de formulário (texto, área de texto e arquivo) */
 @import "@/index.css";
 
+/* Campo de texto de uma linha */
 .inputform{
     @apply w-full max-w-xl border-2 rounded-full border-discreto bg-fundo text-texto-main px-4 py-4 md:py-2 focus:outline-none focus:ring-2 focus:ring-destaque focus:border-destaque font-normal text-sm;
 }
+/* Área de texto (posts e comentários) */
 .areaform{
     @apply w-full max-w-xl border-2 rounded-3xl border-discreto bg-fundo text-texto-main px-4 py-4 md:py-2 focus:outline-none focus:ring-2 focus:ring-destaque focus:border-destaque font-normal text-sm;
 }
+/* Área de texto do perfil (biografia) */
 .areaformprofile{
     @apply w-full max-w-xl border-2 rounded-3xl border-discreto bg-fundo text-texto-main px-4 py-4 md:py-2 focus:outline-none focus:ring-2 focus:ring-destaque focus:border-destaque font-normal text-sm;
 }
+/* Rótulo dos campos */
 .inputlabel{
     @apply font-principal text-texto-main text-lg font-semibold mb-2;
 }
 
+/* Campo de seleção de arquivo */
 .fileform{
     @apply w-full max-w-xl border-2 rounded-xl border-discreto bg-fundo text-texto-main px-4 py-4 md:py-2 focus:outline-none focus:ring-2 focus:ring-destaque focus:border-destaque font-normal text-sm;
 }
 
+/* Texto de ajuda abaixo dos campos */
 .desc{
     @apply text-sm text-cinza
 }

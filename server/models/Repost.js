@@ -1,14 +1,17 @@
+// Modelo: tabela "repost" — republicações de posts
 import { DataTypes } from 'sequelize';
-//define tabela com base na classe definida no ./config/database.js
+// Conexão com o banco
 import database from '../config/database.js';
 
-//define classes
+// Define a tabela e suas colunas
 const Repost = database.define('repost', {
+    // Chave primária
     repost_id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
     },
+    // Post republicado
     post_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -18,6 +21,7 @@ const Repost = database.define('repost', {
             key: 'post_id'
         }
     },
+    // Usuário que republicou
     user_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -28,10 +32,12 @@ const Repost = database.define('repost', {
         }
     }
 }, {
+    // Opções da tabela: nome e controle das datas
     tableName: 'repost',
     timestamps: true,
     createdAt: 'created_at',
     updatedAt: false
 });
 
+// Exporta o modelo
 export default Repost;

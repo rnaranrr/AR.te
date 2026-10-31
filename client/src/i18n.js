@@ -1,3 +1,4 @@
+// Configuração: traduções (português e inglês) com i18next
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
@@ -5,11 +6,13 @@ import { initReactI18next } from 'react-i18next';
 import ptTranslation from './locales/pt.json';
 import enTranslation from './locales/en.json';
 
+// Textos disponíveis em cada idioma
 const resources = {
   pt: { translation: ptTranslation },
   en: { translation: enTranslation }
 };
 
+// Idioma escolhido anteriormente (salvo no navegador); o padrão é português
 const idiomaSalvo = localStorage.getItem('idiomaSalvo') || 'pt';
 
 i18n

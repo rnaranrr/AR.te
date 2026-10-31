@@ -1,3 +1,4 @@
+// Componente: seção de comentários de um post (lista e campo para comentar)
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -6,10 +7,11 @@ import api, { apiError, isLoggedIn } from '@/services/api';
 import Comment from '@/components/comments/Comment';
 import '@/components/form/forms.css';
 
-// Seção de comentários de um post. Recebe o id do post exibido.
+// Seção de comentários de um post. Recebe o id do post exibido
 export default function Comments({ postId }) {
-    // Obtém o objeto de idioma do i18next para definir o idioma atual
+    // Função de tradução dos textos
     const { t } = useTranslation();
+    // Navega para outra tela sem recarregar a página
     const navigate = useNavigate();
 
     // Texto do campo de novo comentário
@@ -17,6 +19,7 @@ export default function Comments({ postId }) {
 
     // Lista de comentários carregados da API
     const [comments, setComments] = useState([]);
+    // Estado da requisição: carregando, enviando e mensagem de erro
     const [loading, setLoading] = useState(true);
     const [sending, setSending] = useState(false);
     const [error, setError] = useState('');
@@ -36,6 +39,7 @@ export default function Comments({ postId }) {
         }
     }, [postId, t]);
 
+    // Carrega os comentários ao abrir e quando o post muda
     useEffect(() => {
         loadComments();
     }, [loadComments]);
@@ -81,6 +85,7 @@ export default function Comments({ postId }) {
                         Comentários
                     </h2>
 
+                    {/* Formulário de novo comentário */}
                     <form
                         onSubmit={handleSubmit}
                         className="flex gap-3 items-start mt-4 w-full mx-4 flex-row justify-center max-w-xl"

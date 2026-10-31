@@ -1,14 +1,17 @@
+// Modelo: tabela "comment" — comentários nos posts
 import { DataTypes } from 'sequelize';
-//define tabela com base na classe definida no ./config/database.js
+// Conexão com o banco
 import database from '../config/database.js';
 
-//define classes
+// Define a tabela e suas colunas
 const Comment = database.define('comment', {
+    // Chave primária
     comment_id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
     },
+    // Post comentado
     post_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -18,6 +21,7 @@ const Comment = database.define('comment', {
             key: 'post_id'
         }
     },
+    // Autor do comentário
     user_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -27,6 +31,7 @@ const Comment = database.define('comment', {
             key: 'user_id'
         }
     },
+    // Texto do comentário
     comment_content: {
         type: DataTypes.TEXT,
         allowNull: false
@@ -36,10 +41,12 @@ const Comment = database.define('comment', {
         allowNull: true,
     },
 }, {
+    // Opções da tabela: nome e controle das datas
     tableName: 'comment',
     timestamps: true,
     createdAt: 'created_at',
     updatedAt: false
 });
 
+// Exporta o modelo
 export default Comment;

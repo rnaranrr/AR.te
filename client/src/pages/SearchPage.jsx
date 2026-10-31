@@ -1,3 +1,4 @@
+// Página: pesquisa de usuários, posts e #tags
 import { useEffect, useState } from 'react';
 import { NavLink, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +13,7 @@ import '@/components/form/forms.css';
 const RECENT_KEY = 'recentSearches';
 const MAX_RECENT = 5;
 
+// Lê as pesquisas recentes salvas no navegador
 function readRecent() {
     try {
         return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
@@ -20,6 +22,7 @@ function readRecent() {
     }
 }
 
+// Campo de pesquisa, pesquisas recentes e resultados
 export default function SearchPage() {
 
     const { t } = useTranslation();
@@ -31,6 +34,7 @@ export default function SearchPage() {
     // Texto digitado no campo (só vira pesquisa ao enviar o formulário)
     const [input, setInput] = useState(query);
 
+    // Resultado da pesquisa (null = nenhuma pesquisa ativa) e estado da requisição
     const [results, setResults] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -76,6 +80,7 @@ export default function SearchPage() {
         localStorage.setItem(RECENT_KEY, JSON.stringify(next));
     }
 
+    // Remove um termo das pesquisas recentes
     function removeRecent(term) {
         const next = recent.filter((item) => item !== term);
 
@@ -83,6 +88,7 @@ export default function SearchPage() {
         localStorage.setItem(RECENT_KEY, JSON.stringify(next));
     }
 
+    // Envia a pesquisa: guarda nos recentes e coloca o termo na URL
     function handleSubmit(event) {
         event.preventDefault();
 
@@ -98,6 +104,7 @@ export default function SearchPage() {
         <main className="flex min-h-dvh w-full min-w-0 justify-center bg-fundo font-principal text-texto-main">
             <div className="flex min-h-dvh w-full min-w-0 max-w-3xl flex-col border-x border-discreto bg-fundo">
 
+                {/* Campo de pesquisa */}
                 <form
                     onSubmit={handleSubmit}
                     className="flex shrink-0 pt-8 items-center justify-center gap-3 border-t border-discreto bg-fundo px-4 py-3 pb-4"
@@ -206,6 +213,9 @@ export default function SearchPage() {
                                         repostsCount={post.repostsCount}
                                         likedByMe={post.likedByMe}
                                         repostedByMe={post.repostedByMe}
+
+                                        is_raffle={post.is_raffle}
+                                        raffle={post.raffle}
 
                                         tags={post.tags}
                                     />

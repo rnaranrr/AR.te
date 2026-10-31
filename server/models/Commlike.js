@@ -1,14 +1,17 @@
+// Modelo: tabela "commlike" — curtidas em comentários
 import { DataTypes } from 'sequelize';
-//define tabela com base na classe definida no ./config/database.js
+// Conexão com o banco
 import database from '../config/database.js';
 
-//define classes
+// Define a tabela e suas colunas
 const Commlike = database.define('commlike', {
+    // Chave primária
     commlike_id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
     },
+    // Comentário curtido
     comment_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -18,6 +21,7 @@ const Commlike = database.define('commlike', {
             key: 'comment_id'
         }
     },
+    // Usuário que curtiu
     user_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -28,10 +32,12 @@ const Commlike = database.define('commlike', {
         }
     }
 }, {
+    // Opções da tabela: nome e controle das datas
     tableName: 'commlike',
     timestamps: true,
     createdAt: 'created_at',
     updatedAt: false
 });
 
+// Exporta o modelo
 export default Commlike;

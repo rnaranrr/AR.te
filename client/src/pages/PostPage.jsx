@@ -1,3 +1,4 @@
+// Página: post individual com comentários (ou participações, se for um raffle)
 import { useEffect, useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -6,15 +7,20 @@ import { useTranslation } from 'react-i18next';
 import api, { apiError } from '@/services/api';
 import Post from '@/components/Post';
 import Comments from '@/components/comments/CommentSection';
+import RaffleSection from '@/components/raffle/RaffleSection';
 
+// Carrega o post da URL e mostra a seção correspondente abaixo dele
 export default function PostPage() {
+    // Navega para outra tela sem recarregar a página
     const navigate = useNavigate();
     const { t } = useTranslation();
 
+    // Id do post vindo da rota /post/:id
     const { id } = useParams();
 
     // Post carregado da API
     const [post, setPost] = useState(null);
+    // Estado da requisição
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
@@ -49,6 +55,7 @@ export default function PostPage() {
 
             {/* Cabeçalho */}
             <div className="w-full mx-auto px-4 pt-6">
+                {/* Botão de voltar */}
                 <button
                     type="button"
                     onClick={() => navigate(-1)}
@@ -65,7 +72,7 @@ export default function PostPage() {
             {/* Post */}
             {post && (
                 <section className="w-full  mx-auto mt-4">
-                    {/* key força o Post a reiniciar seus estados (like/repost) ao trocar de post */}
+                    {/* Key força o Post a reiniciar seus estados (like/repost) ao trocar de post */}
                     <Post
                         key={post.post_id}
                         author={post.author?.user_id}
@@ -83,9 +90,15 @@ export default function PostPage() {
                         repostsCount={post.repostsCount}
                         likedByMe={post.likedByMe}
                         repostedByMe={post.repostedByMe}
+                        is_raffle={post.is_raffle}
+                        raffle={post.raffle}
                         tags={post.tags}
                     />
-                    <Comments postId={post.post_id} />
+
+                    {/* Concurso: participações no lugar dos comentários */}
+                    {post.is_raffle
+                        ? <RaffleSection key={post.raffle_id} raffleId={post.raffle_id} postId={post.post_id} />
+                        : <Comments postId={post.post_id} />}
                 </section>
             )}
 

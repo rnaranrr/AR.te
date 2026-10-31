@@ -1,3 +1,4 @@
+// Componente: não utilizado (nenhuma rota usa este arquivo)
 import { NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import DMList from '@/pages/Messages/DMList';

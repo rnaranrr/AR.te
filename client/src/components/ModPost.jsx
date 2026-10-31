@@ -1,3 +1,4 @@
+// Componente: card de um post denunciado no espaço de moderação
 import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +9,7 @@ import { assetUrl } from '@/services/api';
 
 import '@/components/Post.css';
 
-// Componente Post recebe os dados do post, incluindo autor, título, conteúdo, mídia, tags e contadores de interações
+// Mostra o post com o status de moderação e o número de denúncias
 export default function ModPost({
     author,
     authorname,
@@ -45,7 +46,7 @@ export default function ModPost({
             ? tags
             : [];
 
-    // Obtém o objeto de idioma do i18next para definir o idioma atual
+    // Função de tradução e idioma atual
     const { t, i18n } = useTranslation();
 
     // Formata a data de criação do post de acordo com o idioma atual
@@ -146,13 +147,13 @@ export default function ModPost({
                                     </button>
                                 ) : (
 
-                                    //mapeia a mídia do post e renderiza imagens ou vídeos de acordo com o tipo de mídia
+                                    // Mapeia a mídia do post e renderiza imagens ou vídeos de acordo com o tipo de mídia
                                     media.map((item, index) => {
                                         const type = (item.media_type || '').toLowerCase();
                                         const key = item.media_id ?? index;
                                         const thirdPost = media.length === 3 && index === 2;
 
-                                        //se for imagem
+                                        // Se for imagem
                                         if (type.startsWith('image')) {
                                             return (
                                                 <button
@@ -170,7 +171,7 @@ export default function ModPost({
                                             );
                                         }
 
-                                        //se for vídeo
+                                        // Se for vídeo
                                         if (type.startsWith('video')) {
                                             return (
                                                 <video
@@ -205,7 +206,7 @@ export default function ModPost({
                         {/* Tags do post */}
                         <div className="flex flex-wrap gap-2 mt-2">
                             {renderedTags.map((tag) => (
-                                <NavLink key={tag.tag_id} to={`/tag/${tag.tag_name}`} className="badge bg-fundo border-discreto text-cinza hover:bg-destaque hover:text-fundo transition-colors duration-200">
+                                <NavLink key={tag.tag_id} to={`/search?q=${encodeURIComponent('#' + tag.tag_name)}`} className="badge bg-fundo border-discreto text-cinza hover:bg-destaque hover:text-fundo transition-colors duration-200">
                                     {tag.tag_name}
                                 </NavLink>
                             ))}
@@ -216,10 +217,10 @@ export default function ModPost({
                             </p>
                         </div>
 
-                        {/* Contadores de likes, comentários e reposts */}
+                        {/* Denúncias e ações de moderação (ainda não ligadas à API) */}
                         <div className="card-actions justify-start mt-4">
                             <div className="flex w-full items-center gap-4">
-                                {/* Botão de like */}
+                                {/* Número de denúncias do post */}
                                 <button
                                     className="flex items-center gap-1 hover:cursor-pointer w-15"
                                 >

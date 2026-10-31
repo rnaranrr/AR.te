@@ -36,7 +36,9 @@
     "action_error": "Não foi possível concluir a ação.",
     "report_confirm": "Denunciar este post? Ele ficará em análise pela moderação.",
     "reported_ok": "Denúncia enviada. O post está em análise.",
-    "not_found": "Publicação não encontrada."
+    "not_found": "Publicação não encontrada.",
+    "raffle": "Concurso",
+    "raffle_entry": "Participação no concurso: {{title}}"
   },
   "login": {
     "error": "Email ou senha incorretos",
@@ -83,7 +85,8 @@
     "commissions_closed": "Fechadas",
     "commissions_banner_empty": "Banner das comissões",
     "commissions_image_empty": "Tabela de preços das comissões",
-    "no_posts": "Nenhuma publicação ainda."
+    "no_posts": "Nenhuma publicação ainda.",
+    "reposted_by": "{{name}} republicou"
   },
   "profileform": {
     "banner_label": "Banner do perfil",
@@ -112,7 +115,14 @@
     "update_success": "Perfil atualizado com sucesso.",
     "update_error": "Não foi possível atualizar o perfil.",
     "saving": "Salvando...",
-    "save": "Salvar alterações"
+    "save": "Salvar alterações",
+    "delete_account": "Excluir conta",
+    "delete_warning": "Esta ação é permanente: seu perfil, publicações, comentários, curtidas, reposts e mensagens serão apagados.",
+    "delete_password": "Digite sua senha para confirmar",
+    "delete_cancel": "Cancelar",
+    "delete_confirm": "Excluir definitivamente",
+    "deleting": "Excluindo...",
+    "delete_error": "Não foi possível excluir a conta."
   },
   "newpost": {
     "title": "Nova publicação",
@@ -132,7 +142,9 @@
     "title_required": "Informe um título.",
     "title_too_long": "O título deve ter no máximo 255 caracteres.",
     "success": "Publicação criada com sucesso.",
-    "error": "Não foi possível publicar. Tente novamente."
+    "error": "Não foi possível publicar. Tente novamente.",
+    "raffle_notice": "Esta publicação será vinculada ao concurso e aparecerá na página dele.",
+    "raffle_back": "Voltar ao concurso"
   },
   "raffleform": {
     "title": "Título do concurso",
@@ -162,5 +174,10 @@
     "no_results": "Nenhum resultado encontrado.",
     "min_chars": "Digite pelo menos 2 caracteres.",
     "error": "Não foi possível realizar a pesquisa."
+  },
+  "raffle": {
+    "participations": "Participações",
+    "join": "Participar do concurso",
+    "empty": "Ninguém participou deste concurso ainda."
   }
 }

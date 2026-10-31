@@ -1,15 +1,20 @@
+// Rotas: cadastro e login de usuários
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/index.js';
 
+// Roteador com as rotas deste arquivo
 const router = Router();
 
-// POST /auth/register - Cadastro de Usuário
+// POST /auth/register
+// Cadastra um novo usuário
 router.post('/register', async (req, res) => {
     try {
+        // Dados enviados pelo formulário de cadastro
         const { name, username, email, password } = req.body;
 
+        // Todos os campos são obrigatórios
         if (!name || !username || !email || !password) {
             return res.status(400).json({ error: 'Preencha todos os campos obrigatórios.' });
         }
@@ -38,15 +43,19 @@ router.post('/register', async (req, res) => {
             user_passwd_hash: hashedPassword
         });
 
+        // Cadastro concluído
         return res.status(201).json({ message: 'Usuário cadastrado com sucesso.' });
     } catch (error) {
+        // Falha inesperada: registra no console e responde com erro
         return res.status(500).json({ error: 'Erro interno no servidor ao registrar.' });
     }
 });
 
-// POST /auth/login - Login
+// POST /auth/login
+// Autentica o usuário e devolve um token
 router.post('/login', async (req, res) => {
     try {
+        // Dados enviados pelo formulário de login
         const { email, password } = req.body;
 
         // Verifica se existe usuário com esse email
@@ -68,6 +77,7 @@ router.post('/login', async (req, res) => {
             { expiresIn: '7d' }
         );
 
+        // Devolve o token e os dados públicos do usuário
         return res.json({
             token,
             user: {
@@ -79,8 +89,10 @@ router.post('/login', async (req, res) => {
             }
         });
     } catch (error) {
+        // Falha inesperada: registra no console e responde com erro
         return res.status(500).json({ error: 'Erro interno no servidor ao realizar login.' });
     }
 });
 
+// Exporta o roteador para ser registrado no index.js
 export default router;

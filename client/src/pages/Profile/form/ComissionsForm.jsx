@@ -1,3 +1,4 @@
+// Página: edição da aba de comissões (banner, tabela de preços e status aberto/fechado)
 import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -6,16 +7,20 @@ import { ArrowLeft } from 'lucide-react';
 
 import '@/components/form/forms.css';
 
+// Carrega as imagens atuais, permite trocá-las e alterna o status das comissões
 export default function ComissionsForm() {
     const { t } = useTranslation();
 
+    // Estado da tela: carregando, salvando e mensagens
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
+    // Comissões abertas (true) ou fechadas (false)
     const [commissionsOpen, setCommissionsOpen] = useState(false);
-    
+
+    // Imagens já salvas, arquivos escolhidos e prévias
     const [currentImages, setCurrentImages] = useState({
         commissions_banner_url: '',
         commissions_image_url: ''
@@ -29,6 +34,7 @@ export default function ComissionsForm() {
         commissions_image: ''
     });
 
+    // Carrega as imagens e o status atuais das comissões
     useEffect(() => {
         let isMounted = true;
 
@@ -58,6 +64,7 @@ export default function ComissionsForm() {
         };
     }, [t]);
 
+    // Cria e limpa as prévias das imagens selecionadas
     useEffect(() => {
         const nextPreviews = Object.fromEntries(
             Object.entries(files).map(([name, file]) => [
@@ -75,6 +82,7 @@ export default function ComissionsForm() {
         };
     }, [files]);
 
+    // Valida a imagem escolhida e atualiza o arquivo e a prévia correspondentes
     function handleImageChange(event, fieldName) {
         const file = event.target.files?.[0];
 
@@ -108,6 +116,7 @@ export default function ComissionsForm() {
         }));
     }
 
+    // Envia as imagens e o status das comissões para a API
     async function handleSubmit(event) {
         event.preventDefault();
 
@@ -163,6 +172,7 @@ export default function ComissionsForm() {
     return (
         <aside className="flex min-h-dvh w-full justify-center bg-fundo p-4 font-principal">
             <div className="card w-full max-w-md bg-fundo p-6">
+                {/* Cabeçalho com botão de voltar */}
                 <header className="mb-6 flex items-center gap-4">
                     <NavLink to="/profile/comissions" className="btn btn-lang w-10">
                         <ArrowLeft />
@@ -172,6 +182,7 @@ export default function ComissionsForm() {
                     </h1>
                 </header>
 
+                {/* Formulário das comissões */}
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                     {imageFields.map((field) => {
                         const preview = previews[field.name];
@@ -230,6 +241,7 @@ export default function ComissionsForm() {
                     {error && <p role="alert" className="text-sm text-red-500">{error}</p>}
                     {success && <p role="status" className="text-sm text-green-500">{success}</p>}
 
+                    {/* Botão de salvar */}
                     <button
                         type="submit"
                         disabled={saving}

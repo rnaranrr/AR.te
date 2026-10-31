@@ -1,14 +1,17 @@
+// Modelo: tabela "ptag" — relação entre posts e tags
 import { DataTypes } from 'sequelize';
-//define tabela com base na classe definida no ./config/database.js
+// Conexão com o banco
 import database from '../config/database.js';
 
-//define classes
+// Define a tabela e suas colunas
 const Ptag = database.define('ptag', {
+    // Chave primária
     ptag_id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
     },
+    // Post marcado
     post_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -18,6 +21,7 @@ const Ptag = database.define('ptag', {
             key: 'post_id'
         }
     },
+    // Tag aplicada ao post
     tag_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -28,8 +32,10 @@ const Ptag = database.define('ptag', {
         }
     }
 }, {
+    // Opções da tabela: nome e controle das datas
     tableName: 'ptag',
     timestamps: false
 });
 
+// Exporta o modelo
 export default Ptag;

@@ -1,3 +1,4 @@
+// Página: login com e-mail e senha
 import { useState } from 'react';
 import { useNavigate, NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -7,14 +8,16 @@ import '@/components/form/forms.css';
 import LangBtn from '@/components/lang/Lang-btn';
 import Logo from '@/assets/logo/icon-logo-big.svg?react';
 
+// Envia e-mail e senha para a API e guarda o token recebido
 export default function Login() {
     const { t } = useTranslation();
+    // Navega para outra tela sem recarregar a página
     const navigate = useNavigate();
 
     // Define as variáveis de estado para o formulário, erro e carregamento
-    const [formData, setFormData] = useState({ 
-        email: '', 
-        password: '' 
+    const [formData, setFormData] = useState({
+        email: '',
+        password: ''
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -48,12 +51,16 @@ export default function Login() {
 
     return (
         <aside className="flex justify-center items-center h-dvh bg-fundo w-full font-principal p-4">
+            {/* Botões de idioma */}
             <LangBtn />
             <div className="card align-self-center my-auto w-full max-w-md bg-fundo p-6 flex flex-col items-center">
+                {/* Logo */}
                 <Logo className='w-40 h-40 border-4 mt-6 border-texto rounded-2xl' />
 
                 <div className="w-full mt-6">
+                    {/* Formulário de login */}
                     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                        {/* Campo de e-mail */}
                         <fieldset className="fieldset inputlabel">
                             <label>{t('login.email')}</label>
                             <input
@@ -66,7 +73,8 @@ export default function Login() {
                                 className="inputform"
                             />
                         </fieldset>
-                        
+
+                        {/* Campo de senha */}
                         <fieldset className="fieldset inputlabel">
                             <label>{t('login.password')}</label>
                             <input
@@ -80,10 +88,12 @@ export default function Login() {
                             />
                         </fieldset>
 
+                        {/* Mensagem de erro do login */}
                         {error && <p className="text-red-500 text-sm">{error}</p>}
                         <p className='text-cinza text-sm'>{t('login.registermsg')}<NavLink to="/register" className='text-destaque'>{t('login.registermsglink')}</NavLink></p>
 
                         <div className="grid grid-cols-2 gap-2 mt-2">
+                            {/* Botão de entrar */}
                             <button
                                 type="submit"
                                 disabled={loading}
@@ -92,6 +102,7 @@ export default function Login() {
                                 {loading ? t('login.logging') : t('login.login')}
                             </button>
 
+                            {/* Botão para ir ao cadastro */}
                             <NavLink
                                 to="/register"
                                 className="btn text-cinza font-normal bg-fundo hover:bg-destaque/50 border-2 border-destaque rounded-full mt-2 w-full"

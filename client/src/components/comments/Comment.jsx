@@ -1,3 +1,4 @@
+// Componente: um comentário (autor, texto, data e curtida)
 import { useRef, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +21,7 @@ export default function Comment({
     likesCount,
     likedByMe = false,
 }) {
+    // Navega para outra tela sem recarregar a página
     const navigate = useNavigate();
 
     // Estado de like e contador (valores iniciais vindos do servidor)

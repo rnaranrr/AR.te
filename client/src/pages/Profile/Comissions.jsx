@@ -1,5 +1,7 @@
+// Página: aba "Comissões" do perfil (status, banner e tabela de preços)
 import { useTranslation } from 'react-i18next';
 
+// Mostra o status das comissões e as imagens cadastradas pelo artista
 export default function Comissions({ user }) {
     const { t } = useTranslation();
 
@@ -7,6 +9,7 @@ export default function Comissions({ user }) {
         <aside className="min-h-dvh w-full bg-fundo px-3 py-5 text-texto-main">
             <div className="mx-auto flex w-full max-w-xl flex-col gap-4">
 
+                {/* Status: comissões abertas ou fechadas */}
                 <div className="flex items-center justify-between py-4">
                     <span className="text-sm font-semibold">
                         {t('profile.commissions_status')}
@@ -24,6 +27,7 @@ export default function Comissions({ user }) {
                     </span>
                 </div>
 
+                {/* Banner de apresentação das comissões */}
                 <div aria-label={t('profileform.commissions_banner_label')}>
                     {user.commissions_banner_url ? (
                         <img

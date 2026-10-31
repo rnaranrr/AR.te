@@ -1,8 +1,9 @@
+// Servidor: ponto de entrada da API (Express + MySQL)
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 
-// banco
+// Conexão com o banco
 import { database } from './models/index.js';
 
 import authRoutes from './routes/authRoutes.js';
@@ -13,24 +14,27 @@ import searchRoutes from './routes/searchRoutes.js';
 import modRoutes from './routes/modRoutes.js';
 import raffleRoutes from './routes/raffleRoutes.js';
 
+// Carrega as variáveis do arquivo .env
 dotenv.config();
 
+// Aplicação Express
 const app = express();
 
-//
+// Utilitários para descobrir a pasta do servidor
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-// Caminho da pasta server
+// Caminho da pasta do servidor
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Disponibiliza as imagens em /uploads
+// Disponibiliza os arquivos enviados em /uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Porta do servidor (definida no .env)
 const PORT = process.env.PORT || 3000;
 
-// Middlewares
+// Middlewares globais: CORS e leitura de JSON e de formulários
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -44,13 +48,13 @@ app.use('/search', searchRoutes);
 app.use('/mod', modRoutes);
 app.use('/raffles', raffleRoutes);
 
-// Rota de teste
+// Rota de teste (confirma que a API está no ar)
 app.get('/', (req, res) => {
     res.json({ message: 'API rodando' });
 });
 
 // Tratamento de erros (multer: formato inválido, arquivo grande demais, etc.)
-// Precisa vir DEPOIS das rotas. Responde em JSON com a chave "error", como o restante da API.
+// Precisa vir DEPOIS das rotas. Responde em JSON com a chave "error", como o restante da API
 app.use((err, req, res, next) => {
     if (res.headersSent) return next(err);
 
@@ -65,7 +69,7 @@ app.use((err, req, res, next) => {
     });
 });
 
-// Autenticar no banco de dados e sincronizar as tabelas
+// Conecta ao banco, sincroniza as tabelas e inicia o servidor
 async function startServer() {
     try {
         // 1. Testa a conexão com o banco MySQL

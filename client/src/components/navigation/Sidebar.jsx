@@ -1,3 +1,4 @@
+// Componente: menu lateral de navegação (telas grandes)
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -8,13 +9,17 @@ import '@/components/navigation/Sidebar.css';
 
 import LangBtn from '@/components/lang/Lang-btn';
 
+// Menu lateral com os links principais e o botão de sair
 export default function Sidebar() {
+    // Caminho atual da URL (mantém o botão Início ativo em "Seguindo")
     const location = useLocation();
+    // Navega para outra tela sem recarregar a página
     const navigate = useNavigate();
 
-    // Obtém o objeto de idioma do i18next para mudar o idioma atual
+    // Função de tradução dos textos do menu
     const { t } = useTranslation();
 
+    // Encerra a sessão: apaga o token e os dados do usuário e volta ao login
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
@@ -31,14 +36,15 @@ export default function Sidebar() {
                     <h1 className='text-3xl font-logo text-texto-main h-fit pt-4'>AR.te</h1>
                 </div>
 
+                {/* Botões de idioma */}
                 <LangBtn />
 
                 {/* Lista de Navegação */}
                 <nav className='flex flex-col gap-1'>
 
-                    {/* 
+                    {/*
                         className={({ isActive }) => isActive ? 'sidebar-link isActive' : 'sidebar-link'}
-                        
+
                         Navlink recebe função na sua classe
                         a biblioteca react-router-com compara o endereço da página com o endereço do NavLink (to='')
                         isActive ? 'isActive' : '' funciona como if-else
@@ -108,7 +114,6 @@ export default function Sidebar() {
 
                 </nav>
 
-                {/* INSERIR AQUI DETALHES DO PERFIL*/}
 
                 {/* Botão de Sair no Rodapé */}
                 <div className='mt-4 pt-4 border-t border-discreto'>

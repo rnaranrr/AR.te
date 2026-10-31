@@ -1,4 +1,4 @@
-//TELA DE MENSAGENS
+// Página: lista de conversas de mensagens diretas
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -10,8 +10,10 @@ import ListElement from '@/components/messages/ListElement';
 export default function DMList() {
 
     const { t } = useTranslation();
+    // Navega para outra tela sem recarregar a página
     const navigate = useNavigate();
 
+    // Conversas carregadas da API e estado da requisição
     const [conversations, setConversations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -49,7 +51,7 @@ export default function DMList() {
         <aside className="flex justify-center items-start min-h-dvh bg-fundo w-full font-principal">
             <div className="w-full h-full bg-fundo flex flex-col items-center">
 
-                {/* navbar*/}
+                {/* Barra superior com o título */}
                 <div className='navbar font-principal sticky top-0 bg-fundo align-center mb-4 flex flex-col z-999 border-b-1 border-discreto'>
                     <p className='my-4 font-bold text-lg'>{t('messages.title')}</p>
                 </div>

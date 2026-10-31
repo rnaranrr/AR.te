@@ -1,3 +1,4 @@
+// Componente: barra superior com a logo (telas pequenas)
 import { NavLink } from 'react-router-dom';
 
 import { CirclePlus } from 'lucide-react';
@@ -11,7 +12,7 @@ export default function Navbar() {
     return (
         <div className='navbar md:hidden font-principal sticky top-0 z-50 bg-fundo'>
 
-            {/* Botão para a plat. de moderação */}
+            {/* Botão para criar um novo post */}
             <div className='flex gap-2 p-2 pt-5 fixed top-0 left-0 z-[999]'>
                 <NavLink
                     to='/post/new'
@@ -21,6 +22,7 @@ export default function Navbar() {
                 </NavLink>
             </div>
 
+            {/* Botões de idioma */}
             <LangBtn />
 
             {/* Logo do site */}

@@ -1,3 +1,4 @@
+// Página: cabeçalho do perfil (banner, avatar, dados, estatísticas e botões)
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +8,7 @@ import api, { assetUrl, isLoggedIn } from '@/services/api';
 
 import '@/pages/Profile.css';
 
+// Mostra os dados do perfil; no perfil próprio exibe os botões de edição e, nos demais, Seguir e Mensagens
 export default function ProfileDetails({
     user,
     loading,
@@ -14,6 +16,7 @@ export default function ProfileDetails({
     isOwnProfile
 }) {
     const { t } = useTranslation();
+    // Navega para outra tela sem recarregar a página
     const navigate = useNavigate();
 
     // Estado do botão "Seguir" (valores iniciais vêm da API; o Profile.jsx remonta este componente ao carregar)
@@ -54,10 +57,10 @@ export default function ProfileDetails({
 
     return (
         <aside className='w-full'>
-            {/* navbar de navegação mobile */}
+            {/* Barra superior de navegação (telas pequenas) */}
             <div className='navbar md:hidden font-principal sticky top-0 z-50 bg-fundo'>
 
-                {/* Botão para voltar pro feed*/}
+                {/* Botão para voltar ao feed */}
                 <div className='flex gap-2 pt-3 pl-2 fixed top-0 left-0 z-[999]'>
                     <NavLink
                         to='/feed'
@@ -67,7 +70,7 @@ export default function ProfileDetails({
                     </NavLink>
                 </div>
 
-                {/* username */}
+                {/* Username */}
 
                 <div className='mr-1 flex w-full justify-center flex-row items-center'>
                     <h1 className='text-lg text-texto-main h-fit'>@{user.username}</h1>
@@ -75,10 +78,10 @@ export default function ProfileDetails({
 
             </div>
 
-            {/* exibição do perfil */}
+            {/* Exibição do perfil */}
             <div className="profile-card">
 
-                {/* banner do usuário */}
+                {/* Banner do usuário */}
                 {user.banner_url ? (
                     <img
                         src={assetUrl(user.banner_url)}
@@ -91,7 +94,7 @@ export default function ProfileDetails({
                 {/* Informações do perfil */}
                 <div className="profile-info">
 
-                    {/* imagem de perfil do usuário */}
+                    {/* Imagem de perfil do usuário */}
                     {user.avatar_url ? (
                         <img
                             src={assetUrl(user.avatar_url)}
@@ -101,7 +104,7 @@ export default function ProfileDetails({
                         <CircleUser className='profile-avatar' />
                     )}
 
-                    {/* detalhes do perfil */}
+                    {/* Detalhes do perfil */}
                     <div className="profile-details">
 
                         <div className='flex flex-row gap-2'>
@@ -117,7 +120,7 @@ export default function ProfileDetails({
 
                     </div>
 
-                    {/* estatisticas do perfil */}
+                    {/* Estatísticas do perfil */}
                     <div className="profile-stats">
                         <div>
                             <strong>{user.posts?.length || 0}</strong>
@@ -135,12 +138,13 @@ export default function ProfileDetails({
                         </div>
                     </div>
 
-                    {/* biografia do perfil */}
+                    {/* Biografia do perfil */}
                     <p className='profile-bio'>
                         {user.bio || ''}
                     </p>
                 </div>
 
+                {/* Botões do perfil: editar (perfil próprio) ou seguir e enviar mensagem (outros perfis) */}
                 {isOwnProfile ?(
                     <div className="grid grid-cols-2 gap-2 mx-2 mb-2 md:mb-0">
                         <NavLink

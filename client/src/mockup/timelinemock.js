@@ -1,3 +1,4 @@
+// Dados de exemplo da timeline: não são mais usados (a timeline vem da API)
 export const timelineMock = [
     {
         post_id: 1,

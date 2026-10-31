@@ -1,8 +1,10 @@
+// Serviço: cliente HTTP (axios) da API e funções auxiliares
 import axios from 'axios';
 
 // URL base da API (definida no .env do client: VITE_API_URL=http://localhost:3000)
 const API_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 
+// Cliente axios com a URL base da API
 const api = axios.create({
   baseURL: API_URL,
   headers: {
@@ -10,6 +12,7 @@ const api = axios.create({
   }
 });
 
+// Antes de cada requisição, envia o token de login (se existir)
 api.interceptors.request.use((config) => {
   // Adiciona o token de autenticação ao cabeçalho da requisição
   const token = localStorage.getItem('token');
@@ -20,7 +23,7 @@ api.interceptors.request.use((config) => {
 });
 
 // Se o servidor responder 401 para quem tinha token, a sessão expirou:
-// limpa os dados locais e volta para o login.
+// limpa os dados locais e volta para o login
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -36,8 +39,8 @@ api.interceptors.response.use(
   }
 );
 
-// Converte um caminho relativo do servidor (ex.: "/uploads/posts/a.png") em URL completa.
-// URLs absolutas (http, blob, data) são devolvidas sem alteração.
+// Converte um caminho relativo do servidor (ex.: "/uploads/posts/a.png") em URL completa
+// URLs absolutas (http, blob, data) são devolvidas sem alteração
 export function assetUrl(path) {
   if (!path) return '';
   if (/^(https?:)?\/\//i.test(path) || path.startsWith('blob:') || path.startsWith('data:')) {
@@ -46,7 +49,7 @@ export function assetUrl(path) {
   return `${API_URL}${path.startsWith('/') ? '' : '/'}${path}`;
 }
 
-// Extrai a mensagem de erro enviada pela API ({ error: '...' }), ou usa um texto padrão.
+// Extrai a mensagem de erro enviada pela API ({ error: '...' }), ou usa um texto padrão
 export function apiError(err, fallback) {
   return err?.response?.data?.error || fallback;
 }
@@ -60,7 +63,7 @@ export function getStoredUser() {
   }
 }
 
-// true se existe um token salvo
+// True se existe um token salvo
 export function isLoggedIn() {
   return Boolean(localStorage.getItem('token'));
 }

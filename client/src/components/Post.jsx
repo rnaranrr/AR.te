@@ -1,3 +1,4 @@
+// Componente: card de post com mídia, tags e botões de interação
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -32,10 +33,16 @@ export default function Post({
     likedByMe = false,
     repostedByMe = false,
 
+    // Concursos: is_raffle = este post é o concurso; raffle = concurso do qual este post participa
+    is_raffle = false,
+    raffle = null,
+
     post_tags = [],
     tags = []
 }) {
+    // Navega para outra tela sem recarregar a página
     const navigate = useNavigate();
+    // Caminho do perfil do autor (@username na URL)
     const nameURL = String(authorusername ?? '');
     const authorProfilePath = `/user/${encodeURIComponent(nameURL)}`;
 
@@ -56,13 +63,14 @@ export default function Post({
     // Controla se a imagem do post está sendo exibida em tela cheia
     const [fullscreenImage, setFullscreenImage] = useState(null);
 
-    // Função para fechar a imagem em tela cheia ao pressionar Esc
+    // Em tela cheia: bloqueia a rolagem da página e fecha com a tecla Esc
     useEffect(() => {
         if (!fullscreenImage) return;
 
         const OverflowAnterior = document.body.style.overflow;
         document.body.style.overflow = 'hidden';
 
+        // Fecha a imagem ao pressionar Esc
         function closeOnEscape(event) {
             if (event.key === 'Escape') setFullscreenImage(null);
         }
@@ -81,7 +89,7 @@ export default function Post({
             ? tags
             : [];
 
-    // Estado de like/repost e contadores. Os valores iniciais vêm do servidor (já incluem a interação do usuário).
+    // Estado de like/repost e contadores. Os valores iniciais vêm do servidor (já incluem a interação do usuário)
     const [liked, setLiked] = useState(Boolean(likedByMe));
     const [displayedLikes, setDisplayedLikes] = useState(Number(likesCount) || 0);
     const [reposted, setReposted] = useState(Boolean(repostedByMe));
@@ -90,6 +98,7 @@ export default function Post({
     // Mensagem curta (toast) para erros e avisos de ações do post
     const [notice, setNotice] = useState('');
 
+    // Esconde o aviso depois de 3 segundos
     useEffect(() => {
         if (!notice) return;
 
@@ -100,9 +109,9 @@ export default function Post({
     // Impede cliques repetidos enquanto uma requisição de like/repost está em andamento
     const pendingRef = useRef(false);
 
-    // Alterna uma interação (like ou repost).
+    // Alterna uma interação (like ou repost)
     // 1) atualiza a tela na hora (otimista); 2) chama a API; 3) confirma com os valores do servidor
-    // ou desfaz a alteração caso a requisição falhe.
+    // ou desfaz a alteração caso a requisição falhe
     async function toggleInteraction({ endpoint, active, setActive, setCount, activeKey, countKey }) {
         // Interagir exige login
         if (!isLoggedIn()) {
@@ -155,8 +164,8 @@ export default function Post({
         });
     }
 
-    // Função responsável por denunciar o post.
-    // O servidor registra a denúncia e coloca o post automaticamente "Em análise".
+    // Função responsável por denunciar o post
+    // O servidor registra a denúncia e coloca o post automaticamente "Em análise"
     async function reportPost(event) {
         event.currentTarget.blur();
 
@@ -184,15 +193,14 @@ export default function Post({
 
         if (navigator.clipboard?.writeText) {
             try {
-                //manda pra área de transferência o link do post igual um ser normal
+                // Tenta primeiro a API moderna de área de transferência
                 await navigator.clipboard.writeText(postLink);
                 copied = true;
             } catch {
             }
         }
 
-        // manda pra área de transferência o link do post de maneira satânica
-        // Honestamente não entendi essa maracutaia, mas funcionando tá valendo
+        // Alternativa para navegadores sem essa API: usa um campo de texto escondido e o comando de cópia antigo
         if (!copied) {
             const textArea = document.createElement('textarea');
             textArea.value = postLink;
@@ -215,7 +223,7 @@ export default function Post({
         copyButton.blur();
     }
 
-    // Obtém o objeto de idioma do i18next para definir o idioma atual
+    // Função de tradução e idioma atual
     const { t, i18n } = useTranslation();
 
     // Formata a data de criação do post de acordo com o idioma atual
@@ -264,6 +272,23 @@ export default function Post({
                             <NavLink to={`/post/${post_id}`} className="text-lg">
                                 {post_title}
                             </NavLink>
+
+                            {/* Selo: este post é um concurso */}
+                            {is_raffle && (
+                                <span className="badge bg-destaque border-destaque text-fundo ml-2">
+                                    {t('post.raffle')}
+                                </span>
+                            )}
+
+                            {/* Selo: este post participa de um concurso (link para a página do concurso) */}
+                            {raffle && (
+                                <NavLink
+                                    to={`/post/${raffle.post_id}`}
+                                    className="block text-sm text-destaque"
+                                >
+                                    {t('post.raffle_entry', { title: raffle.title })}
+                                </NavLink>
+                            )}
                         </div>
 
                         {/* Menu de opções do post */}
@@ -320,13 +345,13 @@ export default function Post({
                                     </button>
                                 ) : (
 
-                                    //mapeia a mídia do post e renderiza imagens ou vídeos de acordo com o tipo de mídia
+                                    // Mapeia a mídia do post e renderiza imagens ou vídeos de acordo com o tipo de mídia
                                     media.map((item, index) => {
                                         const type = (item.media_type || '').toLowerCase();
                                         const key = item.media_id ?? index;
                                         const thirdPost = media.length === 3 && index === 2;
 
-                                        //se for imagem
+                                        // Se for imagem
                                         if (type.startsWith('image')) {
                                             return (
                                                 <button
@@ -347,7 +372,7 @@ export default function Post({
                                             );
                                         }
 
-                                        //se for vídeo
+                                        // Se for vídeo
                                         if (type.startsWith('video')) {
                                             return (
                                                 <video

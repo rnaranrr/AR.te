@@ -1,31 +1,25 @@
+// Rotas: perfil do usuário, edição, exclusão de conta e seguidores
 import { Router } from 'express';
-import { unlink } from 'node:fs/promises';
-import path from 'node:path';
+import bcrypt from 'bcryptjs';
+import { Op } from 'sequelize';
 
 // Importa as models
-import { User, Follow } from '../models/index.js';
+import { User, Follow, Repost } from '../models/index.js';
 
 // Middlewares
 import authMiddleware, { optionalAuth } from '../middlewares/authMiddleware.js';
 import uploadProfile from '../middlewares/uploadProfile.js';
 
 // Serialização padrão dos posts (mesmo formato do feed)
-import { VISIBLE_POST, findPosts, serializePosts } from '../utils/serializePost.js';
+import { VISIBLE_POST, findPosts, serializePost, serializePosts } from '../utils/serializePost.js';
+import { deleteUserAccount } from '../utils/deleteAccount.js';
+import { removeUploadedFile } from '../utils/uploads.js';
 
+// Roteador com as rotas deste arquivo
 const router = Router();
 
-// Apaga do disco um arquivo antigo de /uploads/profiles (ignora se já não existir)
-async function removeOldFile(previousUrl) {
-    if (!previousUrl?.startsWith('/uploads/profiles/')) return;
-
-    const filePath = path.resolve('uploads/profiles', path.basename(previousUrl));
-
-    await unlink(filePath).catch((error) => {
-        if (error.code !== 'ENOENT') {
-            console.error('Não foi possível apagar o arquivo anterior:', error);
-        }
-    });
-}
+// Quantidade máxima de reposts exibidos na timeline do perfil
+const MAX_REPOSTS = 50;
 
 // Monta o JSON de perfil (usado tanto em /me quanto em /:username)
 async function buildProfile(user, viewerId, { includePrivate = false } = {}) {
@@ -35,10 +29,39 @@ async function buildProfile(user, viewerId, { includePrivate = false } = {}) {
         Follow.count({ where: { follower_id: user.user_id } })
     ]);
 
-    // Posts do usuário (sem apagados/banidos), já no formato do front.
-    // O autor é o próprio dono do perfil (author override), então não precisa de include.
+    // Posts do usuário (sem apagados/banidos), já no formato do front
+    // O autor é o próprio dono do perfil (author override), então não precisa de include
     const posts = await findPosts({ user_id: user.user_id, ...VISIBLE_POST });
     const serializedPosts = await serializePosts(posts, viewerId, user);
+
+    // Reposts do usuário (somente de posts ainda visíveis), do mais recente para o mais antigo
+    const repostRows = await Repost.findAll({
+        where: { user_id: user.user_id },
+        order: [['created_at', 'DESC'], ['repost_id', 'DESC']],
+        limit: MAX_REPOSTS
+    });
+
+    const repostedPosts = repostRows.length > 0
+        ? await findPosts({
+            post_id: { [Op.in]: repostRows.map((row) => row.post_id) },
+            ...VISIBLE_POST
+        })
+        : [];
+    const repostedById = new Map(repostedPosts.map((post) => [post.post_id, post]));
+
+    const reposts = (
+        await Promise.all(
+            repostRows.map(async (row) => {
+                const post = repostedById.get(row.post_id);
+                if (!post) return null;
+
+                return {
+                    repostedAt: row.created_at,
+                    post: await serializePost(post, viewerId)
+                };
+            })
+        )
+    ).filter(Boolean);
 
     // O visitante já segue esse perfil?
     const isFollowing = viewerId && viewerId !== user.user_id
@@ -68,7 +91,8 @@ async function buildProfile(user, viewerId, { includePrivate = false } = {}) {
         followingCount,
         isFollowing,
 
-        posts: serializedPosts
+        posts: serializedPosts,
+        reposts
     };
 }
 
@@ -88,6 +112,7 @@ router.get('/me', authMiddleware, async (req, res) => {
             await buildProfile(user, req.userId, { includePrivate: true })
         );
     } catch (error) {
+        // Falha inesperada: registra no console e responde com erro
         console.error('Erro ao buscar perfil:', error);
         return res.status(500).json({ error: 'Erro interno ao buscar perfil.' });
     }
@@ -178,10 +203,10 @@ router.put(
             });
 
             // Apaga do disco os arquivos que foram substituídos
-            if (avatarFile) await removeOldFile(previous.avatar);
-            if (bannerFile) await removeOldFile(previous.banner);
-            if (commissionsBannerFile) await removeOldFile(previous.commissionsBanner);
-            if (commissionsImageFile) await removeOldFile(previous.commissionsImage);
+            if (avatarFile) await removeUploadedFile(previous.avatar);
+            if (bannerFile) await removeUploadedFile(previous.banner);
+            if (commissionsBannerFile) await removeUploadedFile(previous.commissionsBanner);
+            if (commissionsImageFile) await removeUploadedFile(previous.commissionsImage);
 
             return res.json({
                 message: 'Perfil atualizado com sucesso.',
@@ -193,14 +218,44 @@ router.put(
                 commissions_image_url: commissionsImageUrl
             });
         } catch (error) {
+            // Falha inesperada: registra no console e responde com erro
             console.error('Erro ao atualizar perfil:', error);
             return res.status(500).json({ error: 'Erro interno ao atualizar perfil.' });
         }
     }
 );
 
+// DELETE /users/me
+// Exclui a conta do usuário logado e todas as produções dele. Exige a senha como confirmação
+router.delete('/me', authMiddleware, async (req, res) => {
+    try {
+        const password = String(req.body?.password ?? '');
+
+        const user = await User.findByPk(req.userId);
+        if (!user) {
+            return res.status(404).json({ error: 'Usuário não encontrado.' });
+        }
+
+        // Confere a senha antes de apagar qualquer coisa
+        const isMatch = await bcrypt.compare(password, user.user_passwd_hash);
+        if (!isMatch) {
+            return res.status(403).json({ error: 'Senha incorreta.' });
+        }
+
+        // Apaga os dados do banco e, depois, os arquivos do disco
+        const fileUrls = await deleteUserAccount(req.userId);
+        await Promise.all((fileUrls ?? []).map(removeUploadedFile));
+
+        return res.json({ message: 'Conta excluída com sucesso.' });
+    } catch (error) {
+        // Falha inesperada: registra no console e responde com erro
+        console.error('Erro ao excluir conta:', error);
+        return res.status(500).json({ error: 'Não foi possível excluir a conta.' });
+    }
+});
+
 // POST /users/:username/follow
-// Alterna seguir / deixar de seguir. Retorna { following, followersCount }.
+// Alterna seguir / deixar de seguir. Retorna { following, followersCount }
 router.post('/:username/follow', authMiddleware, async (req, res) => {
     try {
         const username = req.params.username.replace(/^@/, '');
@@ -229,14 +284,15 @@ router.post('/:username/follow', authMiddleware, async (req, res) => {
 
         return res.json({ following: !existing, followersCount });
     } catch (error) {
+        // Falha inesperada: registra no console e responde com erro
         console.error('Erro ao seguir usuário:', error);
         return res.status(500).json({ error: 'Não foi possível atualizar o seguimento.' });
     }
 });
 
 // GET /users/:username
-// Busca os dados públicos de um usuário pelo username.
-// Não exige autenticação (mas, se houver token, informa se o visitante já segue o perfil).
+// Busca os dados públicos de um usuário pelo username
+// Não exige autenticação (mas, se houver token, informa se o visitante já segue o perfil)
 router.get('/:username', optionalAuth, async (req, res) => {
     try {
         // Remove o @ inicial caso o username tenha sido enviado com ele
@@ -265,9 +321,11 @@ router.get('/:username', optionalAuth, async (req, res) => {
 
         return res.json(await buildProfile(user, req.userId));
     } catch (error) {
+        // Falha inesperada: registra no console e responde com erro
         console.error('Erro ao buscar perfil público:', error);
         return res.status(500).json({ error: 'Erro interno ao buscar perfil.' });
     }
 });
 
+// Exporta o roteador para ser registrado no index.js
 export default router;

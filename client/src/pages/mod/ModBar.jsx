@@ -1,4 +1,4 @@
-
+// Componente: barra superior do espaço de moderação (rótulo e menu do moderador)
 import { useEffect, useRef } from 'react';
 
 import { useLocation, NavLink } from 'react-router-dom';
@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import '@/components/form/forms.css';
 
+// Exibe o moderador e o menu de opções dele
 export default function ModBar({
     moderator_idname,
     moderator_nickname,
@@ -15,6 +16,7 @@ export default function ModBar({
     const { t } = useTranslation();
     const { pathname } = useLocation();
 
+    // Moderador de exemplo: ainda não há login de moderador
     const dbMod = [
         {
             moderator_nickname: 'Matheus Ramón de Carvalho',
@@ -23,6 +25,7 @@ export default function ModBar({
         }
     ]
 
+    // Ainda não utilizado
     function handleSubmit(event) {
         event.preventDefault();
     }

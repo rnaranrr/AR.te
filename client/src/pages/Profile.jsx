@@ -1,3 +1,4 @@
+// Página: perfil de usuário com as abas Timeline, Portfólio e Comissões
 import { useCallback, useEffect, useState } from 'react';
 import { NavLink, useLocation, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -8,24 +9,27 @@ import Timeline from '@/pages/Profile/Timeline';
 import Media from '@/pages/Profile/Media';
 import Comissions from '@/pages/Profile/Comissions';
 
+// Carrega o perfil (próprio ou de outro usuário) e mostra a aba escolhida
 export default function Profile() {
 
     const { t } = useTranslation();
+    // Caminho atual da URL
     const location = useLocation();
 
-    //define aba de midia e comissão com base no final de url
+    // Aba do perfil: Portfólio e Comissões são identificadas pelo final da URL
     const isMedia = location.pathname.endsWith('/media');
     const isComissions = location.pathname.endsWith('/comissions');
 
-    // define o username com base nos parametros decididos pela rota atual
+    // Username vindo da rota (/user/:username)
     const { username } = useParams();
 
-    // dados recebidos
+    // Dados do perfil recebidos da API
     const [user, setUser] = useState(null);
+    // Estado da requisição do perfil
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
-    //caso não tenha nenhum username definido na rota, define como o perfil de pessoa logada
+    // Sem username na rota, mostra o perfil do usuário logado
     const isOwnProfile = !username;
 
     const basePath = isOwnProfile
@@ -38,7 +42,7 @@ export default function Profile() {
         setError('');
         setUser(null);
 
-        // busca os dados na api independente de ser o usuário logado ou outra pessoa e os guarda em user
+        // Busca o perfil na API (próprio ou de outro usuário) e guarda em user
         try {
             const endpoint = isOwnProfile
                 ? '/users/me'
@@ -62,7 +66,7 @@ export default function Profile() {
 
         <aside className="w-full min-h-dvh bg-fundo text-texto-main">
             {/* Detalhes do perfil */}
-            {/* key: reinicia o cabeçalho quando os dados chegam (estado inicial do botão Seguir) */}
+            {/* A key reinicia o cabeçalho quando os dados chegam (estado inicial do botão Seguir) */}
             <Details
                 key={user?.id ?? 'loading'}
                 user={user}
@@ -78,6 +82,7 @@ export default function Profile() {
 
                         <div className="join h-9 md:h-fit mb-2">
 
+                            {/* Aba Timeline */}
                             <NavLink
                                 to={basePath}
                                 end
@@ -90,6 +95,7 @@ export default function Profile() {
                             <div className="divider divider-horizontal"></div>
 
 
+                            {/* Aba Portfólio */}
                             <NavLink
                                 to={`${basePath}/media`}
                                 className={({ isActive }) => isActive ? 'isActive profile' : 'profile'}
@@ -100,6 +106,7 @@ export default function Profile() {
                             <div className="divider divider-horizontal"></div>
 
 
+                            {/* Aba Comissões */}
                             <NavLink
                                 to={`${basePath}/comissions`}
                                 className={({ isActive }) => isActive ? 'isActive profile' : 'profile'}
@@ -113,7 +120,7 @@ export default function Profile() {
                     {/* Renderiza o conteúdo do feed com base na rota atual */}
                     {isMedia ? (<Media posts={user.posts ?? []} />) :
                         isComissions ? (<Comissions user={user} isOwnProfile={isOwnProfile} />) :
-                            (<Timeline posts={user.posts ?? []} user={user} />)}
+                            (<Timeline posts={user.posts ?? []} reposts={user.reposts ?? []} user={user} />)}
                 </div>
             )}
         </aside>

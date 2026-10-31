@@ -1,21 +1,29 @@
+// Formulário: criação de raffle (título e descrição)
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import api, { apiError } from '@/services/api';
 
 import '@/components/form/forms.css';
 
+// Cria o raffle na API e abre a página dele
 export default function RaffleForm() {
     const { t } = useTranslation();
+    // Navega para outra tela sem recarregar a página
+    const navigate = useNavigate();
 
+    // Mensagens de erro e sucesso e controle do envio
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [saving, setSaving] = useState(false);
+    // Campos do formulário controlados pelo React
     const [formData, setFormData] = useState({
         raffle_title: '',
         raffle_content: ''
     });
 
+    // Atualiza o campo correspondente usando o atributo name do input
     function handleChange(event) {
         const { name, value } = event.target;
 
@@ -28,6 +36,7 @@ export default function RaffleForm() {
         setSuccess('');
     }
 
+    // Valida os campos e envia o raffle para a API
     async function handleSubmit(event) {
         event.preventDefault();
 
@@ -49,13 +58,15 @@ export default function RaffleForm() {
 
         try {
             // Cria o concurso na API
-            await api.post('/raffles', {
+            const response = await api.post('/raffles', {
                 raffle_title: formData.raffle_title.trim(),
                 raffle_content: formData.raffle_content.trim()
             });
 
             setSuccess(t('raffleform.success'));
-            setFormData({ raffle_title: '', raffle_content: '' });
+
+            // O concurso é um post: abre a página dele (onde ficam as participações)
+            navigate(`/post/${response.data.post_id}`);
         } catch (err) {
             console.error('Erro ao criar concurso:', err);
             setError(apiError(err, t('raffleform.error')));
@@ -73,6 +84,7 @@ export default function RaffleForm() {
                         className="mx-4 flex flex-col gap-4"
                         noValidate
                     >
+                        {/* Título do raffle */}
                         <fieldset className="fieldset inputlabel">
                             <label htmlFor="raffle-title">
                                 {t('raffleform.title')}
@@ -93,6 +105,7 @@ export default function RaffleForm() {
                             </span>
                         </fieldset>
 
+                        {/* Descrição do raffle */}
                         <fieldset className="fieldset inputlabel">
                             <label htmlFor="raffle-content">
                                 {t('raffleform.content')}
@@ -119,6 +132,7 @@ export default function RaffleForm() {
                             </p>
                         )}
 
+                        {/* Botão de criar o raffle */}
                         <button
                             type="submit"
                             disabled={saving}

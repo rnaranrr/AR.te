@@ -1,9 +1,12 @@
+/* Estilo: abas do feed */
 @import "@/index.css";
 
+/* Aba ativa: sublinhado na cor de destaque */
 .isActive {
     @apply border-b-2 border-destaque text-destaque;
 }
 
+/* Tamanho e alinhamento de cada aba */
 .feed{
     @apply font-bold text-sm mt-2 w-20 justify-center flex;
 }

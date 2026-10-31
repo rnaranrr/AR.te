@@ -1,3 +1,4 @@
+// Rotas: pesquisa de usuários, posts e tags
 import { Router } from 'express';
 import { Op } from 'sequelize';
 
@@ -10,11 +11,12 @@ import {
     postIdsByTagName
 } from '../utils/serializePost.js';
 
+// Roteador com as rotas deste arquivo
 const router = Router();
 
 // GET /search?q=texto
-//   "texto"  -> busca usuários (nome / @username) e posts (título / conteúdo / tags)
-//   "#tag"   -> busca somente posts com essa tag
+// "texto"  -> busca usuários (nome / @username) e posts (título / conteúdo / tags)
+// "#tag"   -> busca somente posts com essa tag
 router.get('/', optionalAuth, async (req, res) => {
     try {
         const raw = String(req.query.q ?? '').trim();
@@ -70,9 +72,11 @@ router.get('/', optionalAuth, async (req, res) => {
             posts: await serializePosts(posts, req.userId)
         });
     } catch (error) {
+        // Falha inesperada: registra no console e responde com erro
         console.error('Erro na pesquisa:', error);
         return res.status(500).json({ error: 'Não foi possível realizar a pesquisa.' });
     }
 });
 
+// Exporta o roteador para ser registrado no index.js
 export default router;

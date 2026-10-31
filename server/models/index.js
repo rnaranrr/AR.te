@@ -1,7 +1,8 @@
-// importa banco de dados
+// Models: registra os modelos e define os relacionamentos entre as tabelas
+// Conexão com o banco
 import database from '../config/database.js';
 
-// importa as models
+// Modelos
 import Chat from './Chat.js';
 import Comment from './Comment.js';
 import Commlike from './Commlike.js';
@@ -18,7 +19,7 @@ import Repost from './Repost.js';
 import Tag from './Tag.js';
 import User from './User.js';
 
-// relacionamentos entre tabelas do banco
+// Relacionamentos entre as tabelas
 
 // 1. User ~ Post
 User.hasMany(Post, { foreignKey: 'user_id', as: 'posts' });
@@ -85,12 +86,18 @@ Reports.belongsTo(Post, { foreignKey: 'post_id', as: 'post' });
 Reports.hasMany(Opinion, { foreignKey: 'report_id', as: 'opinions' });
 Opinion.belongsTo(Reports, { foreignKey: 'report_id', as: 'report' });
 
-Moderator.hasMany(Opinion, { foreignKey: 'user_id', as: 'opinions' });
-Opinion.belongsTo(Moderator, { foreignKey: 'user_id', as: 'moderator' });
+// Quem escreve a opinião é um usuário (opinion.user_id -> user.user_id)
+User.hasMany(Opinion, { foreignKey: 'user_id', as: 'opinions' });
+Opinion.belongsTo(User, { foreignKey: 'user_id', as: 'author' });
+
+// Quem denunciou (reports.user_id -> user.user_id)
+User.hasMany(Reports, { foreignKey: 'user_id', as: 'reports' });
+Reports.belongsTo(User, { foreignKey: 'user_id', as: 'reporter' });
 
 // 12. Post ~ Raffle
-Raffle.hasMany(Post, { foreignKey: 'post_raffle_id', as: 'posts' });
-Post.belongsTo(Raffle, { foreignKey: 'post_raffle_id', as: 'raffle' });
+// Usa a coluna post.raffle_id que já existe no modelo Post (antes criava uma coluna duplicada, post_raffle_id)
+Raffle.hasMany(Post, { foreignKey: 'raffle_id', as: 'posts' });
+Post.belongsTo(Raffle, { foreignKey: 'raffle_id', as: 'raffle' });
 
 // Exporta o banco e todos os modelos
 export {

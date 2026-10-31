@@ -1,9 +1,10 @@
+// Página: aba "Portfólio" do perfil (grade com as mídias dos posts)
 import { NavLink } from 'react-router-dom';
 import { ImageIcon } from 'lucide-react';
 
 import { assetUrl } from '@/services/api';
 
-// A aba mostra somente posts que possuem mídia.
+// A aba mostra somente posts que possuem mídia
 export default function Media({ posts = [] }) {
     const postsWithMedia = posts.filter(
         (post) => Array.isArray(post.media) && post.media.length > 0
@@ -16,6 +17,7 @@ export default function Media({ posts = [] }) {
                     {postsWithMedia.map((post) => {
                         const firstMedia = post.media[0];
                         const extraMediaCount = post.media.length - 1;
+                        // Vídeos usam a tag <video>; as demais mídias, <img>
                         const isVideo = (firstMedia.media_type || '').toLowerCase().startsWith('video');
 
                         // Conteúdo sensível fica desfocado na grade do portfólio

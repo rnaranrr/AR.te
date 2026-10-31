@@ -1,13 +1,15 @@
+// Componente: botões para trocar o idioma (PT / EN)
 import '@/components/lang/lang-btn.css';
 
 import { useTranslation } from 'react-i18next';
 
 
+// Exibe os botões de idioma e salva a escolha no navegador
 export default function LangBtn() {
-    // Obtém o objeto de idioma do i18next para mudar o idioma atual
+    // Objeto do i18next, usado para trocar o idioma
     const { i18n } = useTranslation();
 
-    // Altera o idioma da aplicação ao clicar nos botões de idioma.
+    // Altera o idioma da aplicação ao clicar nos botões de idioma
     const changeLanguage = (lng) => {
         i18n.changeLanguage(lng);
         localStorage.setItem('idiomaSalvo', lng);

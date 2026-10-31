@@ -1,3 +1,4 @@
+// Página: espaço de moderação com a lista de posts denunciados
 import { useEffect, useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
@@ -11,13 +12,16 @@ import ModBar from '@/pages/mod/ModBar';
 import ModPost from '@/components/ModPost';
 import Logo from '@/assets/logo/icon-logo-big.svg?react';
 
+// Lista os posts denunciados com o número de denúncias de cada um
 export default function Comissions() {
 
     const { t } = useTranslation();
+    // Navega para outra tela sem recarregar a página
     const navigate = useNavigate();
 
     // Posts denunciados (carregados da API)
     const [dbPosts, setDbPosts] = useState([]);
+    // Estado da requisição
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
@@ -51,6 +55,7 @@ export default function Comissions() {
     return (
 
         <aside className="flex flex-col min-h-dvh w-full justify-start bg-fundo font-principal text-texto-main mb-18">
+            {/* Barra do moderador */}
             <ModBar />
 
             <div className='flex flex-row mt-4'>
@@ -58,6 +63,7 @@ export default function Comissions() {
                     <h1 className='font-logo text-3xl'>{t('mod.label')}</h1>
                     <p className='text-center mt-5'>{t('mod.description')}</p>
                 </div>
+                {/* Logo (somente em telas grandes) */}
                 <Logo className='hidden md:block w-40 h-40 border-4 mt-6 border-texto rounded-2xl justify-self-center mx-auto' />
             </div>
 

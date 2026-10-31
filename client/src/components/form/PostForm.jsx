@@ -1,14 +1,23 @@
+// Formulário: criação de post (título, texto, até 4 mídias, tags e aviso de conteúdo sensível)
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import api, { apiError } from '@/services/api';
 
 import '@/components/form/forms.css';
 
+// Valida os dados e envia o post para a API (vinculado a um raffle, quando há)
 export default function PostForm() {
     const { t } = useTranslation();
+    // Navega para outra tela sem recarregar a página
     const navigate = useNavigate();
+
+    // Participação em concurso: a página do concurso abre /post/new?raffle=<raffle_id>&from=<post do concurso>
+    const [searchParams] = useSearchParams();
+    const raffleParam = searchParams.get('raffle');
+    const raffleId = /^\d+$/.test(raffleParam ?? '') ? raffleParam : null;
+    const rafflePostId = /^\d+$/.test(searchParams.get('from') ?? '') ? searchParams.get('from') : null;
 
     // Controla o carregamento e o salvamento do formulário
     const [loading, setLoading] = useState(false);
@@ -156,6 +165,9 @@ export default function PostForm() {
             data.append('tags', formData.tags);
             data.append('is_nsfw', String(isNsfw));
 
+            // Vincula o post ao concurso (o servidor valida se o concurso existe)
+            if (raffleId) data.append('raffle_id', raffleId);
+
             // Só anexa os slots que realmente têm arquivo (campo "media", até 4)
             mediaFiles.filter(Boolean).forEach((file) => data.append('media', file));
 
@@ -163,8 +175,8 @@ export default function PostForm() {
 
             setSuccess(t('newpost.success'));
 
-            // Abre o post recém-criado
-            navigate(`/post/${response.data.post_id}`);
+            // Participação: volta para a página do concurso; post comum: abre o post recém-criado
+            navigate(`/post/${raffleId && rafflePostId ? rafflePostId : response.data.post_id}`);
         } catch (err) {
             console.error('Erro ao publicar:', err);
             setError(apiError(err, t('newpost.error')));
@@ -192,6 +204,18 @@ export default function PostForm() {
                         onSubmit={handleSubmit}
                         className="flex flex-col gap-4 mx-4"
                     >
+                        {/* Aviso de participação em concurso */}
+                        {raffleId && (
+                            <p className="text-sm text-cinza">
+                                {t('newpost.raffle_notice')}{' '}
+                                {rafflePostId && (
+                                    <NavLink to={`/post/${rafflePostId}`} className="text-destaque">
+                                        {t('newpost.raffle_back')}
+                                    </NavLink>
+                                )}
+                            </p>
+                        )}
+
                         {/* Título da publicação */}
                         <fieldset className="fieldset inputlabel">
                             <label htmlFor="post-title">
@@ -301,7 +325,7 @@ export default function PostForm() {
                             </div>
                         </section>
 
-                        {/* Tags da publicação, separadas por vírgulas */}
+                        {/* Tags da publicação, separadas por ";" ou "," */}
                         <fieldset className="fieldset inputlabel">
                             <label htmlFor="post-tags">
                                 {t('newpost.tags')}

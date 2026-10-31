@@ -1,3 +1,4 @@
+// Rotas: posts, curtidas, reposts, comentários e denúncias
 import { Router } from 'express';
 import multer from 'multer';
 import path from 'node:path';
@@ -27,10 +28,13 @@ import {
     postInclude
 } from '../utils/serializePost.js';
 
+// Roteador com as rotas deste arquivo
 const router = Router();
 
+// Pasta onde as mídias dos posts são salvas
 const uploadDirectory = path.resolve('uploads/posts');
 
+// Formatos de mídia aceitos
 const allowedTypes = new Set([
     'image/jpeg',
     'image/png',
@@ -39,6 +43,7 @@ const allowedTypes = new Set([
     'video/mp4'
 ]);
 
+// Configuração do multer: até 4 arquivos de 20 MB cada
 const upload = multer({
     storage: multer.diskStorage({
         destination: async (req, file, callback) => {
@@ -46,6 +51,7 @@ const upload = multer({
                 await mkdir(uploadDirectory, { recursive: true });
                 callback(null, uploadDirectory);
             } catch (error) {
+                // Falha inesperada: registra no console e responde com erro
                 callback(error);
             }
         },
@@ -72,7 +78,7 @@ const upload = multer({
     }
 });
 
-// Converte e valida um ID vindo da URL. Retorna null se for inválido.
+// Converte e valida um ID vindo da URL. Retorna null se for inválido
 function parseId(value) {
     const id = Number(value);
     return Number.isInteger(id) && id > 0 ? id : null;
@@ -109,11 +115,13 @@ async function serializeComment(comment, author, viewerId = null) {
     };
 }
 
-// GET /posts — feed de publicações (paginado)
-//   ?feed=following  -> só posts de quem o usuário logado segue
-//   ?limit=20&offset=0
+// GET /posts
+// Feed de publicações (paginado)
+// ?feed=following  -> só posts de quem o usuário logado segue
+// ?limit=20&offset=0
 router.get('/', optionalAuth, async (req, res) => {
     try {
+        // Paginação: tamanho da página (máximo 50) e deslocamento
         const limit = Math.min(Number(req.query.limit) || 20, 50);
         const offset = Math.max(Number(req.query.offset) || 0, 0);
 
@@ -139,6 +147,7 @@ router.get('/', optionalAuth, async (req, res) => {
 
         return res.json({ posts: await serializePosts(posts, req.userId) });
     } catch (error) {
+        // Falha inesperada: registra no console e responde com erro
         console.error('Erro ao listar publicações:', error);
         return res.status(500).json({
             error: 'Não foi possível carregar as publicações.'
@@ -146,7 +155,8 @@ router.get('/', optionalAuth, async (req, res) => {
     }
 });
 
-// GET /posts/:id — publicação individual
+// GET /posts/:id
+// Publicação individual
 router.get('/:id', optionalAuth, async (req, res) => {
     try {
         const postId = parseId(req.params.id);
@@ -170,6 +180,7 @@ router.get('/:id', optionalAuth, async (req, res) => {
 
         return res.json({ post: await serializePost(post, req.userId) });
     } catch (error) {
+        // Falha inesperada: registra no console e responde com erro
         console.error('Erro ao buscar publicação:', error);
         return res.status(500).json({
             error: 'Não foi possível carregar a publicação.'
@@ -177,7 +188,8 @@ router.get('/:id', optionalAuth, async (req, res) => {
     }
 });
 
-// POST /posts — criar publicação
+// POST /posts
+// Criar publicação
 router.post(
     '/',
     authMiddleware,
@@ -202,6 +214,25 @@ router.post(
                 });
             }
 
+            // Participação em concurso (opcional): o concurso precisa existir e estar visível
+            let raffleId = null;
+
+            if (req.body.raffle_id) {
+                raffleId = parseId(req.body.raffle_id);
+
+                const rafflePost = raffleId
+                    ? await Post.findOne({
+                        where: { raffle_id: raffleId, is_raffle: true, ...VISIBLE_POST },
+                        transaction
+                    })
+                    : null;
+
+                if (!rafflePost) {
+                    await transaction.rollback();
+                    return res.status(404).json({ error: 'Concurso não encontrado.' });
+                }
+            }
+
             const user = await User.findByPk(req.userId, {
                 transaction
             });
@@ -217,9 +248,13 @@ router.post(
                 user_id: req.userId,
                 post_title: title.trim(),
                 post_content: content?.trim() || null,
-                is_nsfw: is_nsfw === 'true'
+                is_nsfw: is_nsfw === 'true',
+                // raffle_id preenchido + is_raffle falso = participação no concurso
+                raffle_id: raffleId,
+                is_raffle: false
             }, { transaction });
 
+            // Salva cada mídia enviada (imagem ou vídeo)
             for (const file of req.files ?? []) {
                 const mediaType = file.mimetype.startsWith('video/')
                     ? 'video'
@@ -243,6 +278,7 @@ router.post(
                 )
             ];
 
+            // Cria as tags que ainda não existem e vincula todas ao post
             for (const tagName of tagNames) {
                 const [tag] = await Tag.findOrCreate({
                     where: { tag_name: tagName },
@@ -260,6 +296,7 @@ router.post(
                 post_id: post.post_id
             });
         } catch (error) {
+            // Falha inesperada: registra no console e responde com erro
             if (!transaction.finished) {
                 await transaction.rollback();
             }
@@ -273,8 +310,8 @@ router.post(
     }
 );
 
-// Fábrica de rotas "liga/desliga" (like e repost têm o mesmo comportamento).
-// Se o registro já existe, remove; se não existe, cria. Devolve o novo estado e a contagem.
+// Fábrica de rotas "liga/desliga" (like e repost têm o mesmo comportamento)
+// Se o registro já existe, remove; se não existe, cria. Devolve o novo estado e a contagem
 function toggleHandler(Model, flagName, countName) {
     return async (req, res) => {
         try {
@@ -303,19 +340,23 @@ function toggleHandler(Model, flagName, countName) {
 
             return res.json({ [flagName]: !existing, [countName]: count });
         } catch (error) {
+            // Falha inesperada: registra no console e responde com erro
             console.error('Erro ao alternar interação:', error);
             return res.status(500).json({ error: 'Não foi possível registrar a interação.' });
         }
     };
 }
 
-// POST /posts/:id/like — curtir / descurtir
+// POST /posts/:id/like
+// Curtir / descurtir
 router.post('/:id/like', authMiddleware, toggleHandler(Postlike, 'liked', 'likesCount'));
 
-// POST /posts/:id/repost — republicar / desfazer
+// POST /posts/:id/repost
+// Republicar / desfazer
 router.post('/:id/repost', authMiddleware, toggleHandler(Repost, 'reposted', 'repostsCount'));
 
-// GET /posts/:id/comments — lista os comentários do post
+// GET /posts/:id/comments
+// Lista os comentários do post
 router.get('/:id/comments', optionalAuth, async (req, res) => {
     try {
         const postId = parseId(req.params.id);
@@ -337,12 +378,14 @@ router.get('/:id/comments', optionalAuth, async (req, res) => {
 
         return res.json({ comments: result });
     } catch (error) {
+        // Falha inesperada: registra no console e responde com erro
         console.error('Erro ao listar comentários:', error);
         return res.status(500).json({ error: 'Não foi possível carregar os comentários.' });
     }
 });
 
-// POST /posts/:id/comments — cria um comentário  (body: { content })
+// POST /posts/:id/comments
+// Cria um comentário (body: { content })
 router.post('/:id/comments', authMiddleware, async (req, res) => {
     try {
         const postId = parseId(req.params.id);
@@ -374,12 +417,14 @@ router.post('/:id/comments', authMiddleware, async (req, res) => {
             comment: await serializeComment(comment, author, req.userId)
         });
     } catch (error) {
+        // Falha inesperada: registra no console e responde com erro
         console.error('Erro ao comentar:', error);
         return res.status(500).json({ error: 'Não foi possível publicar o comentário.' });
     }
 });
 
-// POST /posts/comments/:commentId/like — curtir / descurtir comentário
+// POST /posts/comments/:commentId/like
+// Curtir / descurtir comentário
 router.post('/comments/:commentId/like', authMiddleware, async (req, res) => {
     try {
         const commentId = parseId(req.params.commentId);
@@ -407,13 +452,15 @@ router.post('/comments/:commentId/like', authMiddleware, async (req, res) => {
 
         return res.json({ liked: !existing, likesCount });
     } catch (error) {
+        // Falha inesperada: registra no console e responde com erro
         console.error('Erro ao curtir comentário:', error);
         return res.status(500).json({ error: 'Não foi possível registrar a curtida.' });
     }
 });
 
-// POST /posts/:id/report — denuncia o post.
-// Registra a denúncia e coloca o post automaticamente em "in_analysis" (tag "Em Análise").
+// POST /posts/:id/report
+// Denuncia o post
+// Registra a denúncia e coloca o post automaticamente em "in_analysis" (tag "Em Análise")
 router.post('/:id/report', authMiddleware, async (req, res) => {
     try {
         const postId = parseId(req.params.id);
@@ -426,7 +473,15 @@ router.post('/:id/report', authMiddleware, async (req, res) => {
             return res.status(404).json({ error: 'Publicação não encontrada.' });
         }
 
-        await Reports.create({ post_id: postId });
+        // Um usuário só pode denunciar o mesmo post uma vez
+        const alreadyReported = await Reports.findOne({
+            where: { post_id: postId, user_id: req.userId }
+        });
+        if (alreadyReported) {
+            return res.status(409).json({ error: 'Você já denunciou esta publicação.' });
+        }
+
+        await Reports.create({ post_id: postId, user_id: req.userId });
 
         // Só muda o status se ainda estiver no padrão (não sobrescreve decisão de moderador)
         if (post.post_status === 'default') {
@@ -435,9 +490,15 @@ router.post('/:id/report', authMiddleware, async (req, res) => {
 
         return res.status(201).json({ message: 'Denúncia registrada.' });
     } catch (error) {
+        // Duas denúncias simultâneas: a chave única do banco barra a segunda
+        if (error.name === 'SequelizeUniqueConstraintError') {
+            return res.status(409).json({ error: 'Você já denunciou esta publicação.' });
+        }
+
         console.error('Erro ao denunciar publicação:', error);
         return res.status(500).json({ error: 'Não foi possível registrar a denúncia.' });
     }
 });
 
+// Exporta o roteador para ser registrado no index.js
 export default router;

@@ -1,4 +1,4 @@
-//TELA DE MENSAGENS
+// Componente: linha da lista de conversas (contato e última mensagem)
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CircleUser } from 'lucide-react';
@@ -20,7 +20,7 @@ export default function ListElement({
 }) {
     const senderProfilePath = `/chat/${encodeURIComponent(senderusername)}`;
 
-    // Obtém o objeto de idioma do i18next para definir o idioma atual
+    // Função de tradução e idioma atual
     const { t, i18n } = useTranslation();
 
     // Formata a data da última mensagem de acordo com o idioma atual

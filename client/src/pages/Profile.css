@@ -1,45 +1,57 @@
+/* Estilo: cabeçalho do perfil */
 @import "@/index.css";
 
+/* Cartão do perfil */
 .profile-card {
     @apply relative w-full max-w-xl mx-auto md:my-5 overflow-hidden md:rounded-t-xl;
 }
 
+/* Banner no topo do perfil */
 .profile-banner {
     @apply h-35 w-full bg-cinza flex items-center justify-center text-texto-main rounded-b-xl object-cover;
 }
 
+/* Área de informações ao lado do avatar */
 .profile-info {
     @apply relative min-h-26 pt-2 pr-3 pb-3 pl-28;
 }
 
+/* Foto de perfil sobreposta ao banner */
 .profile-avatar {
     @apply absolute w-20 h-20 left-4 -top-10 rounded-full object-cover bg-fundo text-texto-main stroke-1 border-2 border-fundo z-2;
 }
 
+/* Nome do usuário */
 .profile-details h2 {
     @apply m-0 text-texto-main;
 }
 
+/* Pronomes */
 .profile-pronouns {
     @apply block mt-1.5 text-cinza gap-2 flex flex-row;
 }
 
+/* Linha de estatísticas (posts, seguidores e seguindo) */
 .profile-stats {
     @apply flex justify-between gap-3 mt-2 pr-4 text-sm text-cinza;
 }
 
+/* Cada estatística */
 .profile-stats div {
     @apply flex flex-col gap-0.5 w-30;
 }
 
+/* Biografia (até 3 linhas) */
 .profile-bio {
     @apply pt-2 text-sm overflow-hidden text-ellipsis line-clamp-3;
 }
 
+/* Aba ativa do perfil */
 .isActive {
     @apply border-b-2 border-destaque text-destaque;
 }
 
+/* Tamanho e alinhamento de cada aba do perfil */
 .profile{
     @apply font-bold text-sm mt-2 w-20 justify-center flex;
 }

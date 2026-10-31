@@ -1,5 +1,7 @@
+/* Estilo: botões de idioma */
 @import '@/index.css';
 
+/* Botão pequeno com borda; inverte as cores ao passar o mouse */
 .btn-lang {
     @apply text-texto-main bg-fundo transition-colors duration-200 ease-in-out text-xs border p-1 border-discreto rounded-md hover:bg-destaque hover:text-fundo;
 }

@@ -1,9 +1,11 @@
+// Rotas: mensagens diretas entre usuários
 import { Router } from 'express';
 import { Op } from 'sequelize';
 
 import authMiddleware from '../middlewares/authMiddleware.js';
 import { Chat, User } from '../models/index.js';
 
+// Roteador com as rotas deste arquivo
 const router = Router();
 
 const USER_ATTRS = ['user_id', 'user_nickname', 'user_idname', 'user_pfpurl'];
@@ -17,11 +19,13 @@ const toContact = (user) => ({
 });
 
 // GET /chat
-// Lista as conversas do usuário logado: uma entrada por contato, com a última mensagem.
+// Lista as conversas do usuário logado: uma entrada por contato, com a última mensagem
 router.get('/', authMiddleware, async (req, res) => {
     try {
+        // Usuário logado
         const me = req.userId;
 
+        // Todas as mensagens enviadas ou recebidas pelo usuário, da mais nova para a mais antiga
         const messages = await Chat.findAll({
             where: {
                 [Op.or]: [{ chat_send_id: me }, { chat_receiver_id: me }]
@@ -34,7 +38,7 @@ router.get('/', authMiddleware, async (req, res) => {
         });
 
         // As mensagens vêm da mais nova para a mais antiga:
-        // a primeira que aparece para cada contato é a última da conversa.
+        // a primeira que aparece para cada contato é a última da conversa
         const conversations = new Map();
 
         for (const message of messages) {
@@ -51,13 +55,14 @@ router.get('/', authMiddleware, async (req, res) => {
 
         return res.json({ conversations: [...conversations.values()] });
     } catch (error) {
+        // Falha inesperada: registra no console e responde com erro
         console.error('Erro ao listar conversas:', error);
         return res.status(500).json({ error: 'Não foi possível carregar as conversas.' });
     }
 });
 
 // GET /chat/:username
-// Histórico de mensagens entre o usuário logado e :username (ordem cronológica).
+// Histórico de mensagens entre o usuário logado e :username (ordem cronológica)
 router.get('/:username', authMiddleware, async (req, res) => {
     try {
         const me = req.userId;
@@ -72,6 +77,7 @@ router.get('/:username', authMiddleware, async (req, res) => {
             return res.status(404).json({ error: 'Usuário não encontrado.' });
         }
 
+        // Mensagens entre os dois usuários, em ordem cronológica
         const messages = await Chat.findAll({
             where: {
                 [Op.or]: [
@@ -94,13 +100,15 @@ router.get('/:username', authMiddleware, async (req, res) => {
             }))
         });
     } catch (error) {
+        // Falha inesperada: registra no console e responde com erro
         console.error('Erro ao carregar mensagens:', error);
         return res.status(500).json({ error: 'Não foi possível carregar as mensagens.' });
     }
 });
 
-// POST /chat/:username   body: { message }
-// Envia uma mensagem direta para :username.
+// POST /chat/:username
+// Corpo da requisição: { message }
+// Envia uma mensagem direta para :username
 router.post('/:username', authMiddleware, async (req, res) => {
     try {
         const me = req.userId;
@@ -139,9 +147,11 @@ router.post('/:username', authMiddleware, async (req, res) => {
             }
         });
     } catch (error) {
+        // Falha inesperada: registra no console e responde com erro
         console.error('Erro ao enviar mensagem:', error);
         return res.status(500).json({ error: 'Não foi possível enviar a mensagem.' });
     }
 });
 
+// Exporta o roteador para ser registrado no index.js
 export default router;

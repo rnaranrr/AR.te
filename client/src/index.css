@@ -1,6 +1,9 @@
+/* Estilo: configuração global (Tailwind, DaisyUI, fontes e cores do tema) */
 @import "tailwindcss";
+/* Plugin de componentes prontos (botões, cards, menus) */
 @plugin "daisyui";
 
+/* Fontes e cores da identidade visual (tema claro) */
 @theme {
     --font-principal: "Fira Sans", sans-serif;
     --font-logo: "Impact", sans-serif;
@@ -11,12 +14,14 @@
     --color-destaque: #8c52ff;
 }
 
+/* Estilo base do corpo da página */
 @layer base {
     body {
         @apply min-h-full w-full bg-fundo font-principal text-texto-main;
     }
 }
 
+/* Tema escuro: inverte as cores de fundo e de texto */
 @media (prefers-color-scheme: dark) {
     :root {
         --color-fundo: #120f22;

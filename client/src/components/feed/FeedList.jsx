@@ -1,3 +1,4 @@
+// Componente: lista de posts com rolagem infinita
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -7,11 +8,14 @@ import Post from '@/components/Post';
 // Quantidade de posts carregados por vez
 const PAGE_SIZE = 10;
 
-// Lista de posts com rolagem infinita.
-// feed = 'foryou' (todos os posts) ou 'following' (somente quem o usuário segue)
-export default function FeedList({ feed = 'foryou' }) {
+// Lista de posts com rolagem infinita
+// feed     = 'foryou' (todos os posts) ou 'following' (somente quem o usuário segue)
+// endpoint = rota da API que devolve { posts } paginado (padrão: /posts; concursos usam /raffles/:id/posts)
+// emptyKey = chave de tradução do texto exibido quando não há posts
+export default function FeedList({ feed = 'foryou', endpoint = '/posts', emptyKey }) {
     const { t } = useTranslation();
 
+    // Posts carregados até agora e estado da requisição
     const [posts, setPosts] = useState([]);
     const [hasMore, setHasMore] = useState(true);
     const [loading, setLoading] = useState(false);
@@ -21,8 +25,10 @@ export default function FeedList({ feed = 'foryou' }) {
     const sentinelRef = useRef(null);
     // Refs evitam requisições duplicadas (ex.: StrictMode) e guardam o deslocamento atual
     const offsetRef = useRef(0);
+    // Evita requisições duplicadas (ex.: StrictMode)
     const loadingRef = useRef(false);
 
+    // Busca a próxima página de posts e a junta com as já carregadas
     const loadMore = useCallback(async () => {
         if (loadingRef.current) return;
 
@@ -31,7 +37,7 @@ export default function FeedList({ feed = 'foryou' }) {
         setError('');
 
         try {
-            const response = await api.get('/posts', {
+            const response = await api.get(endpoint, {
                 params: { feed, limit: PAGE_SIZE, offset: offsetRef.current }
             });
 
@@ -53,10 +59,10 @@ export default function FeedList({ feed = 'foryou' }) {
             loadingRef.current = false;
             setLoading(false);
         }
-    }, [feed, t]);
+    }, [feed, endpoint, t]);
 
-    // Observa o elemento do fim da lista e dispara o carregamento quando ele fica visível.
-    // O observer é recriado a cada mudança, assim ele dispara de novo se a lista ainda for curta.
+    // Observa o elemento do fim da lista e dispara o carregamento quando ele fica visível
+    // O observer é recriado a cada mudança, assim ele dispara de novo se a lista ainda for curta
     useEffect(() => {
         if (!hasMore || !sentinelRef.current) return;
 
@@ -97,6 +103,9 @@ export default function FeedList({ feed = 'foryou' }) {
                     likedByMe={post.likedByMe}
                     repostedByMe={post.repostedByMe}
 
+                    is_raffle={post.is_raffle}
+                    raffle={post.raffle}
+
                     tags={post.tags}
                 />
             ))}
@@ -108,7 +117,7 @@ export default function FeedList({ feed = 'foryou' }) {
             {error && <p className="text-red-500 text-sm py-4">{error}</p>}
             {!loading && !error && posts.length === 0 && !hasMore && (
                 <p className="text-cinza text-sm py-8 text-center px-4">
-                    {feed === 'following' ? t('feed.empty_following') : t('feed.empty')}
+                    {t(emptyKey ?? (feed === 'following' ? 'feed.empty_following' : 'feed.empty'))}
                 </p>
             )}
 

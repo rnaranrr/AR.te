@@ -1,11 +1,15 @@
+/* Estilo: ícones de interação do post */
 @import "@/index.css";
 
+/* Ícone de interação (inativo) */
 .interaction {
     @apply w-5 h-5 text-cinza hover:text-destaque;
 }
+/* Curtida ativa: ícone preenchido */
 .interactedlike {
     @apply w-5 h-5 text-destaque fill-destaque;
 }
+/* Repost ativo */
 .interactedrepost {
     @apply w-5 h-5 text-destaque;
 }
