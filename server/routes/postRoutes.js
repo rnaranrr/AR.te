@@ -20,6 +20,7 @@ import {
     Reports,
     Follow
 } from '../models/index.js';
+import { releaseReportOpinions } from '../utils/opinions.js';
 import {
     VISIBLE_POST,
     findPosts,
@@ -207,10 +208,10 @@ router.post(
                 });
             }
 
-            if (title.trim().length > 255) {
+            if (title.trim().length > 100) {
                 await transaction.rollback();
                 return res.status(400).json({
-                    error: 'O título deve ter no máximo 255 caracteres.'
+                    error: 'O título deve ter no máximo 100 caracteres.'
                 });
             }
 
@@ -364,6 +365,12 @@ router.get('/:id/comments', optionalAuth, async (req, res) => {
             return res.status(400).json({ error: 'Identificador de publicação inválido.' });
         }
 
+        // Comentários de posts removidos ou banidos não são exibidos
+        const visiblePost = await Post.findOne({ where: { post_id: postId, ...VISIBLE_POST } });
+        if (!visiblePost) {
+            return res.status(404).json({ error: 'Publicação não encontrada.' });
+        }
+
         const comments = await Comment.findAll({
             where: { post_id: postId, deleted_at: null },
             include: [{ model: User, as: 'author', attributes: AUTHOR_ATTRS }],
@@ -458,9 +465,18 @@ router.post('/comments/:commentId/like', authMiddleware, async (req, res) => {
     }
 });
 
+// Busca um post para as rotas de denúncia: ele precisa existir e não pode ter sido removido pelo autor
+// Posts banidos continuam acessíveis aqui, pois a moderação os mantém na lista
+async function findReportablePost(postId) {
+    const post = await Post.findOne({ where: { post_id: postId } });
+
+    if (!post || (post.deleted_at && post.post_analysis_status !== 'banned')) return null;
+    return post;
+}
+
 // POST /posts/:id/report
-// Denuncia o post
-// Registra a denúncia e coloca o post automaticamente em "in_analysis" (tag "Em Análise")
+// Denuncia o post: a denúncia é o voto da comunidade
+// A primeira denúncia coloca o post automaticamente em "in_analysis" (tag "Em Análise")
 router.post('/:id/report', authMiddleware, async (req, res) => {
     try {
         const postId = parseId(req.params.id);
@@ -468,9 +484,14 @@ router.post('/:id/report', authMiddleware, async (req, res) => {
             return res.status(400).json({ error: 'Identificador de publicação inválido.' });
         }
 
-        const post = await Post.findOne({ where: { post_id: postId, ...VISIBLE_POST } });
+        const post = await findReportablePost(postId);
         if (!post) {
             return res.status(404).json({ error: 'Publicação não encontrada.' });
+        }
+
+        // Posts banidos já têm uma decisão da moderação
+        if (post.post_analysis_status === 'banned') {
+            return res.status(409).json({ error: 'Este post já foi banido pela moderação.' });
         }
 
         // Um usuário só pode denunciar o mesmo post uma vez
@@ -484,19 +505,112 @@ router.post('/:id/report', authMiddleware, async (req, res) => {
         await Reports.create({ post_id: postId, user_id: req.userId });
 
         // Só muda o status se ainda estiver no padrão (não sobrescreve decisão de moderador)
-        if (post.post_status === 'default') {
-            await post.update({ post_status: 'in_analysis' });
+        if (post.post_analysis_status === 'default') {
+            await post.update({ post_analysis_status: 'in_analysis' });
         }
 
-        return res.status(201).json({ message: 'Denúncia registrada.' });
+        return res.status(201).json({
+            message: 'Denúncia registrada.',
+            reported: true,
+            reportCount: await Reports.count({ where: { post_id: postId } }),
+            post_analysis_status: post.post_analysis_status
+        });
     } catch (error) {
         // Duas denúncias simultâneas: a chave única do banco barra a segunda
         if (error.name === 'SequelizeUniqueConstraintError') {
             return res.status(409).json({ error: 'Você já denunciou esta publicação.' });
         }
 
+        // Falha inesperada: registra no console e responde com erro
         console.error('Erro ao denunciar publicação:', error);
         return res.status(500).json({ error: 'Não foi possível registrar a denúncia.' });
+    }
+});
+
+// DELETE /posts/:id/report
+// Remove a denúncia do usuário logado (pode ser feito a qualquer momento)
+// Sem nenhuma denúncia restante, um post que estava apenas "in_analysis" volta ao padrão
+router.delete('/:id/report', authMiddleware, async (req, res) => {
+    try {
+        const postId = parseId(req.params.id);
+        if (!postId) {
+            return res.status(400).json({ error: 'Identificador de publicação inválido.' });
+        }
+
+        const post = await findReportablePost(postId);
+        if (!post) {
+            return res.status(404).json({ error: 'Publicação não encontrada.' });
+        }
+
+        // Apaga somente a denúncia do próprio usuário
+        // As opiniões ligadas a ela passam para outra denúncia do post (ou são apagadas se não houver outra)
+        const transaction = await database.transaction();
+
+        try {
+            const myReport = await Reports.findOne({
+                where: { post_id: postId, user_id: req.userId },
+                transaction
+            });
+
+            if (!myReport) {
+                await transaction.rollback();
+                return res.status(404).json({ error: 'Você não denunciou esta publicação.' });
+            }
+
+            await releaseReportOpinions(myReport, transaction);
+            await myReport.destroy({ transaction });
+            await transaction.commit();
+        } catch (innerError) {
+            if (!transaction.finished) await transaction.rollback();
+            throw innerError;
+        }
+
+        const reportCount = await Reports.count({ where: { post_id: postId } });
+
+        // Decisões de moderadores (banido ou restaurado) não são alteradas
+        if (reportCount === 0 && post.post_analysis_status === 'in_analysis') {
+            await post.update({ post_analysis_status: 'default' });
+        }
+
+        return res.json({
+            message: 'Denúncia removida.',
+            reported: false,
+            reportCount,
+            post_analysis_status: post.post_analysis_status
+        });
+    } catch (error) {
+        // Falha inesperada: registra no console e responde com erro
+        console.error('Erro ao remover denúncia:', error);
+        return res.status(500).json({ error: 'Não foi possível remover a denúncia.' });
+    }
+});
+
+// DELETE /posts/:id
+// Remove o post do autor com exclusão lógica: preenche deleted_at e o post some da plataforma, sem sair do banco
+router.delete('/:id', authMiddleware, async (req, res) => {
+    try {
+        const postId = parseId(req.params.id);
+        if (!postId) {
+            return res.status(400).json({ error: 'Identificador de publicação inválido.' });
+        }
+
+        const post = await Post.findOne({ where: { post_id: postId, ...VISIBLE_POST } });
+        if (!post) {
+            return res.status(404).json({ error: 'Publicação não encontrada.' });
+        }
+
+        // Somente o autor pode remover o próprio post
+        if (post.user_id !== req.userId) {
+            return res.status(403).json({ error: 'Você só pode excluir os seus próprios posts.' });
+        }
+
+        await post.update({ deleted_at: new Date() });
+
+        return res.json({ message: 'Publicação excluída.' });
+    } catch (error) {
+        // Falha inesperada: registra no console e responde com erro
+        console.error('Erro ao excluir publicação:', error);
+        return res.status(500).json({ error: 'Não foi possível excluir a publicação.' });
     }
 });
 

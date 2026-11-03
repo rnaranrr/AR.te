@@ -2,12 +2,13 @@
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { House, Send, CirclePlus, Search, CircleUser, ShieldAlert, LogOut } from 'lucide-react';
+import { House, Send, CirclePlus, Search, CircleUser, ShieldAlert, LogOut, LogIn } from 'lucide-react';
 import Logo from '@/assets/logo/icon-logo-small.svg?react';
 
 import '@/components/navigation/Sidebar.css';
 
 import LangBtn from '@/components/lang/Lang-btn';
+import { isLoggedIn } from '@/services/api';
 
 // Menu lateral com os links principais e o botão de sair
 export default function Sidebar() {
@@ -115,12 +116,19 @@ export default function Sidebar() {
                 </nav>
 
 
-                {/* Botão de Sair no Rodapé */}
+                {/* Botão de sair (logado) ou de entrar (visitante) no rodapé */}
                 <div className='mt-4 pt-4 border-t border-discreto'>
-                    <button onClick={handleLogout} className='sidebar-link w-full text-left text-cinza'>
-                        <LogOut size={20} />
-                        <span>{t('sidebar.logout')}</span>
-                    </button>
+                    {isLoggedIn() ? (
+                        <button onClick={handleLogout} className='sidebar-link w-full text-left text-cinza'>
+                            <LogOut size={20} />
+                            <span>{t('sidebar.logout')}</span>
+                        </button>
+                    ) : (
+                        <NavLink to='/login' className='sidebar-link w-full text-left text-cinza'>
+                            <LogIn size={20} />
+                            <span>{t('sidebar.login')}</span>
+                        </NavLink>
+                    )}
                 </div>
             </div>
         </aside>

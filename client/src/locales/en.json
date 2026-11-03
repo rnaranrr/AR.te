@@ -6,7 +6,8 @@
     "search": "Search",
     "profile": "You",
     "moderation": "Moderation",
-    "logout": "Logout"
+    "logout": "Logout",
+    "login": "Log in"
   },
   "feed": {
     "foryou": "For you",
@@ -38,7 +39,13 @@
     "reported_ok": "Report sent. The post is now under review.",
     "not_found": "Post not found.",
     "raffle": "Raffle",
-    "raffle_entry": "Raffle entry: {{title}}"
+    "raffle_entry": "Raffle entry: {{title}}",
+    "delete": "Delete post",
+    "delete_confirm": "Delete this post? It will no longer appear on the platform.",
+    "report_remove": "Remove report",
+    "report_removed": "Report removed.",
+    "in_analysis": "Under review",
+    "open_media": "Open media"
   },
   "login": {
     "error": "Invalid email or password",
@@ -66,7 +73,8 @@
     "placeholder": "Write a comment",
     "send": "Send",
     "load_error": "Could not load the comments.",
-    "send_error": "Could not send the comment."
+    "send_error": "Could not send the comment.",
+    "title": "Comments"
   },
   "profile": {
     "timeline": "Timeline",
@@ -83,10 +91,12 @@
     "commissions_status": "Commissions status",
     "commissions_open": "Open",
     "commissions_closed": "Closed",
-    "commissions_banner_empty": "Commissions banner",
-    "commissions_image_empty": "Commissions price sheet",
     "no_posts": "No posts yet.",
-    "reposted_by": "{{name}} reposted"
+    "reposted_by": "{{name}} reposted",
+    "view_post": "View post: {{title}}",
+    "view_post_more": "View post: {{title}}, {{extra}} more attached media",
+    "follow": "Follow",
+    "send_message": "Messages"
   },
   "profileform": {
     "banner_label": "Profile banner",
@@ -140,11 +150,12 @@
     "invalid_media_type": "Invalid format. Select JPG, PNG, WEBP, GIF, or MP4.",
     "media_too_large": "Each file must be no larger than 20 MB.",
     "title_required": "Enter a title.",
-    "title_too_long": "The title must be no longer than 255 characters.",
+    "title_too_long": "The title must be no longer than 100 characters.",
     "success": "Post created successfully.",
     "error": "Could not publish. Please try again.",
     "raffle_notice": "This post will be linked to the raffle and will appear on its page.",
-    "raffle_back": "Back to the raffle"
+    "raffle_back": "Back to the raffle",
+    "media_preview": "Preview of media {{name}}"
   },
   "raffleform": {
     "title": "Raffle title",
@@ -165,7 +176,40 @@
     "status_restored": "Restored",
     "status_banned": "Banned",
     "load_error": "Could not load the reported posts.",
-    "empty": "No reported posts at the moment."
+    "empty": "No reported posts at the moment.",
+    "login": "Sign in as moderator",
+    "login_title": "Moderator access",
+    "idname": "Identifier",
+    "idname_placeholder": "Your moderator identifier",
+    "access_key": "Access key",
+    "access_key_placeholder": "Your access key",
+    "login_button": "Sign in",
+    "logging": "Signing in...",
+    "login_error": "Invalid identifier or access key.",
+    "back": "Back to the site",
+    "change_status": "Change post status",
+    "action_error": "Could not complete the action.",
+    "create_nickname": "Display name",
+    "create_key_hint": "The key must have at least 8 characters.",
+    "create_username": "Linked user (optional)",
+    "create_username_placeholder": "@username",
+    "create_button": "Register",
+    "creating": "Registering...",
+    "create_success": "Moderator registered successfully.",
+    "create_error": "Could not register the moderator.",
+    "post_label": "Post:",
+    "status_label": "Status:",
+    "opinions": "Opinions",
+    "opinion_placeholder": "Write your opinion about this post...",
+    "opinion_send": "Send",
+    "opinion_empty": "Nobody has given an opinion on this post yet.",
+    "opinion_login": "Log in with a user account to give an opinion.",
+    "opinion_remove": "Remove",
+    "opinion_remove_confirm": "Remove this opinion?",
+    "opinion_send_error": "Could not send the opinion.",
+    "opinion_remove_error": "Could not remove the opinion.",
+    "post_not_found": "This post is not under moderation.",
+    "view_opinions": "View post opinions"
   },
   "search": {
     "placeholder": "Search here",
@@ -173,11 +217,21 @@
     "posts": "Posts",
     "no_results": "No results found.",
     "min_chars": "Type at least 2 characters.",
-    "error": "Could not perform the search."
+    "error": "Could not perform the search.",
+    "remove": "Remove",
+    "submit": "Search"
   },
   "raffle": {
     "participations": "Entries",
     "join": "Join the raffle",
     "empty": "Nobody has entered this raffle yet."
+  },
+  "common": {
+    "back": "Back"
+  },
+  "follows": {
+    "empty_followers": "No followers yet.",
+    "empty_following": "This profile is not following anyone yet.",
+    "error": "Could not load the list."
   }
 }

@@ -6,7 +6,8 @@
     "search": "Pesquisar",
     "profile": "Você",
     "moderation": "Moderação",
-    "logout": "Sair"
+    "logout": "Sair",
+    "login": "Entrar"
   },
   "feed": {
     "foryou": "Para você",
@@ -38,7 +39,13 @@
     "reported_ok": "Denúncia enviada. O post está em análise.",
     "not_found": "Publicação não encontrada.",
     "raffle": "Concurso",
-    "raffle_entry": "Participação no concurso: {{title}}"
+    "raffle_entry": "Participação no concurso: {{title}}",
+    "delete": "Excluir post",
+    "delete_confirm": "Excluir este post? Ele deixará de aparecer na plataforma.",
+    "report_remove": "Remover denúncia",
+    "report_removed": "Denúncia removida.",
+    "in_analysis": "Em análise",
+    "open_media": "Abrir mídia"
   },
   "login": {
     "error": "Email ou senha incorretos",
@@ -66,7 +73,8 @@
     "placeholder": "Escreva um comentário",
     "send": "Enviar",
     "load_error": "Não foi possível carregar os comentários.",
-    "send_error": "Não foi possível enviar o comentário."
+    "send_error": "Não foi possível enviar o comentário.",
+    "title": "Comentários"
   },
   "profile": {
     "timeline": "Timeline",
@@ -83,10 +91,12 @@
     "commissions_status": "Status das comissões",
     "commissions_open": "Abertas",
     "commissions_closed": "Fechadas",
-    "commissions_banner_empty": "Banner das comissões",
-    "commissions_image_empty": "Tabela de preços das comissões",
     "no_posts": "Nenhuma publicação ainda.",
-    "reposted_by": "{{name}} republicou"
+    "reposted_by": "{{name}} republicou",
+    "view_post": "Ver publicação: {{title}}",
+    "view_post_more": "Ver publicação: {{title}}, mais {{extra}} mídias anexadas",
+    "follow": "Seguir",
+    "send_message": "Mensagens"
   },
   "profileform": {
     "banner_label": "Banner do perfil",
@@ -140,11 +150,12 @@
     "invalid_media_type": "Formato inválido. Selecione JPG, PNG, WEBP, GIF ou MP4.",
     "media_too_large": "Cada arquivo deve ter no máximo 20 MB.",
     "title_required": "Informe um título.",
-    "title_too_long": "O título deve ter no máximo 255 caracteres.",
+    "title_too_long": "O título deve ter no máximo 100 caracteres.",
     "success": "Publicação criada com sucesso.",
     "error": "Não foi possível publicar. Tente novamente.",
     "raffle_notice": "Esta publicação será vinculada ao concurso e aparecerá na página dele.",
-    "raffle_back": "Voltar ao concurso"
+    "raffle_back": "Voltar ao concurso",
+    "media_preview": "Pré-visualização da mídia {{name}}"
   },
   "raffleform": {
     "title": "Título do concurso",
@@ -165,7 +176,40 @@
     "status_restored": "Restaurado",
     "status_banned": "Banido",
     "load_error": "Não foi possível carregar os posts denunciados.",
-    "empty": "Nenhum post denunciado no momento."
+    "empty": "Nenhum post denunciado no momento.",
+    "login": "Entrar como moderador",
+    "login_title": "Acesso de moderadores",
+    "idname": "Identificador",
+    "idname_placeholder": "Seu identificador de moderador",
+    "access_key": "Chave de acesso",
+    "access_key_placeholder": "Sua chave de acesso",
+    "login_button": "Entrar",
+    "logging": "Entrando...",
+    "login_error": "Identificador ou chave de acesso inválidos.",
+    "back": "Voltar ao site",
+    "change_status": "Alterar status do post",
+    "action_error": "Não foi possível concluir a ação.",
+    "create_nickname": "Nome exibido",
+    "create_key_hint": "A chave deve ter pelo menos 8 caracteres.",
+    "create_username": "Usuário vinculado (opcional)",
+    "create_username_placeholder": "@usuario",
+    "create_button": "Cadastrar",
+    "creating": "Cadastrando...",
+    "create_success": "Moderador cadastrado com sucesso.",
+    "create_error": "Não foi possível cadastrar o moderador.",
+    "post_label": "Post:",
+    "status_label": "Status:",
+    "opinions": "Opiniões",
+    "opinion_placeholder": "Escreva sua opinião sobre este post...",
+    "opinion_send": "Enviar",
+    "opinion_empty": "Ninguém opinou sobre este post ainda.",
+    "opinion_login": "Entre com uma conta de usuário para opinar.",
+    "opinion_remove": "Remover",
+    "opinion_remove_confirm": "Remover esta opinião?",
+    "opinion_send_error": "Não foi possível enviar a opinião.",
+    "opinion_remove_error": "Não foi possível remover a opinião.",
+    "post_not_found": "Este post não está em moderação.",
+    "view_opinions": "Ver opiniões do post"
   },
   "search": {
     "placeholder": "Pesquise aqui",
@@ -173,11 +217,21 @@
     "posts": "Publicações",
     "no_results": "Nenhum resultado encontrado.",
     "min_chars": "Digite pelo menos 2 caracteres.",
-    "error": "Não foi possível realizar a pesquisa."
+    "error": "Não foi possível realizar a pesquisa.",
+    "remove": "Remover",
+    "submit": "Pesquisar"
   },
   "raffle": {
     "participations": "Participações",
     "join": "Participar do concurso",
     "empty": "Ninguém participou deste concurso ainda."
+  },
+  "common": {
+    "back": "Voltar"
+  },
+  "follows": {
+    "empty_followers": "Ainda não há seguidores.",
+    "empty_following": "Este perfil ainda não segue ninguém.",
+    "error": "Não foi possível carregar a lista."
   }
 }

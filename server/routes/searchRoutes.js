@@ -2,7 +2,7 @@
 import { Router } from 'express';
 import { Op } from 'sequelize';
 
-import { optionalAuth } from '../middlewares/authMiddleware.js';
+import authMiddleware from '../middlewares/authMiddleware.js';
 import { User } from '../models/index.js';
 import {
     VISIBLE_POST,
@@ -17,7 +17,7 @@ const router = Router();
 // GET /search?q=texto
 // "texto"  -> busca usuários (nome / @username) e posts (título / conteúdo / tags)
 // "#tag"   -> busca somente posts com essa tag
-router.get('/', optionalAuth, async (req, res) => {
+router.get('/', authMiddleware, async (req, res) => {
     try {
         const raw = String(req.query.q ?? '').trim();
         const isTagSearch = raw.startsWith('#');

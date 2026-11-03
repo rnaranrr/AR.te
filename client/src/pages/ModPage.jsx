@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import api, { apiError, isLoggedIn } from '@/services/api';
+import api, { apiError, isLoggedIn, isModerator, modConfig } from '@/services/api';
 
 import '@/components/form/forms.css';
 
@@ -26,17 +26,19 @@ export default function ModPage() {
     const [error, setError] = useState('');
 
     useEffect(() => {
-        // O espaço de moderação exige login
-        if (!isLoggedIn()) {
+        // O espaço de moderação exige login de usuário ou de moderador
+        if (!isLoggedIn() && !isModerator()) {
             navigate('/login');
             return;
         }
 
         let isMounted = true;
 
+        // Busca a lista de posts denunciados
         async function loadReportedPosts() {
             try {
-                const response = await api.get('/mod/posts');
+                // Usuários logados usam o token de usuário; moderadores sem login de usuário, o de moderador
+                const response = await api.get('/mod/posts', isLoggedIn() ? undefined : modConfig());
                 if (isMounted) setDbPosts(response.data.posts ?? []);
             } catch (err) {
                 console.error('Erro ao carregar posts denunciados:', err);
@@ -51,6 +53,33 @@ export default function ModPage() {
             isMounted = false;
         };
     }, [t, navigate]);
+
+    // Atualiza o status de um post depois que o moderador o altera
+    function handleStatusChange(postId, status) {
+        setDbPosts((current) => current.map((post) => (
+            post.post_id === postId ? { ...post, post_analysis_status: status } : post
+        )));
+    }
+
+    // Atualiza o número de denúncias depois de um voto
+    // Se o post voltou ao padrão (sem denúncias), ele sai da lista
+    function handleReportChange(postId, data) {
+        setDbPosts((current) => current
+            .map((post) => (
+                post.post_id === postId
+                    ? {
+                        ...post,
+                        ReportCount: data.reportCount,
+                        reportedByMe: data.reported,
+                        post_analysis_status: data.post_analysis_status
+                    }
+                    : post
+            ))
+            .filter((post) => post.post_analysis_status !== 'default'));
+    }
+
+    // Posts do mais denunciado para o menos denunciado (empates mantêm a ordem recebida)
+    const sortedPosts = [...dbPosts].sort((a, b) => b.ReportCount - a.ReportCount);
 
     return (
 
@@ -71,12 +100,12 @@ export default function ModPage() {
 
             <div>
                 {loading && <p className='text-cinza text-center'>{t('profile.loading')}</p>}
-                {error && <p className='text-red-500 text-center'>{error}</p>}
+                {error && <p className='text-destaque text-center'>{error}</p>}
                 {!loading && !error && dbPosts.length === 0 && (
                     <p className='text-cinza text-center'>{t('mod.empty')}</p>
                 )}
 
-                {dbPosts.map((post) => (
+                {sortedPosts.map((post) => (
                     <ModPost
                         key={post.post_id}
                         author={post.author.user_id}
@@ -88,13 +117,16 @@ export default function ModPage() {
                         post_title={post.post_title}
                         post_content={post.post_content}
                         createdAt={post.createdAt}
-                        post_status={post.post_status}
+                        post_analysis_status={post.post_analysis_status}
 
                         is_nsfw={post.is_nsfw}
 
                         media={post.media}
 
                         ReportCount={post.ReportCount}
+                        reportedByMe={post.reportedByMe}
+                        onStatusChange={handleStatusChange}
+                        onReportChange={handleReportChange}
 
                         tags={post.tags}
                     />

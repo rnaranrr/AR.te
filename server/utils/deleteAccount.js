@@ -17,6 +17,7 @@ import {
     Chat,
     Moderator
 } from '../models/index.js';
+import { releaseReportOpinions } from './opinions.js';
 
 // Apaga a conta e todas as produções do usuário
 // As chaves estrangeiras não têm exclusão em cascata, então a ordem abaixo (dos dependentes para o usuário) é obrigatória
@@ -73,22 +74,36 @@ export async function deleteUserAccount(userId) {
             });
         }
 
-        // Denúncias (feitas pelo usuário ou contra os posts dele) e as opiniões ligadas a elas
+        // Denúncias feitas pelo usuário ou contra os posts dele
         const reports = await Reports.findAll({
             where: {
                 [Op.or]: [{ post_id: { [Op.in]: postIds } }, { user_id: userId }]
             },
-            attributes: ['report_id'],
+            attributes: ['report_id', 'post_id'],
             transaction
         });
         const reportIds = reports.map((report) => report.report_id);
 
+        // As denúncias contra os posts do usuário saem junto com eles; as que ele fez em posts de outras pessoas
+        // precisam preservar as opiniões de terceiros ligadas a elas
+        const ownPostReportIds = reports
+            .filter((report) => postIds.includes(report.post_id))
+            .map((report) => report.report_id);
+        const reportsOnOthers = reports.filter((report) => !postIds.includes(report.post_id));
+
+        // Opiniões escritas pelo usuário e as feitas nos posts dele são apagadas
         await Opinion.destroy({
             where: {
-                [Op.or]: [{ report_id: { [Op.in]: reportIds } }, { user_id: userId }]
+                [Op.or]: [{ report_id: { [Op.in]: ownPostReportIds } }, { user_id: userId }]
             },
             transaction
         });
+
+        // As demais opiniões passam para outra denúncia do mesmo post (ou são apagadas se não houver outra)
+        for (const report of reportsOnOthers) {
+            await releaseReportOpinions(report, transaction);
+        }
+
         await Reports.destroy({ where: { report_id: { [Op.in]: reportIds } }, transaction });
 
         // Tags e mídias dos posts

@@ -121,7 +121,7 @@ export default function RaffleForm() {
                         </fieldset>
 
                         {error && (
-                            <p role="alert" className="text-sm text-red-500">
+                            <p role="alert" className="text-sm text-destaque">
                                 {error}
                             </p>
                         )}

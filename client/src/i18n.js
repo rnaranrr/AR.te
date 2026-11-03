@@ -26,4 +26,12 @@ i18n
     }
   });
 
+// Mantém o atributo lang do HTML igual ao idioma da interface (leitores de tela e tradutores do navegador)
+const updateHtmlLang = (language) => {
+  document.documentElement.lang = language.startsWith('en') ? 'en' : 'pt-BR';
+};
+
+updateHtmlLang(idiomaSalvo);
+i18n.on('languageChanged', updateHtmlLang);
+
 export default i18n;

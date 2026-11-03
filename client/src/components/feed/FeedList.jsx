@@ -102,7 +102,8 @@ export default function FeedList({ feed = 'foryou', endpoint = '/posts', emptyKe
                     repostsCount={post.repostsCount}
                     likedByMe={post.likedByMe}
                     repostedByMe={post.repostedByMe}
-
+                    reportedByMe={post.reportedByMe}
+                    post_analysis_status={post.post_analysis_status}
                     is_raffle={post.is_raffle}
                     raffle={post.raffle}
 
@@ -114,7 +115,7 @@ export default function FeedList({ feed = 'foryou', endpoint = '/posts', emptyKe
             {hasMore && <div ref={sentinelRef} className="h-1 w-full" />}
 
             {loading && <p className="text-cinza text-sm py-4">{t('profile.loading')}</p>}
-            {error && <p className="text-red-500 text-sm py-4">{error}</p>}
+            {error && <p className="text-destaque text-sm py-4">{error}</p>}
             {!loading && !error && posts.length === 0 && !hasMore && (
                 <p className="text-cinza text-sm py-8 text-center px-4">
                     {t(emptyKey ?? (feed === 'following' ? 'feed.empty_following' : 'feed.empty'))}

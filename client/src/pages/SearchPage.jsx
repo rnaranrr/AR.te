@@ -128,7 +128,7 @@ export default function SearchPage() {
                 {!query && recent.map((term) => (
                     <div key={term} className='text-sm text-cinza mt-2 px-4 flex flex-row gap-4 items-center w-full'>
 
-                        <button type="button" onClick={() => removeRecent(term)} aria-label="Remover">
+                        <button type="button" onClick={() => removeRecent(term)} aria-label={t('search.remove')}>
                             <X />
                         </button>
                         <p>{term}</p>
@@ -137,7 +137,7 @@ export default function SearchPage() {
                             type="button"
                             onClick={() => setSearchParams({ q: term })}
                             className='justify-self-right ml-auto'
-                            aria-label="Pesquisar"
+                            aria-label={t('search.submit')}
                         >
                             <ArrowUpRight />
                         </button>
@@ -146,7 +146,7 @@ export default function SearchPage() {
 
                 {/* Resultados */}
                 {loading && <p className="text-cinza text-sm text-center py-6">{t('profile.loading')}</p>}
-                {error && <p className="text-red-500 text-sm text-center py-6">{error}</p>}
+                {error && <p className="text-destaque text-sm text-center py-6">{error}</p>}
 
                 {query && !loading && !error && results === null && (
                     <p className="text-cinza text-sm text-center py-6">{t('search.min_chars')}</p>
@@ -213,7 +213,8 @@ export default function SearchPage() {
                                         repostsCount={post.repostsCount}
                                         likedByMe={post.likedByMe}
                                         repostedByMe={post.repostedByMe}
-
+                                        reportedByMe={post.reportedByMe}
+                                        post_analysis_status={post.post_analysis_status}
                                         is_raffle={post.is_raffle}
                                         raffle={post.raffle}
 

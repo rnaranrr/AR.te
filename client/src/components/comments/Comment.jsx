@@ -9,7 +9,6 @@ import api, { assetUrl, isLoggedIn } from '@/services/api';
 // Componente Comment recebe os dados do comentário e de seu autor
 
 export default function Comment({
-    author,
     authorname,
     authorusername,
     authoravatar_url,

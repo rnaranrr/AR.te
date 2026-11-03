@@ -238,7 +238,7 @@ export default function ComissionsForm() {
 
                     <p className="desc">{t('profileform.banner_filetype')}</p>
 
-                    {error && <p role="alert" className="text-sm text-red-500">{error}</p>}
+                    {error && <p role="alert" className="text-sm text-destaque">{error}</p>}
                     {success && <p role="status" className="text-sm text-green-500">{success}</p>}
 
                     {/* Botão de salvar */}

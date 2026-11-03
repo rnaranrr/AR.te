@@ -1,6 +1,8 @@
 // Serviço: cliente HTTP (axios) da API e funções auxiliares
 import axios from 'axios';
 
+import i18n from '@/i18n';
+
 // URL base da API (definida no .env do client: VITE_API_URL=http://localhost:3000)
 const API_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 
@@ -14,25 +16,35 @@ const api = axios.create({
 
 // Antes de cada requisição, envia o token de login (se existir)
 api.interceptors.request.use((config) => {
-  // Adiciona o token de autenticação ao cabeçalho da requisição
-  const token = localStorage.getItem('token');
+  // Requisições marcadas com isMod (ver modConfig) usam o token de moderador; as demais, o de usuário
+  const token = localStorage.getItem(config.isMod ? 'modToken' : 'token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
+  // Idioma da interface: o servidor usa para traduzir as mensagens das respostas
+  config.headers['Accept-Language'] = i18n.language || 'pt';
+
   return config;
 });
 
 // Se o servidor responder 401 para quem tinha token, a sessão expirou:
-// limpa os dados locais e volta para o login
+// limpa os dados locais e volta para o login (o de moderador tem sessão e tela próprias)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const hadToken = Boolean(localStorage.getItem('token'));
+    const isMod = Boolean(error.config?.isMod);
+    const hadToken = Boolean(localStorage.getItem(isMod ? 'modToken' : 'token'));
+    const loginPath = isMod ? '/mod/login' : '/login';
 
-    if (error.response?.status === 401 && hadToken && window.location.pathname !== '/login') {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+    if (error.response?.status === 401 && hadToken && window.location.pathname !== loginPath) {
+      if (isMod) {
+        clearModeratorSession();
+      } else {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      }
+      window.location.href = loginPath;
     }
 
     return Promise.reject(error);
@@ -69,3 +81,29 @@ export function isLoggedIn() {
 }
 
 export default api;
+
+// Marca uma requisição como de moderador: ela usa o token de moderador em vez do token de usuário
+// Uso: api.put(url, dados, modConfig())
+export function modConfig() {
+  return { isMod: true };
+}
+
+// Moderador logado salvo no login de moderador (ou null)
+export function getStoredModerator() {
+  try {
+    return JSON.parse(localStorage.getItem('moderator') || 'null');
+  } catch {
+    return null;
+  }
+}
+
+// True se existe um token de moderador salvo
+export function isModerator() {
+  return Boolean(localStorage.getItem('modToken'));
+}
+
+// Encerra somente a sessão de moderador (a sessão de usuário continua)
+export function clearModeratorSession() {
+  localStorage.removeItem('modToken');
+  localStorage.removeItem('moderator');
+}

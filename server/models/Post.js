@@ -23,7 +23,7 @@ const Post = database.define('post', {
     },
     // Título
     post_title: {
-        type: DataTypes.STRING(255),
+        type: DataTypes.STRING(100),
         allowNull: false
     },
     // Texto da publicação
@@ -50,7 +50,7 @@ const Post = database.define('post', {
         field: 'post.is_raffle'
     },
     // Status de moderação: default, in_analysis, restored ou banned
-    post_status: {
+    post_analysis_status: {
         type: DataTypes.ENUM('default', 'in_analysis', 'restored', 'banned'),
         defaultValue: 'default',
         allowNull: false

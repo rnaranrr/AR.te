@@ -12,6 +12,8 @@ import postRoutes from './routes/postRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
 import searchRoutes from './routes/searchRoutes.js';
 import modRoutes from './routes/modRoutes.js';
+import translateResponses from './middlewares/translateResponses.js';
+import { assertSecretKey } from './utils/secretKey.js';
 import raffleRoutes from './routes/raffleRoutes.js';
 
 // Carrega as variáveis do arquivo .env
@@ -28,6 +30,18 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Pede a rastreadores de IA que não usem o conteúdo (imagens incluídas) para treinar modelos
+// Vale para a API e para /uploads, onde ficam as artes publicadas
+app.use((req, res, next) => {
+    res.setHeader('X-Robots-Tag', 'noai, noimageai');
+    next();
+});
+
+// robots.txt da API: nenhum rastreador deve acessar a API nem as imagens enviadas
+app.get('/robots.txt', (req, res) => {
+    res.type('text/plain').sendFile(path.join(__dirname, 'robots.txt'));
+});
+
 // Disponibiliza os arquivos enviados em /uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -38,6 +52,9 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Traduz as mensagens da API para o idioma do front-end (inglês quando Accept-Language começa com "en")
+app.use(translateResponses);
 
 // Registro das rotas
 app.use('/auth', authRoutes);
@@ -58,19 +75,41 @@ app.get('/', (req, res) => {
 app.use((err, req, res, next) => {
     if (res.headersSent) return next(err);
 
-    // Erros do multer (tamanho, quantidade de arquivos) e do fileFilter são erros do cliente
-    const isUploadError = err?.name === 'MulterError' || /Formato/.test(err?.message ?? '');
-    const status = isUploadError ? 400 : 500;
+    // JSON malformado no corpo da requisição
+    if (err?.type === 'entity.parse.failed') {
+        return res.status(400).json({ error: 'Corpo da requisição inválido.' });
+    }
 
-    if (status === 500) console.error('Erro não tratado:', err);
+    // Erros do multer (tamanho, quantidade de arquivos) viram mensagens da API, que podem ser traduzidas
+    if (err?.name === 'MulterError') {
+        const messages = {
+            LIMIT_FILE_SIZE: 'Arquivo muito grande.',
+            LIMIT_FILE_COUNT: 'Quantidade de arquivos acima do limite.'
+        };
 
-    res.status(status).json({
-        error: isUploadError ? err.message : 'Erro interno no servidor.'
-    });
+        return res.status(400).json({ error: messages[err.code] ?? 'Envio de arquivo inválido.' });
+    }
+
+    // Formato de arquivo recusado pelo fileFilter (a mensagem já está em português)
+    if (/Formato/.test(err?.message ?? '')) {
+        return res.status(400).json({ error: err.message });
+    }
+
+    // Falha inesperada: registra no console e responde com erro 500
+    console.error('Erro não tratado:', err);
+    return res.status(500).json({ error: 'Erro interno no servidor.' });
 });
 
 // Conecta ao banco, sincroniza as tabelas e inicia o servidor
 async function startServer() {
+    // Sem uma SECRET_KEY válida os logins não funcionam: o servidor não inicia
+    try {
+        assertSecretKey();
+    } catch (error) {
+        console.error(`\n${error.message}\n`);
+        process.exit(1);
+    }
+
     try {
         // 1. Testa a conexão com o banco MySQL
         await database.authenticate();

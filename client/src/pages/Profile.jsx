@@ -36,7 +36,7 @@ export default function Profile() {
         ? '/profile'
         : `/user/${encodeURIComponent(username)}`;
 
-    //
+    // Função que carrega o perfil (recriada quando o usuário da rota ou o idioma muda)
     const loadProfile = useCallback(async () => {
         setLoading(true);
         setError('');
@@ -57,9 +57,9 @@ export default function Profile() {
         } finally {
             setLoading(false);
         }
-    }, [isOwnProfile, username]);
+    }, [isOwnProfile, username, t]);
 
-    //
+    // Carrega o perfil ao abrir a tela e quando o usuário da rota muda
     useEffect(() => {loadProfile();}, [loadProfile]);
 
     return (
@@ -73,6 +73,7 @@ export default function Profile() {
                 loading={loading}
                 error={error}
                 isOwnProfile={isOwnProfile}
+                basePath={basePath}
             />
 
             {/* Aba seletora de exibição */}

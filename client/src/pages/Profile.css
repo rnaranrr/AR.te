@@ -37,8 +37,14 @@
 }
 
 /* Cada estatística */
-.profile-stats div {
+.profile-stats div,
+.profile-stats a {
     @apply flex flex-col gap-0.5 w-30;
+}
+
+/* Seguidores e seguindo são links: destaque ao passar o mouse */
+.profile-stats a:hover {
+    @apply text-destaque;
 }
 
 /* Biografia (até 3 linhas) */

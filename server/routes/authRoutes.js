@@ -2,6 +2,8 @@
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+
+import { getSecretKey } from '../utils/secretKey.js';
 import { User } from '../models/index.js';
 
 // Roteador com as rotas deste arquivo
@@ -73,7 +75,7 @@ router.post('/login', async (req, res) => {
         // Geração do token
         const token = jwt.sign(
             { id: user.user_id },
-            process.env.SECRET_KEY || 'chave_secreta_padrao',
+            getSecretKey(),
             { expiresIn: '7d' }
         );
 

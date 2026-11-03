@@ -1,27 +1,25 @@
-// Componente: linha da lista de conversas (contato e última mensagem)
+// Componente: linha de lista de usuários (conversas com a última mensagem; seguidores e seguindo sem ela)
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CircleUser } from 'lucide-react';
 
 import { assetUrl } from '@/services/api';
 
-// Linha da lista de conversas: mostra o contato e a última mensagem
+// Linha de lista: mostra o usuário (foto, nome e @username) e, nas conversas, a última mensagem
+// to = destino do clique (padrão: a conversa com o usuário); sem chat_content a coluna da mensagem não aparece
 export default function ListElement({
-    sender,
+    to,
     sendername,
     senderusername,
     senderavatar_url,
 
-    chat_id,
     chat_content,
-    chat_data,
-
-    likesCount
+    chat_data
 }) {
-    const senderProfilePath = `/chat/${encodeURIComponent(senderusername)}`;
+    const senderProfilePath = to ?? `/chat/${encodeURIComponent(senderusername)}`;
 
-    // Função de tradução e idioma atual
-    const { t, i18n } = useTranslation();
+    // Idioma atual (define o formato da data)
+    const { i18n } = useTranslation();
 
     // Formata a data da última mensagem de acordo com o idioma atual
     const dateLocale = i18n.language?.toLowerCase().startsWith('pt')
@@ -47,10 +45,13 @@ export default function ListElement({
                 <p className='truncate font-bold'>{sendername}</p>
                 <p className='truncate text-cinza'>@{senderusername}</p>
             </div>
-            <div className='ml-auto flex min-w-0 flex-1 flex-col justify-self-end text-end text-cinza'>
-                <p className='truncate font-semibold'>{chat_content}</p>
-                <p>{formattedCreatedAt}</p>
-            </div>
+            {/* Última mensagem e data (somente nas conversas) */}
+            {chat_content !== undefined && (
+                <div className='ml-auto flex min-w-0 flex-1 flex-col justify-self-end text-end text-cinza'>
+                    <p className='truncate font-semibold'>{chat_content}</p>
+                    <p>{formattedCreatedAt}</p>
+                </div>
+            )}
         </NavLink>
     );
 }

@@ -1,6 +1,8 @@
 // Middleware: valida o token JWT e identifica o usuário logado
 import jwt from 'jsonwebtoken';
 
+import { getSecretKey } from '../utils/secretKey.js';
+
 // Middleware responsável por validar o token JWT enviado no header
 export default function authMiddleware(req, res, next) {
     // Obtém o valor do header
@@ -22,7 +24,12 @@ export default function authMiddleware(req, res, next) {
 
     try {
         // Verifica a assinatura e validade do token usando a chave secreta configurada
-        const decoded = jwt.verify(token, process.env.SECRET_KEY);
+        const decoded = jwt.verify(token, getSecretKey());
+
+        // Token de moderador não vale como login de usuário
+        if (decoded.role === 'moderator') {
+            return res.status(401).json({ error: 'Token de moderador não vale para esta rota.' });
+        }
 
         // Armazena o identificador do usuário na requisição para uso nos próximos middlewares/rotas
         req.userId = decoded.id;
@@ -43,7 +50,10 @@ export function optionalAuth(req, _res, next) {
         const [scheme, token] = authHeader.split(' ');
         if (scheme === 'Bearer' && token) {
             try {
-                req.userId = jwt.verify(token, process.env.SECRET_KEY).id;
+                const decoded = jwt.verify(token, getSecretKey());
+
+                // Token de moderador não identifica um usuário
+                if (decoded.role !== 'moderator') req.userId = decoded.id;
             } catch {
                 // Token inválido: trata como visitante
             }

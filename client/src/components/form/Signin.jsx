@@ -41,7 +41,7 @@ export default function Register() {
 
             // Após o cadastro bem-sucedido, redireciona para a página de login
             navigate('/login');
-        } catch (err) {
+        } catch {
             setError(t('login.errorregister'));
         } finally {
             setLoading(false);
@@ -121,7 +121,7 @@ export default function Register() {
                         </fieldset>
 
                         {/* Mensagem de erro do cadastro */}
-                        {error && <p className="text-red-500 text-sm">{error}</p>}
+                        {error && <p className="text-destaque text-sm">{error}</p>}
 
                         {/* Dica para personalizar o perfil depois */}
                         <p className='text-cinza w-full flex text-center itens-center'>{t('login.registertip')}</p>

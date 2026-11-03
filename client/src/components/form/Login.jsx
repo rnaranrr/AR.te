@@ -1,6 +1,6 @@
 // Página: login com e-mail e senha
 import { useState } from 'react';
-import { useNavigate, NavLink } from 'react-router-dom';
+import { useNavigate, useLocation, NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import api from '@/services/api';
 
@@ -13,6 +13,10 @@ export default function Login() {
     const { t } = useTranslation();
     // Navega para outra tela sem recarregar a página
     const navigate = useNavigate();
+    // Tela que o usuário tentou abrir antes do login (se houver); senão, o feed
+    const location = useLocation();
+    const from = location.state?.from;
+    const destination = from ? `${from.pathname}${from.search ?? ''}` : '/feed';
 
     // Define as variáveis de estado para o formulário, erro e carregamento
     const [formData, setFormData] = useState({
@@ -41,8 +45,8 @@ export default function Login() {
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('user', JSON.stringify(response.data.user));
 
-            navigate('/feed');
-        } catch (err) {
+            navigate(destination, { replace: true });
+        } catch {
             setError(t('login.error'));
         } finally {
             setLoading(false);
@@ -89,7 +93,7 @@ export default function Login() {
                         </fieldset>
 
                         {/* Mensagem de erro do login */}
-                        {error && <p className="text-red-500 text-sm">{error}</p>}
+                        {error && <p className="text-destaque text-sm">{error}</p>}
                         <p className='text-cinza text-sm'>{t('login.registermsg')}<NavLink to="/register" className='text-destaque'>{t('login.registermsglink')}</NavLink></p>
 
                         <div className="grid grid-cols-2 gap-2 mt-2">
@@ -113,6 +117,14 @@ export default function Login() {
                         </div>
 
                     </form>
+
+                    {/* Link para o login de moderadores */}
+                    <NavLink
+                        to="/mod/login"
+                        className="block text-sm text-cinza text-center w-full mt-4 hover:text-destaque"
+                    >
+                        {t('mod.login')}
+                    </NavLink>
                 </div>
             </div>
         </aside>

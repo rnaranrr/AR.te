@@ -62,7 +62,8 @@ export default function Timeline({ posts = [], reposts = [], user }) {
                             repostsCount={post.repostsCount}
                             likedByMe={post.likedByMe}
                             repostedByMe={post.repostedByMe}
-
+                            reportedByMe={post.reportedByMe}
+                            post_analysis_status={post.post_analysis_status}
                             is_raffle={post.is_raffle}
                             raffle={post.raffle}
 

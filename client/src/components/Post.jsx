@@ -1,11 +1,11 @@
 // Componente: card de post com mídia, tags e botões de interação
 import { useEffect, useRef, useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import api, { assetUrl, apiError, isLoggedIn } from '@/services/api';
+import api, { assetUrl, apiError, getStoredUser, isLoggedIn } from '@/services/api';
 
-import { EllipsisVertical, Heart, MessageCircle, RotateCcw, CircleUserRound, StickyNote, TriangleAlert, Link, X, CircleUser } from 'lucide-react';
+import { EllipsisVertical, Heart, MessageCircle, RotateCcw, CircleUserRound, StickyNote, TriangleAlert, Trash2, Link, X, CircleUser } from 'lucide-react';
 
 import '@/components/Post.css';
 
@@ -32,10 +32,14 @@ export default function Post({
     // Estado das interações do usuário logado (vem da API)
     likedByMe = false,
     repostedByMe = false,
+    reportedByMe = false,
 
     // Concursos: is_raffle = este post é o concurso; raffle = concurso do qual este post participa
     is_raffle = false,
     raffle = null,
+
+    // Status de moderação do post (default, in_analysis, restored ou banned)
+    post_analysis_status = 'default',
 
     post_tags = [],
     tags = []
@@ -97,6 +101,18 @@ export default function Post({
 
     // Mensagem curta (toast) para erros e avisos de ações do post
     const [notice, setNotice] = useState('');
+
+    // O usuário logado já denunciou este post (o menu mostra "Denunciar" ou "Remover denúncia")
+    const [reported, setReported] = useState(Boolean(reportedByMe));
+
+    // Post excluído pelo autor: deixa de ser exibido
+    const [removed, setRemoved] = useState(false);
+
+    // Caminho atual da URL (usado para sair da página de um post que acabou de ser excluído)
+    const location = useLocation();
+
+    // O usuário logado é o autor deste post
+    const isAuthor = Boolean(author) && getStoredUser()?.id === author;
 
     // Esconde o aviso depois de 3 segundos
     useEffect(() => {
@@ -164,9 +180,9 @@ export default function Post({
         });
     }
 
-    // Função responsável por denunciar o post
-    // O servidor registra a denúncia e coloca o post automaticamente "Em análise"
-    async function reportPost(event) {
+    // Função responsável por denunciar o post ou remover a denúncia do usuário (a denúncia é o voto da comunidade)
+    // O servidor coloca o post automaticamente "Em análise" na primeira denúncia
+    async function toggleReport(event) {
         event.currentTarget.blur();
 
         if (!isLoggedIn()) {
@@ -174,11 +190,36 @@ export default function Post({
             return;
         }
 
-        if (!window.confirm(t('post.report_confirm'))) return;
+        // Só pede confirmação ao denunciar; remover a denúncia é imediato
+        if (!reported && !window.confirm(t('post.report_confirm'))) return;
 
         try {
-            await api.post(`/posts/${post_id}/report`);
-            setNotice(t('post.reported_ok'));
+            if (reported) {
+                await api.delete(`/posts/${post_id}/report`);
+                setReported(false);
+                setNotice(t('post.report_removed'));
+            } else {
+                await api.post(`/posts/${post_id}/report`);
+                setReported(true);
+                setNotice(t('post.reported_ok'));
+            }
+        } catch (err) {
+            setNotice(apiError(err, t('post.action_error')));
+        }
+    }
+
+    // Função responsável por excluir o post do autor (exclusão lógica: o post deixa de ser exibido)
+    async function deletePost(event) {
+        event.currentTarget.blur();
+
+        if (!window.confirm(t('post.delete_confirm'))) return;
+
+        try {
+            await api.delete(`/posts/${post_id}`);
+            setRemoved(true);
+
+            // Se o post excluído estava aberto na própria página, volta para o feed
+            if (location.pathname === `/post/${post_id}`) navigate('/feed');
         } catch (err) {
             setNotice(apiError(err, t('post.action_error')));
         }
@@ -197,6 +238,7 @@ export default function Post({
                 await navigator.clipboard.writeText(postLink);
                 copied = true;
             } catch {
+                // Sem permissão para a área de transferência: segue para a alternativa abaixo
             }
         }
 
@@ -236,6 +278,9 @@ export default function Post({
             timeStyle: 'short'
         }).format(new Date(createdAt))
         : '';
+
+    // Post excluído pelo autor não é mais exibido
+    if (removed) return null;
 
     return (
         <aside className="w-full flex flex-col justify-center items-center mx-auto">
@@ -280,6 +325,13 @@ export default function Post({
                                 </span>
                             )}
 
+                            {/* Selo: post em análise pela moderação */}
+                            {post_analysis_status === 'in_analysis' && (
+                                <span className="badge bg-fundo border-destaque text-destaque ml-2">
+                                    {t('post.in_analysis')}
+                                </span>
+                            )}
+
                             {/* Selo: este post participa de um concurso (link para a página do concurso) */}
                             {raffle && (
                                 <NavLink
@@ -302,8 +354,14 @@ export default function Post({
                                     <NavLink to={`/post/${post_id}`}><StickyNote className="h-5 mr-2" />{t('post.details')}</NavLink>
                                 </li>
                                 <li>
-                                    <button type="button" onClick={reportPost}><TriangleAlert className="h-5 mr-2" />{t('post.report')}</button>
+                                    <button type="button" onClick={toggleReport}><TriangleAlert className="h-5 mr-2" />{reported ? t('post.report_remove') : t('post.report')}</button>
                                 </li>
+                                {/* Excluir post (somente o autor) */}
+                                {isAuthor && (
+                                    <li>
+                                        <button type="button" onClick={deletePost}><Trash2 className="h-5 mr-2" />{t('post.delete')}</button>
+                                    </li>
+                                )}
                             </ul>
                         </div>
                     </div>
@@ -395,7 +453,7 @@ export default function Post({
                                                 rel="noopener noreferrer"
                                                 className={`link ${media.length === 3 && index === 2 ? 'col-span-2' : ''}`}
                                             >
-                                                Abrir mídia
+                                                {t('post.open_media')}
                                             </a>
                                         );
                                     })

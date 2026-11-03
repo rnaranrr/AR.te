@@ -118,7 +118,7 @@ export default function DMuser() {
                                 </div>
                             );
                         })}
-                        {error && <p role="alert" className="text-center text-sm text-red-500">{error}</p>}
+                        {error && <p role="alert" className="text-center text-sm text-destaque">{error}</p>}
                         <div ref={messagesEndRef} />
                     </div>
 

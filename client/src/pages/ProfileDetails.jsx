@@ -13,7 +13,8 @@ export default function ProfileDetails({
     user,
     loading,
     error,
-    isOwnProfile
+    isOwnProfile,
+    basePath
 }) {
     const { t } = useTranslation();
     // Navega para outra tela sem recarregar a página
@@ -127,15 +128,17 @@ export default function ProfileDetails({
                             <span>{t('profile.posts')}</span>
                         </div>
 
-                        <div>
+                        {/* Seguidores: abre a lista de seguidores do perfil */}
+                        <NavLink to={`${basePath}/followers`}>
                             <strong>{followersCount}</strong>
                             <span>{t('profile.followers')}</span>
-                        </div>
+                        </NavLink>
 
-                        <div>
+                        {/* Seguindo: abre a lista de quem o perfil segue */}
+                        <NavLink to={`${basePath}/following`}>
                             <strong>{user.followingCount || 0}</strong>
                             <span>{t('profile.following')}</span>
-                        </div>
+                        </NavLink>
                     </div>
 
                     {/* Biografia do perfil */}
@@ -174,7 +177,7 @@ export default function ProfileDetails({
                                 ? "btn bg-fundo font-bold hover:bg-discreto/90 border-2 border-cinza rounded-full mt-2 w-full"
                                 : "btn bg-cinza text-[#f1f1e7] font-bold hover:bg-discreto/90 border-2 border-cinza rounded-full mt-2 w-full"}
                         >
-                            {isFollowing ? 'Seguindo' : 'Seguir'}
+                            {isFollowing ? t('profile.following') : t('profile.follow')}
                         </button>
 
                         {/* Abre a conversa direta com o usuário */}
@@ -182,7 +185,7 @@ export default function ProfileDetails({
                             to={`/chat/${encodeURIComponent(user.username)}`}
                             className="btn bg-fundo font-bold hover:bg-discreto/90 border-2 border-cinza rounded-full mt-2 w-full"
                         >
-                            Mensagens
+                            {t('profile.send_message')}
                         </NavLink>
                     </div>
                 )}

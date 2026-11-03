@@ -58,17 +58,15 @@ export default function DMList() {
 
                 <div className='card md:border-1 border-discreto h-full md:max-w-xl w-full mb-4'>
                     {loading && <p className='text-sm text-cinza text-center w-full py-4'>{t('profile.loading')}</p>}
-                    {error && <p className='text-sm text-red-500 text-center w-full py-4'>{error}</p>}
+                    {error && <p className='text-sm text-destaque text-center w-full py-4'>{error}</p>}
 
                     {conversations.map((dm) => (
                         <ListElement
                             key={dm.contact.user_id}
-                            sender={dm.contact.user_id}
                             sendername={dm.contact.name}
                             senderusername={dm.contact.username}
                             senderavatar_url={dm.contact.avatar_url}
 
-                            chat_id={dm.chat}
                             chat_content={dm.chat_message}
                             chat_data={dm.chat_data}
                         />

@@ -2,12 +2,12 @@
 // Todas as rotas que devolvem posts (feed, post único, perfil, busca, moderação) usam estas funções,
 // assim o JSON é idêntico em todos os lugares
 import { Op } from 'sequelize';
-import { User, Post, PostMedia, Tag, Ptag, Postlike, Comment, Repost, Raffle } from '../models/index.js';
+import { User, Post, PostMedia, Tag, Ptag, Postlike, Comment, Repost, Raffle, Reports } from '../models/index.js';
 
 // Filtro de posts "visíveis": não apagados (soft-delete) e não banidos
 export const VISIBLE_POST = {
     deleted_at: null,
-    post_status: { [Op.ne]: 'banned' }
+    post_analysis_status: { [Op.ne]: 'banned' }
 };
 
 // Includes padrão: autor, mídias e tags
@@ -53,12 +53,13 @@ export async function serializePost(post, viewerId = null, authorOverride = null
     // Participação em concurso: identifica o concurso (título + post do concurso) para o front exibir o selo/link
     const isEntry = Boolean(post.raffle_id) && !post.is_raffle;
 
-    const [likesCount, commentsCount, repostsCount, myLike, myRepost, raffleRow, rafflePost] = await Promise.all([
+    const [likesCount, commentsCount, repostsCount, myLike, myRepost, myReport, raffleRow, rafflePost] = await Promise.all([
         Postlike.count({ where: { post_id: postId } }),
         Comment.count({ where: { post_id: postId, deleted_at: null } }),
         Repost.count({ where: { post_id: postId } }),
         viewerId ? Postlike.findOne({ where: { post_id: postId, user_id: viewerId } }) : null,
         viewerId ? Repost.findOne({ where: { post_id: postId, user_id: viewerId } }) : null,
+        viewerId ? Reports.findOne({ where: { post_id: postId, user_id: viewerId } }) : null,
         isEntry ? Raffle.findByPk(post.raffle_id) : null,
         isEntry
             ? Post.findOne({
@@ -74,7 +75,7 @@ export async function serializePost(post, viewerId = null, authorOverride = null
         post_id: postId,
         post_title: post.post_title,
         post_content: post.post_content,
-        post_status: post.post_status,
+        post_analysis_status: post.post_analysis_status,
         is_nsfw: post.is_nsfw,
         createdAt: post.created_at,
 
@@ -105,7 +106,9 @@ export async function serializePost(post, viewerId = null, authorOverride = null
         commentsCount,
         repostsCount,
         likedByMe: Boolean(myLike),
-        repostedByMe: Boolean(myRepost)
+        repostedByMe: Boolean(myRepost),
+        // O usuário logado já denunciou (votou contra) este post
+        reportedByMe: Boolean(myReport)
     };
 }
 

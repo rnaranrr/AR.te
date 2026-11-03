@@ -1,17 +1,19 @@
 // Componente: card de um post denunciado no espaço de moderação
-import { useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { useState } from 'react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import { EllipsisVertical, Heart, MessageCircle, RotateCcw, CircleUserRound, StickyNote, TriangleAlert, Link, X, CircleUser } from 'lucide-react';
 
-import { assetUrl } from '@/services/api';
+import api, { assetUrl, apiError, isLoggedIn, isModerator, modConfig } from '@/services/api';
 
 import '@/components/Post.css';
 
-// Mostra o post com o status de moderação e o número de denúncias
+// Status que o moderador pode escolher no menu
+const STATUS_OPTIONS = ['in_analysis', 'banned', 'restored'];
+
+// Mostra o post com o status de moderação, o número de denúncias e as ações de moderação
 export default function ModPost({
-    author,
     authorname,
     authorusername,
     authoravatar_url,
@@ -25,9 +27,14 @@ export default function ModPost({
 
     is_nsfw,
 
-    post_status,
+    post_analysis_status,
 
     ReportCount,
+    reportedByMe = false,
+
+    // Avisam a lista (ModPage) quando o status ou as denúncias mudam
+    onStatusChange,
+    onReportChange,
 
     post_tags = [],
     tags = []
@@ -49,6 +56,67 @@ export default function ModPost({
     // Função de tradução e idioma atual
     const { t, i18n } = useTranslation();
 
+    // Navega para outra tela sem recarregar a página
+    const navigate = useNavigate();
+
+    // Mensagem de erro das ações de moderação
+    const [notice, setNotice] = useState('');
+
+    // Caminho atual da URL (na tela do próprio post, clicar no card não abre nada)
+    const location = useLocation();
+    const isOnPostPage = location.pathname === `/mod/${post_id}`;
+
+    // Abre a tela do post (/mod/:id) ao clicar no card, exceto em links, botões, mídia e menus
+    function openPostPage(event) {
+        if (event.target.closest('a, button, [role="button"], img, video, ul')) return;
+
+        if (!isOnPostPage) navigate(`/mod/${post_id}`);
+    }
+
+    // Abre a tela do post (/mod/:id); se já estiver nela, rola até a seção de opiniões
+    function openOpinions() {
+        if (isOnPostPage) {
+            document.getElementById('opinions')?.scrollIntoView({ behavior: 'smooth' });
+            return;
+        }
+
+        navigate(`/mod/${post_id}`);
+    }
+
+    // Muda o status do post (somente moderadores) e avisa a lista para atualizar
+    async function changeStatus(event, status) {
+        event.currentTarget.blur();
+        setNotice('');
+
+        try {
+            const response = await api.put(`/mod/posts/${post_id}/status`, { status }, modConfig());
+            onStatusChange?.(post_id, response.data.post_analysis_status);
+        } catch (err) {
+            setNotice(apiError(err, t('mod.action_error')));
+        }
+    }
+
+    // Voto da comunidade: denuncia o post ou remove a denúncia do usuário logado
+    async function toggleReport() {
+        // Votar exige login de usuário
+        if (!isLoggedIn()) {
+            navigate('/login');
+            return;
+        }
+
+        setNotice('');
+
+        try {
+            const response = reportedByMe
+                ? await api.delete(`/posts/${post_id}/report`)
+                : await api.post(`/posts/${post_id}/report`);
+
+            onReportChange?.(post_id, response.data);
+        } catch (err) {
+            setNotice(apiError(err, t('mod.action_error')));
+        }
+    }
+
     // Formata a data de criação do post de acordo com o idioma atual
     const dateLocale = i18n.language?.toLowerCase().startsWith('pt')
         ? 'pt-BR'
@@ -65,7 +133,7 @@ export default function ModPost({
 
             {/* Card do post */}
             <div className="card bg-fundo w-full max-w-120 min-w-90 border-1 border-cinza md:rounded-lg">
-                <div className="card-body w-full min-w-90">
+                <div className={`card-body w-full min-w-90 ${isOnPostPage ? '' : 'cursor-pointer'}`} onClick={openPostPage}>
 
                     {/* Cabeçalho do post com informações do autor e título */}
                     <div className="flex items-center gap-3">
@@ -92,7 +160,7 @@ export default function ModPost({
                             </NavLink>
 
                             {/* Título do post */}
-                            <NavLink to={`/post/${post_id}`} className="text-lg">
+                            <NavLink to={`/mod/${post_id}`} className="text-lg">
                                 {post_title}
                             </NavLink>
                         </div>
@@ -101,18 +169,18 @@ export default function ModPost({
 
                     <div className='ml-13 bg-discreto rounded-full px-4 flex flex-row justify-between'>
                         <div className='flex flex-row gap-3'>
-                            <p className='font-bold'>Post: </p>
+                            <p className='font-bold'>{t('mod.post_label')} </p>
                             <p className='font-normal'>{post_id}</p>
                         </div>
                         <div className='flex flex-row gap-3'>
-                            <p className='font-bold'>Status: </p>
-                            <p className='font-normal'>{t(`mod.status_${post_status}`, { defaultValue: String(post_status ?? '') })}</p>
+                            <p className='font-bold'>{t('mod.status_label')} </p>
+                            <p className='font-normal'>{t(`mod.status_${post_analysis_status}`, { defaultValue: String(post_analysis_status ?? '') })}</p>
                         </div>
                     </div>
 
                     {/* Conteúdo do post */}
                     <div className="w-full pl-13">
-                        <NavLink to={`/post/${post_id}`}>
+                        <NavLink to={`/mod/${post_id}`}>
                             {post_content}
                         </NavLink>
 
@@ -194,7 +262,7 @@ export default function ModPost({
                                                 rel="noopener noreferrer"
                                                 className={`link ${media.length === 3 && index === 2 ? 'col-span-2' : ''}`}
                                             >
-                                                Abrir mídia
+                                                {t('post.open_media')}
                                             </a>
                                         );
                                     })
@@ -217,22 +285,58 @@ export default function ModPost({
                             </p>
                         </div>
 
-                        {/* Denúncias e ações de moderação (ainda não ligadas à API) */}
+                        {/* Denúncias (voto da comunidade) e ações de moderação */}
                         <div className="card-actions justify-start mt-4">
                             <div className="flex w-full items-center gap-4">
-                                {/* Número de denúncias do post */}
+                                {/* Denúncias: clicar no ícone denuncia o post ou remove a denúncia do usuário (como curtir e descurtir) */}
                                 <button
-                                    className="flex items-center gap-1 hover:cursor-pointer w-15"
+                                    type="button"
+                                    onClick={toggleReport}
+                                    disabled={post_analysis_status === 'banned' && !reportedByMe}
+                                    className="flex items-center gap-1 hover:cursor-pointer w-15 disabled:opacity-50 disabled:hover:cursor-not-allowed"
                                 >
-                                    <TriangleAlert className='interaction'/>
+                                    <TriangleAlert className={`interaction ${reportedByMe ? 'interactedreport' : ''}`} />
                                     <span>{ReportCount ?? 0}</span>
                                 </button>
                             </div>
 
                             <div className='flex flex-row gap-3 justify-center items-center mt-2'>
-                                <div className='w-[50%] h-15 flex items-center text-center px-4 py-2 border-2 border-destaque text-destaque rounded-xl'> Alterar status do post</div>
-                                <div className='w-[50%] h-15 flex items-center text-center px-4 py-2 border-2 border-destaque text-destaque rounded-xl'>Ver opiniões do post</div>
+                                {/* Alterar status do post (somente moderadores) */}
+                                {isModerator() && (
+                                    <div className="dropdown w-[50%]">
+                                        {/* Botão que abre o menu de status */}
+                                        <div tabIndex={0} role="button" className='w-full h-15 flex items-center justify-center text-center px-4 py-2 border-2 border-destaque text-destaque rounded-xl'>
+                                            {t('mod.change_status')}
+                                        </div>
+                                        {/* Opções de status (o status atual fica desativado) */}
+                                        <ul tabIndex={-1} className="dropdown-content menu bg-cinza rounded-box z-1 w-60 p-2 shadow-sm text-[#f1f1e7]">
+                                            {STATUS_OPTIONS.map((status) => (
+                                                <li key={status}>
+                                                    <button
+                                                        type="button"
+                                                        disabled={status === post_analysis_status}
+                                                        onClick={(event) => changeStatus(event, status)}
+                                                    >
+                                                        {t(`mod.status_${status}`)}
+                                                    </button>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+
+                                {/* Ver opiniões do post: abre a tela do post, onde ficam as opiniões da comunidade */}
+                                <button
+                                    type="button"
+                                    onClick={openOpinions}
+                                    className={`${isModerator() ? 'w-[50%]' : 'w-full'} h-15 flex items-center justify-center text-center px-4 py-2 border-2 border-destaque text-destaque rounded-xl hover:cursor-pointer`}
+                                >
+                                    {t('mod.view_opinions')}
+                                </button>
                             </div>
+
+                            {/* Erro das ações de moderação */}
+                            {notice && <p role="alert" className="w-full text-center text-sm text-destaque">{notice}</p>}
                         </div>
                     </div>
                 </div>

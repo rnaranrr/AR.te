@@ -254,6 +254,74 @@ router.delete('/me', authMiddleware, async (req, res) => {
     }
 });
 
+// Dados públicos de um usuário nas listas de seguidores e seguidos
+const FOLLOW_USER_ATTRS = ['user_id', 'user_nickname', 'user_idname', 'user_pfpurl'];
+
+// Lista paginada dos seguidores ou dos seguidos de um usuário
+// kind = 'followers' (quem segue o usuário) ou 'following' (quem o usuário segue)
+async function listFollows(req, res, kind) {
+    try {
+        const username = req.params.username.replace(/^@/, '');
+
+        const target = await User.findOne({
+            where: { user_idname: username },
+            attributes: ['user_id']
+        });
+        if (!target) {
+            return res.status(404).json({ error: 'Usuário não encontrado.' });
+        }
+
+        // Paginação: tamanho da página (máximo 50) e deslocamento
+        const limit = Math.min(Number(req.query.limit) || 20, 50);
+        const offset = Math.max(Number(req.query.offset) || 0, 0);
+
+        // Seguidores: linhas em que o perfil é o seguido; seguindo: linhas em que ele é quem segue
+        const isFollowers = kind === 'followers';
+        const where = isFollowers
+            ? { following_id: target.user_id }
+            : { follower_id: target.user_id };
+
+        const [rows, total] = await Promise.all([
+            Follow.findAll({
+                where,
+                include: [{
+                    model: User,
+                    as: isFollowers ? 'follower' : 'followed',
+                    attributes: FOLLOW_USER_ATTRS
+                }],
+                order: [['follow_id', 'DESC']],
+                limit,
+                offset
+            }),
+            Follow.count({ where })
+        ]);
+
+        const users = rows
+            .map((row) => (isFollowers ? row.follower : row.followed))
+            .filter(Boolean)
+            .map((user) => ({
+                user_id: user.user_id,
+                name: user.user_nickname,
+                username: user.user_idname,
+                avatar_url: user.user_pfpurl
+            }));
+
+        return res.json({ users, total });
+    } catch (error) {
+        // Falha inesperada: registra no console e responde com erro
+        console.error('Erro ao listar seguidores:', error);
+        return res.status(500).json({ error: 'Não foi possível carregar a lista de usuários.' });
+    }
+}
+
+// GET /users/:username/followers
+// Lista os seguidores do usuário (paginada: ?limit=20&offset=0)
+router.get('/:username/followers', (req, res) => listFollows(req, res, 'followers'));
+
+// GET /users/:username/following
+// Lista quem o usuário segue (paginada: ?limit=20&offset=0)
+router.get('/:username/following', (req, res) => listFollows(req, res, 'following'));
+
 // POST /users/:username/follow
 // Alterna seguir / deixar de seguir. Retorna { following, followersCount }
 router.post('/:username/follow', authMiddleware, async (req, res) => {

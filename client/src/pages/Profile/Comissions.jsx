@@ -1,7 +1,10 @@
 // Página: aba "Comissões" do perfil (status, banner e tabela de preços)
 import { useTranslation } from 'react-i18next';
 
-// Mostra o status das comissões e as imagens cadastradas pelo artista
+import { assetUrl } from '@/services/api';
+
+// Mostra o status das comissões e, se o artista cadastrou, o banner e a tabela de preços
+// Banner e tabela ausentes não ocupam espaço nenhum na tela
 export default function Comissions({ user }) {
     const { t } = useTranslation();
 
@@ -27,34 +30,23 @@ export default function Comissions({ user }) {
                     </span>
                 </div>
 
-                {/* Banner de apresentação das comissões */}
-                <div aria-label={t('profileform.commissions_banner_label')}>
-                    {user.commissions_banner_url ? (
-                        <img
-                            src={new URL(user.commissions_banner_url, import.meta.env.VITE_API_URL).href}
-                            alt={t('profileform.commissions_banner_label')}
-                            className="h-40 w-full rounded-xl bg-cinza object-cover sm:h-48"
-                        />
-                    ) : (
-                        <div className="flex h-40 items-center justify-center rounded-xl bg-discreto text-sm text-texto-main sm:h-48">
-                            {t('profile.commissions_banner_empty')}
-                        </div>
-                    )}
-                </div>
+                {/* Banner de apresentação das comissões (só aparece se existir) */}
+                {user.commissions_banner_url && (
+                    <img
+                        src={assetUrl(user.commissions_banner_url)}
+                        alt={t('profileform.commissions_banner_label')}
+                        className="h-40 w-full rounded-xl bg-cinza object-cover sm:h-48"
+                    />
+                )}
 
-                <div aria-label={t('profileform.commissions_image_label')}>
-                    {user.commissions_image_url ? (
-                        <img
-                            src={new URL(user.commissions_image_url, import.meta.env.VITE_API_URL).href}
-                            alt={t('profileform.commissions_image_label')}
-                            className="max-h-[70dvh] min-h-48 w-full rounded-xl bg-cinza object-contain"
-                        />
-                    ) : (
-                        <div className="flex min-h-48 items-center justify-center rounded-xl bg-discreto text-sm text-texto-main">
-                            {t('profile.commissions_image_empty')}
-                        </div>
-                    )}
-                </div>
+                {/* Tabela de preços (só aparece se existir) */}
+                {user.commissions_image_url && (
+                    <img
+                        src={assetUrl(user.commissions_image_url)}
+                        alt={t('profileform.commissions_image_label')}
+                        className="max-h-[70dvh] min-h-48 w-full rounded-xl bg-cinza object-contain"
+                    />
+                )}
             </div>
         </aside>
     );

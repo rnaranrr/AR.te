@@ -19,8 +19,7 @@ export default function PostForm() {
     const raffleId = /^\d+$/.test(raffleParam ?? '') ? raffleParam : null;
     const rafflePostId = /^\d+$/.test(searchParams.get('from') ?? '') ? searchParams.get('from') : null;
 
-    // Controla o carregamento e o salvamento do formulário
-    const [loading, setLoading] = useState(false);
+    // Controla o salvamento do formulário
     const [saving, setSaving] = useState(false);
 
     // Armazena as mensagens de erro e sucesso
@@ -148,8 +147,8 @@ export default function PostForm() {
             return;
         }
 
-        // Verifica se o título não ultrapassa 255 caracteres
-        if (formData.title.length > 255) {
+        // Verifica se o título não ultrapassa 100 caracteres
+        if (formData.title.length > 100) {
             setError(t('newpost.title_too_long'));
             return;
         }
@@ -183,15 +182,6 @@ export default function PostForm() {
         } finally {
             setSaving(false);
         }
-    }
-
-    // Exibe uma mensagem enquanto o carregamento estiver ativo
-    if (loading) {
-        return (
-            <aside className="w-full min-h-dvh bg-fundo text-texto-main p-6">
-                {t('profile.loading')}
-            </aside>
-        );
     }
 
     return (
@@ -228,13 +218,13 @@ export default function PostForm() {
                                 type="text"
                                 value={formData.title}
                                 onChange={handleChange}
-                                maxLength={255}
+                                maxLength={100}
                                 className="inputform"
                                 required
                             />
 
                             <span className="text-sm text-cinza text-right">
-                                {formData.title.length}/255
+                                {formData.title.length}/100
                             </span>
                         </fieldset>
 
@@ -281,7 +271,7 @@ export default function PostForm() {
                                                 ) : (
                                                     <img
                                                         src={preview}
-                                                        alt={`Pré-visualização da mídia ${mediaName}`}
+                                                        alt={t('newpost.media_preview', { name: mediaName })}
                                                         className="aspect-square w-full rounded-xl object-cover"
                                                     />
                                                 )
@@ -362,7 +352,7 @@ export default function PostForm() {
 
                         {/* Mensagens de erro e sucesso */}
                         {error && (
-                            <p role="alert" className="text-red-500 text-sm">
+                            <p role="alert" className="text-destaque text-sm">
                                 {error}
                             </p>
                         )}

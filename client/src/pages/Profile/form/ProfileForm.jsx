@@ -73,7 +73,7 @@ export default function ProfileForm() {
         }
 
         loadProfile();
-    }, []);
+    }, [t]);
 
     // Cria e limpa as prévias das imagens selecionadas
     useEffect(() => {
@@ -193,6 +193,14 @@ export default function ProfileForm() {
         } finally {
             setSaving(false);
         }
+    }
+
+    // Encerra a sessão de usuário (apaga o token e os dados guardados no navegador) e volta para o login
+    function handleLogout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+
+        navigate('/login');
     }
 
     // Exclui a conta (e todas as produções) na API e volta para o login
@@ -403,7 +411,7 @@ export default function ProfileForm() {
                         </fieldset>
 
                         {/* Mensagens */}
-                        {error && <p className="text-red-500 text-sm">{error}</p>}
+                        {error && <p className="text-destaque text-sm">{error}</p>}
                         {success && <p className="text-green-500 text-sm">{success}</p>}
 
                         {/* Botão de salvar */}
@@ -416,19 +424,28 @@ export default function ProfileForm() {
                         </button>
                     </form>
 
-                    {/* Exclusão da conta (pede a senha para confirmar) */}
+                    {/* Sair da conta e exclusão da conta (a exclusão pede a senha para confirmar) */}
                     <div className="flex flex-col gap-4 mt-8 pt-6 border-t border-discreto">
+                        {/* Sair da conta (encerra a sessão neste navegador) */}
+                        <button
+                            type="button"
+                            onClick={handleLogout}
+                            className="btn bg-fundo font-bold hover:bg-discreto/90 border-2 border-cinza rounded-full w-full"
+                        >
+                            {t('sidebar.logout')}
+                        </button>
+
                         {!showDelete ? (
                             <button
                                 type="button"
                                 onClick={() => setShowDelete(true)}
-                                className="btn bg-fundo text-red-500 font-bold border-2 border-red-500 hover:bg-red-500/10 rounded-full w-full"
+                                className="btn bg-fundo text-destaque font-bold border-2 border-destaque hover:bg-destaque/10 rounded-full w-full"
                             >
                                 {t('profileform.delete_account')}
                             </button>
                         ) : (
                             <>
-                                <p className="text-sm text-red-500">{t('profileform.delete_warning')}</p>
+                                <p className="text-sm text-destaque">{t('profileform.delete_warning')}</p>
 
                                 <fieldset className="fieldset inputlabel">
                                     <label htmlFor="delete-password">{t('profileform.delete_password')}</label>
@@ -443,7 +460,7 @@ export default function ProfileForm() {
                                     />
                                 </fieldset>
 
-                                {deleteError && <p role="alert" className="text-red-500 text-sm">{deleteError}</p>}
+                                {deleteError && <p role="alert" className="text-destaque text-sm">{deleteError}</p>}
 
                                 <div className="grid grid-cols-2 gap-2">
                                     <button
@@ -462,7 +479,7 @@ export default function ProfileForm() {
                                         type="button"
                                         onClick={handleDeleteAccount}
                                         disabled={!deletePassword || deleting}
-                                        className="btn bg-red-500 text-white font-bold hover:bg-red-500/90 border-none rounded-full w-full"
+                                        className="btn bg-destaque text-fundo font-bold hover:bg-destaque/90 border-none rounded-full w-full"
                                     >
                                         {deleting ? t('profileform.deleting') : t('profileform.delete_confirm')}
                                     </button>

@@ -62,12 +62,12 @@ export default function PostPage() {
                     className="flex items-center gap-2 text-texto-main hover:text-destaque transition-colors"
                 >
                     <ArrowLeft size={22} />
-                    <span>Voltar</span>
+                    <span>{t('common.back')}</span>
                 </button>
             </div>
 
             {loading && <p className="px-4 pt-6">{t('profile.loading')}</p>}
-            {!loading && error && <p className="px-4 pt-6 text-red-500">{error}</p>}
+            {!loading && error && <p className="px-4 pt-6 text-destaque">{error}</p>}
 
             {/* Post */}
             {post && (
@@ -90,6 +90,8 @@ export default function PostPage() {
                         repostsCount={post.repostsCount}
                         likedByMe={post.likedByMe}
                         repostedByMe={post.repostedByMe}
+                        reportedByMe={post.reportedByMe}
+                        post_analysis_status={post.post_analysis_status}
                         is_raffle={post.is_raffle}
                         raffle={post.raffle}
                         tags={post.tags}

@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon index.js",
-    "start": "node index.js"
+    "start": "node index.js",
+    "create-moderator": "node scripts/createModerator.js",
+    "check-messages": "node scripts/checkMessages.js"
   },
   "keywords": [],
   "dependencies": {

@@ -9,6 +9,10 @@
 .interactedlike {
     @apply w-5 h-5 text-destaque fill-destaque;
 }
+/* Denúncia ativa: triângulo com preenchimento suave (o ponto de exclamação continua visível) */
+.interactedreport {
+    @apply w-5 h-5 text-destaque fill-destaque/25;
+}
 /* Repost ativo */
 .interactedrepost {
     @apply w-5 h-5 text-destaque;

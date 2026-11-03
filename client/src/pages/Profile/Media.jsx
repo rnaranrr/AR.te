@@ -1,11 +1,15 @@
 // Página: aba "Portfólio" do perfil (grade com as mídias dos posts)
 import { NavLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ImageIcon } from 'lucide-react';
 
 import { assetUrl } from '@/services/api';
 
 // A aba mostra somente posts que possuem mídia
 export default function Media({ posts = [] }) {
+    // Função de tradução dos textos
+    const { t } = useTranslation();
+
     const postsWithMedia = posts.filter(
         (post) => Array.isArray(post.media) && post.media.length > 0
     );
@@ -27,10 +31,9 @@ export default function Media({ posts = [] }) {
                             <NavLink
                                 key={post.post_id}
                                 to={`/post/${post.post_id}`}
-                                aria-label={`Ver publicação: ${post.post_title}${extraMediaCount > 0
-                                        ? `, mais ${extraMediaCount} mídias anexadas`
-                                        : ''
-                                    }`}
+                                aria-label={extraMediaCount > 0
+                                    ? t('profile.view_post_more', { title: post.post_title, extra: extraMediaCount })
+                                    : t('profile.view_post', { title: post.post_title })}
                                 className="group relative aspect-square overflow-hidden rounded-xl bg-cinza focus:outline-none focus:ring-2 focus:ring-destaque"
                             >
                                 {isVideo ? (

@@ -1,0 +1,4 @@
+# AR.te (API): instruções para rastreadores (robots.txt)
+# A API e as imagens enviadas (/uploads) não devem ser rastreadas por nenhum robô
+User-agent: *
+Disallow: /

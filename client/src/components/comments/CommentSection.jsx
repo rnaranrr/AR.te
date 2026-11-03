@@ -82,7 +82,7 @@ export default function Comments({ postId }) {
                 <div className="card w-full max-w-xl mx-auto bg-fundo flex flex-col items-center justify-center pb-4">
 
                     <h2 className="max-w-xl text-xl font-bold mb-1 ml-2 flex justify-left">
-                        Comentários
+                        {t('comment.title')}
                     </h2>
 
                     {/* Formulário de novo comentário */}
@@ -109,7 +109,7 @@ export default function Comments({ postId }) {
                         </button>
                     </form>
 
-                    {error && <p role="alert" className="text-red-500 text-sm mt-2">{error}</p>}
+                    {error && <p role="alert" className="text-destaque text-sm mt-2">{error}</p>}
                 </div>
             </div>
 
